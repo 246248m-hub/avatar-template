@@ -1,43 +1,64 @@
-name: Phoenix Mind Training (Analysis Protocol @ 6 FPS)
+name: Phoenix Mind Training (Seal Protocol)
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-and-train:
+  build-and-analyze:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
 
     steps:
-      - name: Checkout Repository Code
-        uses: actions/checkout@v4
-
-      - name: Run Android Emulator
-        uses: ReactiveCircus/android-emulator-runner@v2
-        with:
-          api-level: 29
-          target: google_apis
-          arch: x86_64
-          emulator-options: "-no-snapshot -no-window -no-audio -no-accel"
-          script: echo "Emulator is ready."
-
-      - name: Set up Node.js for Puppeteer
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Run Frame Capture Script
-        working-directory: ./viewer_scripts
+      # الخطوة 1: تثبيت الأدوات الأساسية (yt-dlp و ffmpeg)
+      - name: Install Dependencies
         run: |
-          echo "Installing Puppeteer and Archiver..."
-          npm install puppeteer archiver
-          echo "Running viewer script..."
-          node viewer.js
+          echo "Installing system dependencies..."
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+          
+          echo "Installing yt-dlp..."
+          sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
+          sudo chmod a+rx /usr/local/bin/yt-dlp
+          echo "All dependencies installed successfully."
 
-      - name: Upload Captured Frames
-        if: always()
+      # الخطوة 2: تنزيل مقطع الفيديو المحدد باستخدام yt-dlp
+      - name: Download Video Segment via yt-dlp
+        run: |
+          echo "Downloading video segment from 00:09 to 11:20..."
+          # الأمر يقوم بتنزيل أفضل جودة فيديو mp4 ويقص المقطع المطلوب بدقة
+          # هذا هو قلب "طريقة Seal"
+          yt-dlp -f "bestvideo[ext=mp4][height<=720]" --download-sections "*00:09-11:20" -o "gameplay.mp4" "https://youtu.be/QMj7MjZNEkg"
+          
+          echo "Video segment downloaded as gameplay.mp4"
+          ls -lh gameplay.mp4 # طباعة حجم الملف للتأكد
+
+      # الخطوة 3: استخراج الإطارات من الفيديو المحلي باستخدام ffmpeg
+      - name: Extract Frames at 6 FPS
+        run: |
+          echo "Creating frames directory..."
+          mkdir -p frames
+          
+          echo "Extracting frames using ffmpeg..."
+          # ffmpeg يستخرج 6 إطارات كل ثانية من الفيديو المحلي
+          ffmpeg -i gameplay.mp4 -vf fps=6 frames/frame_%05d.jpg
+          
+          # التحقق من عدد الإطارات التي تم إنشاؤها
+          FRAME_COUNT=$(ls -1q frames/ | wc -l)
+          echo "$FRAME_COUNT frames extracted successfully."
+          if [ "$FRAME_COUNT" -lt 100 ]; then
+            echo "Error: Very few frames were extracted. Something went wrong."
+            exit 1
+          fi
+
+      # الخطوة 4: ضغط الإطارات ورفعها كـ Artifact
+      - name: Zip and Upload Frames
+        run: |
+          echo "Zipping frames..."
+          zip -r captured_frames.zip frames
+          echo "Uploading artifact..."
+        
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: captured-frames-6fps
-          path: viewer_scripts/captured_frames.zip
-          continue-on-error: true
+          name: captured-frames-6fps-seal-protocol
+          path: captured_frames.zip
