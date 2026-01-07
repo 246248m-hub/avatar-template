@@ -1,4 +1,4 @@
-name: Phoenix Mind Training (Direct Viewing Protocol)
+name: Phoenix Mind Training (Analysis Protocol @ 6 FPS)
 
 on:
   workflow_dispatch:
@@ -6,14 +6,12 @@ on:
 jobs:
   build-and-train:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
-      # الخطوة 1: تنزيل الكود (بما في ذلك سكريبت puppeteer)
       - name: Checkout Repository Code
         uses: actions/checkout@v4
 
-      # الخطوة 2: تشغيل المحاكي
       - name: Run Android Emulator
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
@@ -21,29 +19,25 @@ jobs:
           target: google_apis
           arch: x86_64
           emulator-options: "-no-snapshot -no-window -no-audio -no-accel"
-          script: echo "Emulator is ready for browser automation."
+          script: echo "Emulator is ready."
 
-      # الخطوة 3: تجهيز بيئة المتصفح الآلي
       - name: Set up Node.js for Puppeteer
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      # الخطوة 4: تشغيل سكريبت المشاهدة
-      - name: Run YouTube Viewer Script
-        # سنقوم بإنشاء هذا السكريبت في الخطوة التالية
-        working-directory: ./viewer_scripts 
+      - name: Run Frame Capture Script
+        working-directory: ./viewer_scripts
         run: |
-          echo "Installing Puppeteer..."
-          npm install puppeteer
+          echo "Installing Puppeteer and Archiver..."
+          npm install puppeteer archiver
           echo "Running viewer script..."
           node viewer.js
 
-      # الخطوة 5: حفظ لقطة الشاشة كدليل على النجاح
-      - name: Upload Final Screenshot
+      - name: Upload Captured Frames
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: youtube-viewer-screenshot
-          path: viewer_scripts/youtube_page.png
+          name: captured-frames-6fps
+          path: viewer_scripts/captured_frames.zip
           continue-on-error: true
