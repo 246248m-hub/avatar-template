@@ -1,4 +1,4 @@
-name: Phoenix Mind Training (Direct Invite Protocol v2)
+name: Phoenix Mind Training (Total Deception Protocol)
 
 on:
   workflow_dispatch:
@@ -9,15 +9,21 @@ jobs:
     timeout-minutes: 60
 
     steps:
-      # الخطوة 1: تنزيل ملف APK (لا تغيير هنا)
-      - name: Download Base APK via Direct Link
+      # الخطوة 1: تنزيل ملف APK باستخدام curl مع خداع كامل
+      - name: Download Base APK via cURL
         run: |
-          echo "Downloading base APK using the signed URL..."
-          wget -O game.apk "https://apkcombo.com/r2?u=https%3A%2F%2Fapks.39b7cb94d40914bac590886981b0ed6e.r2.cloudflarestorage.com%2Fcom.dts.freefireth%2F1.119.13%2F2019119424.e1fb99aa2e82e6d94451c064e235ca74ed52d414.apk%3Fresponse-content-disposition%3Dattachment%253B%2520filename%253D%2522Garena%2520Free%2520Fire_1.119.13_apkcombo.com.apk%2522%26response-content-type%3Dapplication%252Fvnd.android.package-archive%26X-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Date%3D20260107T171833Z%26X-Amz-SignedHeaders%3Dhost%26X-Amz-Expires%3D14400%26X-Amz-Credential%3D3cb727b4cd4780c410b780ac7caa4da3%252F20260107%252Fauto%252Fs3%252Faws4_request%26X-Amz-Signature%3Ddefbc5315b822442171bf2a93f1cea467a4bb7dec48f0bc999d25b0d90af1ce6&fp=3436e638672dfbb4c273fb7f61a4f020&ip=134.35.97.107&package_name=com.dts.freefireth&lang=en"
+          echo "Downloading base APK using Total Deception Protocol..."
+          # <<<--- هذا هو الجزء الحاسم والمعدل ---<<<
+          curl -L \
+            -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" \
+            -H "Referer: https://apkcombo.com/" \
+            -o game.apk \
+            "https://apkcombo.com/r2?u=https%3A%2F%2Fapks.39b7cb94d40914bac590886981b0ed6e.r2.cloudflarestorage.com%2Fcom.dts.freefireth%2F1.119.13%2F2019119424.e1fb99aa2e82e6d94451c064e235ca74ed52d414.apk%3Fresponse-content-disposition%3Dattachment%253B%2520filename%253D%2522Garena%2520Free%2520Fire_1.119.13_apkcombo.com.apk%2522%26response-content-type%3Dapplication%252Fvnd.android.package-archive%26X-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Date%3D20260107T171833Z%26X-Amz-SignedHeaders%3Dhost%26X-Amz-Expires%3D14400%26X-Amz-Credential%3D3cb727b4cd4780c410b780ac7caa4da3%252F20260107%252Fauto%252Fs3%252Faws4_request%26X-Amz-Signature%3Ddefbc5315b822442171bf2a93f1cea467a4bb7dec48f0bc999d25b0d90af1ce6&fp=3436e638672dfbb4c273fb7f61a4f020&ip=134.35.97.107&package_name=com.dts.freefireth&lang=en"
+          
           echo "Download finished. Checking file size..."
           ls -lh game.apk
 
-      # الخطوة 2: تشغيل المحاكي وتنفيذ كل أوامر ADB
+      # الخطوة 2: تشغيل المحاكي وتنفيذ كل أوامر ADB (لا تغيير هنا)
       - name: Run Emulator and Perform All ADB Actions
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
@@ -25,7 +31,6 @@ jobs:
           target: google_apis
           arch: x86_64
           emulator-options: "-no-snapshot -no-window -no-audio -no-accel"
-          # <<<--- هنا التغيير الحاسم: كل الأوامر في سكريبت واحد ---<<<
           script: |
             echo "Emulator is ready. Installing APK..."
             adb install game.apk
@@ -41,10 +46,10 @@ jobs:
             
             echo "All ADB actions complete."
 
-      # الخطوة 3: رفع لقطة الشاشة كدليل
+      # الخطوة 3: رفع لقطة الشاشة كدليل (لا تغيير هنا)
       - name: Upload Verification Screenshot
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: final-installation-proof-v2
+          name: final-installation-proof-v3
           path: final_screen.png
