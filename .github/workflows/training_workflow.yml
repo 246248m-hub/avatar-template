@@ -8,59 +8,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # الخطوة 1: تنزيل الكود
+      # الخطوة 1: تنزيل الكود (لا تغيير)
       - name: Checkout Repository Code
         uses: actions/checkout@v4
 
-      # الخطوة 2: تفعيل مسرّع المحاكي KVM
-      - name: Enable KVM
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm-permissions.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger
-          
-      # الخطوة 3: تثبيت أدوات أندرويد والمحاكي
-      - name: Set up Android SDK and Emulator
-        uses: android-actions/setup-android@v3
+      # الخطوة 2: (جديدة كليًا) تشغيل المحاكي باستخدام "الخبير"
+      - name: Run Android Emulator
+        uses: ReactiveCircus/android-emulator-runner@v2
         with:
-          packages: 'emulator platform-tools system-images;android-29;google_apis;x86_64'
+          # نحدد مواصفات المحاكي الذي نريده
+          api-level: 29
+          target: google_apis
+          arch: x86_64
+          # نمرر نفس الخيارات التي اكتشفنا أنها مهمة
+          emulator-options: "-no-snapshot -no-window -no-audio -no-accel"
+          # نطلب منه الانتظار حتى يكتمل الإقلاع
+          wait-for-emulator: true
+          # نطلب منه تشغيل أمر بعد الإقلاع للتأكد من كل شيء
+          script: echo "Emulator is ready and running."
 
-      # الخطوة 4: إنشاء وتشغيل المحاكي
-      - name: Create and Run Emulator
-        run: |
-          # إنشاء الجهاز الافتراضي
-          echo "no" | avdmanager create avd -n phoenix_emulator -k "system-images;android-29;google_apis;x86_64" --force
-
-          # <<<--- هذا هو السطر المهم الذي تم تعديله
-          # تشغيل المحاكي مع تعطيل تسريع الرسوميات لزيادة الاستقرار
-          echo "Starting emulator..."
-          nohup emulator -avd phoenix_emulator -no-snapshot -no-window -no-audio -camera-back none -camera-front none -no-accel &
-
-          # حلقة الانتظار مع مهلة زمنية
-          echo "Waiting for emulator to boot..."
-          timeout=300
-          elapsed=0
-          boot_completed=false
-          while [ $elapsed -lt $timeout ]; do
-            if adb shell getprop sys.boot_completed | grep -q "1"; then
-              boot_completed=true
-              break
-            fi
-            sleep 10
-            elapsed=$((elapsed + 10))
-            echo "Waited ${elapsed}s / ${timeout}s..."
-          done
-          if [ "$boot_completed" = true ]; then
-            echo "Emulator booted successfully!"
-            adb shell input keyevent 82
-          else
-            echo "::error::Emulator failed to boot within ${timeout} seconds."
-            exit 1
-          fi
-
-      # الخطوة 5: التحقق من أن المحاكي يعمل
+      # الخطوة 3: التحقق من أن المحاكي يعمل
       - name: Verify Emulator Status
         run: |
           echo "Listing connected devices:"
           adb devices
-          echo "Emulator is ready."
+          echo "Emulator is ready for the next steps."
