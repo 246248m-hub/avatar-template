@@ -1,64 +1,65 @@
-name: Phoenix Mind Training (Seal Protocol)
+name: Phoenix Mind Training (Direct Invite Protocol)
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-and-analyze:
+  download-and-install:
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
     steps:
-      # الخطوة 1: تثبيت الأدوات الأساسية (yt-dlp و ffmpeg)
-      - name: Install Dependencies
+      # الخطوة 1: تنزيل ملف APK باستخدام الرابط المباشر
+      - name: Download Base APK via Direct Link
         run: |
-          echo "Installing system dependencies..."
-          sudo apt-get update -y
-          sudo apt-get install -y ffmpeg
+          echo "Downloading base APK using the signed URL..."
+          # نضع الرابط الطويل بين علامتي اقتباس لضمان التعامل معه بشكل صحيح
+          wget -O game.apk "https://apkcombo.com/r2?u=https%3A%2F%2Fapks.39b7cb94d40914bac590886981b0ed6e.r2.cloudflarestorage.com%2Fcom.dts.freefireth%2F1.119.13%2F2019119424.e1fb99aa2e82e6d94451c064e235ca74ed52d414.apk%3Fresponse-content-disposition%3Dattachment%253B%2520filename%253D%2522Garena%2520Free%2520Fire_1.119.13_apkcombo.com.apk%2522%26response-content-type%3Dapplication%252Fvnd.android.package-archive%26X-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Date%3D20260107T171833Z%26X-Amz-SignedHeaders%3Dhost%26X-Amz-Expires%3D14400%26X-Amz-Credential%3D3cb727b4cd4780c410b780ac7caa4da3%252F20260107%252Fauto%252Fs3%252Faws4_request%26X-Amz-Signature%3Ddefbc5315b822442171bf2a93f1cea467a4bb7dec48f0bc999d25b0d90af1ce6&fp=3436e638672dfbb4c273fb7f61a4f020&ip=134.35.97.107&package_name=com.dts.freefireth&lang=en"
           
-          echo "Installing yt-dlp..."
-          sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
-          sudo chmod a+rx /usr/local/bin/yt-dlp
-          echo "All dependencies installed successfully."
+          echo "Download finished. Checking file size..."
+          ls -lh game.apk
 
-      # الخطوة 2: تنزيل مقطع الفيديو المحدد باستخدام yt-dlp
-      - name: Download Video Segment via yt-dlp
-        run: |
-          echo "Downloading video segment from 00:09 to 11:20..."
-          # الأمر يقوم بتنزيل أفضل جودة فيديو mp4 ويقص المقطع المطلوب بدقة
-          # هذا هو قلب "طريقة Seal"
-          yt-dlp -f "bestvideo[ext=mp4][height<=720]" --download-sections "*00:09-11:20" -o "gameplay.mp4" "https://youtu.be/QMj7MjZNEkg"
-          
-          echo "Video segment downloaded as gameplay.mp4"
-          ls -lh gameplay.mp4 # طباعة حجم الملف للتأكد
+      # الخطوة 2: تشغيل المحاكي
+      - name: Run Android Emulator
+        uses: ReactiveCircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: google_apis
+          arch: x86_64
+          emulator-options: "-no-snapshot -no-window -no-audio -no-accel"
+          script: echo "Emulator is ready."
 
-      # الخطوة 3: استخراج الإطارات من الفيديو المحلي باستخدام ffmpeg
-      - name: Extract Frames at 6 FPS
+      # الخطوة 3: تثبيت اللعبة على المحاكي
+      - name: Install Game APK
         run: |
-          echo "Creating frames directory..."
-          mkdir -p frames
-          
-          echo "Extracting frames using ffmpeg..."
-          # ffmpeg يستخرج 6 إطارات كل ثانية من الفيديو المحلي
-          ffmpeg -i gameplay.mp4 -vf fps=6 frames/frame_%05d.jpg
-          
-          # التحقق من عدد الإطارات التي تم إنشاؤها
-          FRAME_COUNT=$(ls -1q frames/ | wc -l)
-          echo "$FRAME_COUNT frames extracted successfully."
-          if [ "$FRAME_COUNT" -lt 100 ]; then
-            echo "Error: Very few frames were extracted. Something went wrong."
-            exit 1
-          fi
+          echo "Installing the downloaded APK..."
+          # انتظر حتى يصبح المحاكي جاهزًا تمامًا
+          adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
+          adb install game.apk
+          echo "Installation command sent."
 
-      # الخطوة 4: ضغط الإطارات ورفعها كـ Artifact
-      - name: Zip and Upload Frames
+      # الخطوة 4: تشغيل اللعبة لبدء تنزيل OBB
+      - name: Launch Game to Download OBB
         run: |
-          echo "Zipping frames..."
-          zip -r captured_frames.zip frames
-          echo "Uploading artifact..."
-        
-      - name: Upload Artifact
+          echo "Launching the game for the first time..."
+          # نستخدم أمر monkey لتشغيل الحزمة الرئيسية للعبة
+          adb shell monkey -p com.dts.freefireth -c android.intent.category.LAUNCHER 1
+          echo "Game launched. Waiting for OBB download to complete..."
+          # سننتظر 20 دقيقة. هذا يجب أن يكون وقتًا كافيًا لتنزيل ملف OBB
+          sleep 1200 
+
+      # الخطوة 5: التقاط لقطة شاشة نهائية للتحقق
+      - name: Capture Final Verification Screenshot
+        if: always()
+        run: |
+          echo "Capturing final screenshot..."
+          adb exec-out screencap -p > final_screen.png
+          echo "Screenshot captured."
+
+      # الخطوة 6: رفع لقطة الشاشة كدليل
+      - name: Upload Verification Screenshot
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: captured-frames-6fps-seal-protocol
-          path: captured_frames.zip
+          name: final-installation-proof
+          path: final_screen.png
