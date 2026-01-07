@@ -1,45 +1,42 @@
 name: Phoenix Mind Training
 
 on:
-  # هذا يسمح لنا بتشغيله يدويًا من خلال واجهة GitHub
   workflow_dispatch:
 
 jobs:
-  # اسم المهمة
   build-and-train:
-    # استخدم أحدث نسخة من نظام Ubuntu Linux
     runs-on: ubuntu-latest
 
-    # الخطوات التي يجب تنفيذها بالترتيب
+    # هنا نحدد مسار العمل الافتراضي لكل الخطوات في هذه المهمة
+    # هذا هو الحل الأنظف
+    defaults:
+      run:
+        working-directory: ./avatar-template
+
     steps:
-      # الخطوة 1: قم بتنزيل الكود من المستودع إلى الآلة الافتراضية
-      # هذا سينشئ مجلدًا اسمه 'avatar-template' داخل مساحة العمل
+      # الخطوة 1: تنزيل الكود في مجلد 'avatar-template'
       - name: Checkout Repository Code
         uses: actions/checkout@v4
         with:
-          # هذا يضمن أن يتم تنزيل الكود في مجلد 'avatar-template'
           path: 'avatar-template'
 
-      # الخطوة 2: قم بإعداد بيئة بايثون
+      # الخطوة 2: إعداد بايثون
       - name: Set up Python 3.9
         uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
-      # الخطوة 3: قم بتشغيل سكريبت جامع البيانات
+      # الخطوة 3: تشغيل السكريبت
+      # لم نعد بحاجة لتحديد working-directory هنا لأنه تم تحديده في defaults
       - name: Run Data Collector Script
-        # <<<--- هذا هو السطر المهم الذي تم تعديله
-        # حدد مجلد العمل الصحيح قبل تشغيل الأمر
-        working-directory: ./avatar-template
         run: |
-          echo "Workflow is starting the data collection step..."
+          echo "Current working directory is: $(pwd)"
+          echo "Starting the data collection step..."
           python3 training_scripts/data_collector.py --num_images 50 --output_dir collected_images
           echo "Data collection script has finished."
 
-      # الخطوة 4: قم بعرض محتويات المجلدات لإثبات أن السكريبت عمل
+      # الخطوة 4: التحقق من المخرجات
       - name: Verify Script Output
-        # <<<--- وهذا أيضًا تم تعديله ليعرض المحتوى من المجلد الصحيح
-        working-directory: ./avatar-template
         run: |
-          echo "Listing files and folders to verify the output:"
+          echo "Verifying output..."
           ls -R
