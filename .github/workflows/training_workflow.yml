@@ -19,28 +19,24 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger
           
-      # الخطوة 3: (مُعدَّلة بشكل كبير) تثبيت أدوات أندرويد والمحاكي
+      # الخطوة 3: تثبيت أدوات أندرويد والمحاكي
       - name: Set up Android SDK and Emulator
-        uses: android-actions/setup-android@v3 # <-- تم التحديث إلى v3
+        uses: android-actions/setup-android@v3
         with:
-          # <<<--- هذا هو الجزء الجديد والمهم
-          # نطلب صراحة تثبيت كل ما نحتاجه
           packages: 'emulator platform-tools system-images;android-29;google_apis;x86_64'
 
       # الخطوة 4: إنشاء وتشغيل المحاكي
       - name: Create and Run Emulator
         run: |
-          # لم نعد بحاجة لتنزيل صورة النظام هنا، فقد تم ذلك في الخطوة السابقة
-          # echo "y" | sdkmanager "system-images;android-29;google_apis;x86_64"
-
           # إنشاء الجهاز الافتراضي
           echo "no" | avdmanager create avd -n phoenix_emulator -k "system-images;android-29;google_apis;x86_64" --force
 
-          # تشغيل المحاكي في الخلفية
+          # <<<--- هذا هو السطر المهم الذي تم تعديله
+          # تشغيل المحاكي مع تعطيل تسريع الرسوميات لزيادة الاستقرار
           echo "Starting emulator..."
-          nohup emulator -avd phoenix_emulator -no-snapshot -no-window -no-audio -camera-back none -camera-front none &
+          nohup emulator -avd phoenix_emulator -no-snapshot -no-window -no-audio -camera-back none -camera-front none -no-accel &
 
-          # حلقة الانتظار مع مهلة زمنية (لا تغيير هنا)
+          # حلقة الانتظار مع مهلة زمنية
           echo "Waiting for emulator to boot..."
           timeout=300
           elapsed=0
