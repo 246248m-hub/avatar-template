@@ -1,4 +1,4 @@
-name: Phoenix Mind Training
+name: Phoenix Mind Training (Imitation Protocol)
 
 on:
   workflow_dispatch:
@@ -6,12 +6,15 @@ on:
 jobs:
   build-and-train:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    # زيادة المهلة الزمنية للمهمة إلى 30 دقيقة
+    timeout-minutes: 30
 
     steps:
+      # الخطوة 1: تنزيل الكود (لا تغيير)
       - name: Checkout Repository Code
         uses: actions/checkout@v4
 
+      # الخطوة 2: تشغيل المحاكي (لا تغيير)
       - name: Run Android Emulator
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
@@ -19,59 +22,46 @@ jobs:
           target: google_apis
           arch: x86_64
           emulator-options: "-no-snapshot -no-window -no-audio -no-accel"
-          script: echo "Emulator is ready."
+          script: echo "Emulator is ready for YouTube installation."
 
-      - name: Set up Node.js for Downloader
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      # تعديل: تثبيت الإضافات الشبحية
-      - name: Download Game via Puppeteer (Stealth Mode)
-        working-directory: ./downloader_scripts
+      # الخطوة 3: (جديدة) تنزيل وتثبيت يوتيوب
+      - name: Download and Install YouTube
         run: |
-          echo "Installing Puppeteer and Stealth Plugin..."
-          npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
-          echo "Running downloader script..."
-          node downloader.js
+          # تنزيل ملف APK الخاص بيوتيوب من رابط مباشر وموثوق
+          echo "Downloading YouTube APK..."
+          wget -O youtube.apk "https://www.apkmirror.com/apk/google-inc/youtube/youtube-19-05-36-release/youtube-19-05-36-2-android-apk-download/download/?key=2d21ad896aad338c75e2f75435f663336150f143"
+          
+          # التحقق من أن الملف تم تنزيله
+          if [ ! -f youtube.apk ]; then
+            echo "::error:: YouTube APK download failed."
+            exit 1
+          fi
+          
+          echo "YouTube APK downloaded successfully."
+          
+          # تثبيت التطبيق على المحاكي
+          echo "Installing YouTube on the emulator..."
+          adb install youtube.apk
+          
+          echo "YouTube installation complete."
 
-      # إضافة خطوة جديدة لحفظ لقطات الشاشة التشخيصية
-      - name: Upload Debug Screenshot
-        # هذه الخطوة ستعمل دائمًا، حتى لو فشلت الخطوة السابقة
-        if: always()
+      # الخطوة 4: (جديدة) التحقق من التثبيت والتقاط صورة
+      - name: Verify Installation and Take Screenshot
+        run: |
+          # التحقق من أن حزمة يوتيوب تم تثبيتها
+          echo "Verifying YouTube package installation..."
+          adb shell pm list packages | grep com.google.android.youtube
+          
+          # التقاط صورة للشاشة الرئيسية للمحاكي (للتأكد من أن كل شيء يعمل)
+          echo "Taking a screenshot of the home screen..."
+          adb shell screencap -p /sdcard/homescreen.png
+          
+          # سحب الصورة من المحاكي
+          adb pull /sdcard/homescreen.png .
+
+      # الخطوة 5: (جديدة) حفظ صورة التحقق كـ "دليل"
+      - name: Upload Verification Screenshot
         uses: actions/upload-artifact@v4
         with:
-          name: debug-screenshots
-          path: |
-            debug_screenshot.png
-            debug_screenshot_failure.png
-          # تجاهل الخطأ إذا لم يتم العثور على الملفات
-          continue-on-error: true
-
-      - name: Install Free Fire
-        run: |
-          echo "Unzipping XAPK..."
-          unzip freefire.xapk -d freefire_files
-          # ... (بقية الكود كما هو)
-          echo "Installing base APK..."
-          adb install freefire_files/*.apk
-          echo "Pushing OBB data..."
-          adb shell mkdir -p /sdcard/Android/obb/com.dts.freefireth
-          adb push freefire_files/Android/obb/com.dts.freefireth/* /sdcard/Android/obb/com.dts.freefireth/
-          echo "Game installation complete."
-
-      - name: Launch Game and Take Screenshot
-        run: |
-          echo "Launching Free Fire..."
-          adb shell monkey -p com.dts.freefireth -c android.intent.category.LAUNCHER 1
-          echo "Waiting 30 seconds for game to load..."
-          sleep 30
-          echo "Taking screenshot..."
-          adb shell screencap -p /sdcard/screenshot.png
-          adb pull /sdcard/screenshot.png .
-
-      - name: Upload Final Screenshot
-        uses: actions/upload-artifact@v4
-        with:
-          name: final-game-screenshot
-          path: screenshot.png
+          name: youtube-install-verification
+          path: homescreen.png
