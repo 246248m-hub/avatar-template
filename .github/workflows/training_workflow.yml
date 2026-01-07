@@ -13,25 +13,33 @@ jobs:
     # الخطوات التي يجب تنفيذها بالترتيب
     steps:
       # الخطوة 1: قم بتنزيل الكود من المستودع إلى الآلة الافتراضية
-      # (هذا سيجعل ملف data_collector.py متاحًا)
+      # هذا سينشئ مجلدًا اسمه 'avatar-template' داخل مساحة العمل
       - name: Checkout Repository Code
         uses: actions/checkout@v4
+        with:
+          # هذا يضمن أن يتم تنزيل الكود في مجلد 'avatar-template'
+          path: 'avatar-template'
 
-      # الخطوة 2: قم بإعداد بيئة بايثون (لأن السكريبت مكتوب بلغة بايثون)
+      # الخطوة 2: قم بإعداد بيئة بايثون
       - name: Set up Python 3.9
         uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
-      # الخطوة 3: قم بتشغيل سكريبت جامع البيانات الذي أنشأناه
+      # الخطوة 3: قم بتشغيل سكريبت جامع البيانات
       - name: Run Data Collector Script
+        # <<<--- هذا هو السطر المهم الذي تم تعديله
+        # حدد مجلد العمل الصحيح قبل تشغيل الأمر
+        working-directory: ./avatar-template
         run: |
           echo "Workflow is starting the data collection step..."
           python3 training_scripts/data_collector.py --num_images 50 --output_dir collected_images
           echo "Data collection script has finished."
 
-      # الخطوة 4: (جديدة) قم بعرض محتويات المجلدات لإثبات أن السكريبت عمل
+      # الخطوة 4: قم بعرض محتويات المجلدات لإثبات أن السكريبت عمل
       - name: Verify Script Output
+        # <<<--- وهذا أيضًا تم تعديله ليعرض المحتوى من المجلد الصحيح
+        working-directory: ./avatar-template
         run: |
           echo "Listing files and folders to verify the output:"
           ls -R
