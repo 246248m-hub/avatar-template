@@ -19,28 +19,48 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger
           
-      # الخطوة 3: تثبيت أدوات أندرويد والمحاكي
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
+      # الخطوة 3: (مُعدَّلة بشكل كبير) تثبيت أدوات أندرويد والمحاكي
+      - name: Set up Android SDK and Emulator
+        uses: android-actions/setup-android@v3 # <-- تم التحديث إلى v3
+        with:
+          # <<<--- هذا هو الجزء الجديد والمهم
+          # نطلب صراحة تثبيت كل ما نحتاجه
+          packages: 'emulator platform-tools system-images;android-29;google_apis;x86_64'
 
       # الخطوة 4: إنشاء وتشغيل المحاكي
       - name: Create and Run Emulator
         run: |
-          # تنزيل صورة النظام (لا تغيير هنا)
-          echo "y" | sdkmanager "system-images;android-29;google_apis;x86_64"
+          # لم نعد بحاجة لتنزيل صورة النظام هنا، فقد تم ذلك في الخطوة السابقة
+          # echo "y" | sdkmanager "system-images;android-29;google_apis;x86_64"
 
-          # <<<--- هذا هو السطر المهم الذي تم تعديله
-          # إنشاء الجهاز الافتراضي مع إرسال "no" تلقائيًا للرد على أي سؤال
+          # إنشاء الجهاز الافتراضي
           echo "no" | avdmanager create avd -n phoenix_emulator -k "system-images;android-29;google_apis;x86_64" --force
 
-          # تشغيل المحاكي في الخلفية (لا تغيير هنا)
+          # تشغيل المحاكي في الخلفية
           echo "Starting emulator..."
           nohup emulator -avd phoenix_emulator -no-snapshot -no-window -no-audio -camera-back none -camera-front none &
-          
-          # الانتظار حتى يقلع المحاكي بالكامل (لا تغيير هنا)
-          adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
-          
-          echo "Emulator started and boot completed."
+
+          # حلقة الانتظار مع مهلة زمنية (لا تغيير هنا)
+          echo "Waiting for emulator to boot..."
+          timeout=300
+          elapsed=0
+          boot_completed=false
+          while [ $elapsed -lt $timeout ]; do
+            if adb shell getprop sys.boot_completed | grep -q "1"; then
+              boot_completed=true
+              break
+            fi
+            sleep 10
+            elapsed=$((elapsed + 10))
+            echo "Waited ${elapsed}s / ${timeout}s..."
+          done
+          if [ "$boot_completed" = true ]; then
+            echo "Emulator booted successfully!"
+            adb shell input keyevent 82
+          else
+            echo "::error::Emulator failed to boot within ${timeout} seconds."
+            exit 1
+          fi
 
       # الخطوة 5: التحقق من أن المحاكي يعمل
       - name: Verify Emulator Status
@@ -48,8 +68,3 @@ jobs:
           echo "Listing connected devices:"
           adb devices
           echo "Emulator is ready."
-
-      # الخطوة 6: (لا تزال معطلة مؤقتًا)
-      # - name: Run Data Collector Script
-      #   run: |
-      #     python3 training_scripts/data_collector.py --num_images 50 --output_dir collected_images
