@@ -1,18 +1,22 @@
-// downloader_scripts/downloader.js
-const puppeteer = require('puppeteer');
+// downloader_scripts/downloader.js (Stealth Version)
+
+// استدعاء الإضافات الجديدة
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+puppeteer.use(StealthPlugin());
+
 const fs = require('fs');
 const path = require('path');
 
 async function downloadFreeFire() {
-    console.log('Launching Puppeteer...');
+    console.log('Launching Puppeteer in Stealth Mode...');
     const browser = await puppeteer.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
 
-    // تحديد مسار التنزيل داخل بيئة GitHub
-    const downloadPath = path.resolve('./');
+    const downloadPath = path.resolve('../'); // <-- تعديل بسيط: التنزيل في المجلد الرئيسي
     await page._client().send('Page.setDownloadBehavior', {
         behavior: 'allow',
         downloadPath: downloadPath,
@@ -24,33 +28,32 @@ async function downloadFreeFire() {
 
     console.log('Page loaded. Looking for the download button...');
     
-    // انتظر حتى يظهر رابط التنزيل الذي يحتوي على النص "Download XAPK"
+    // حفظ لقطة شاشة للمساعدة في تشخيص المشكلة إذا فشلت مرة أخرى
+    await page.screenshot({ path: '../debug_screenshot.png' });
+    console.log('Debug screenshot saved.');
+
     const downloadSelector = 'a.download-btn[href*="download-xapk"]';
     await page.waitForSelector(downloadSelector, { timeout: 60000 });
     
     console.log('Download button found. Clicking it...');
     await page.click(downloadSelector);
 
-    console.log('Download initiated. Waiting for the download to complete...');
+    console.log('Download initiated. Waiting for completion...');
     
-    // حيلة للانتظار حتى يكتمل التنزيل
-    // سننتظر حتى يظهر ملف .crdownload (ملف التنزيل المؤقت) ثم يختفي
     let downloadCompleted = false;
     let attempts = 0;
-    const maxAttempts = 180; // 180 محاولة * 5 ثواني = 15 دقيقة كحد أقصى
+    const maxAttempts = 180;
 
     while (attempts < maxAttempts) {
         const files = fs.readdirSync(downloadPath);
         const downloadingFile = files.find(file => file.endsWith('.crdownload'));
         
         if (downloadingFile) {
-            console.log(`Downloading in progress: ${downloadingFile}`);
+            console.log(`Downloading in progress...`);
         } else {
-            // تحقق مما إذا كان هناك ملف xapk موجود
             const xapkFile = files.find(file => file.endsWith('.xapk'));
             if (xapkFile) {
                 console.log(`Download completed! File found: ${xapkFile}`);
-                // إعادة تسمية الملف إلى اسم ثابت
                 fs.renameSync(path.join(downloadPath, xapkFile), path.join(downloadPath, 'freefire.xapk'));
                 console.log('File renamed to freefire.xapk');
                 downloadCompleted = true;
@@ -58,10 +61,12 @@ async function downloadFreeFire() {
             }
         }
         attempts++;
-        await new Promise(resolve => setTimeout(resolve, 5000)); // انتظر 5 ثوانٍ
+        await new Promise(resolve => setTimeout(resolve, 5000));
     }
 
     if (!downloadCompleted) {
+        // حفظ لقطة شاشة أخرى عند الفشل
+        await page.screenshot({ path: '../debug_screenshot_failure.png' });
         throw new Error('Download did not complete within the time limit.');
     }
 
