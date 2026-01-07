@@ -8,49 +8,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # الخطوة 1: تنزيل الكود (لا تغيير هنا)
+      # الخطوة 1: تنزيل الكود
       - name: Checkout Repository Code
         uses: actions/checkout@v4
 
-      # الخطوة 2: (جديدة) تفعيل مسرّع المحاكي KVM
+      # الخطوة 2: تفعيل مسرّع المحاكي KVM
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm-permissions.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger
           
-      # الخطوة 3: (جديدة) تثبيت أدوات أندرويد والمحاكي
+      # الخطوة 3: تثبيت أدوات أندرويد والمحاكي
       - name: Set up Android SDK
         uses: android-actions/setup-android@v2
 
-      # الخطوة 4: (جديدة) إنشاء وتشغيل المحاكي
+      # الخطوة 4: إنشاء وتشغيل المحاكي
       - name: Create and Run Emulator
         run: |
-          # إنشاء جهاز افتراضي (AVD) باسم "phoenix_emulator"
-          # نستخدم صورة نظام android-29 (Android 10) ونوع google_apis لضمان التوافق
-          # نستخدم معمارية x86_64 وهي الأسرع للمحاكاة
+          # تنزيل صورة النظام (لا تغيير هنا)
           echo "y" | sdkmanager "system-images;android-29;google_apis;x86_64"
-          avdmanager create avd -n phoenix_emulator -k "system-images;android-29;google_apis;x86_64" --force
 
-          # تشغيل المحاكي في الخلفية
+          # <<<--- هذا هو السطر المهم الذي تم تعديله
+          # إنشاء الجهاز الافتراضي مع إرسال "no" تلقائيًا للرد على أي سؤال
+          echo "no" | avdmanager create avd -n phoenix_emulator -k "system-images;android-29;google_apis;x86_64" --force
+
+          # تشغيل المحاكي في الخلفية (لا تغيير هنا)
           echo "Starting emulator..."
           nohup emulator -avd phoenix_emulator -no-snapshot -no-window -no-audio -camera-back none -camera-front none &
-
-          # الانتظار حتى يقلع المحاكي بالكامل
-          # نستخدم adb wait-for-device ثم نتحقق من أن حالة الإقلاع اكتملت
+          
+          # الانتظار حتى يقلع المحاكي بالكامل (لا تغيير هنا)
           adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
           
           echo "Emulator started and boot completed."
 
-      # الخطوة 5: (جديدة) التحقق من أن المحاكي يعمل
+      # الخطوة 5: التحقق من أن المحاكي يعمل
       - name: Verify Emulator Status
         run: |
           echo "Listing connected devices:"
           adb devices
           echo "Emulator is ready."
 
-      # الخطوة 6: (مؤقتًا) إيقاف تشغيل السكريبت القديم
-      # لقد وضعنا علامة # لتعطيله مؤقتًا لأننا نركز فقط على تشغيل المحاكي
+      # الخطوة 6: (لا تزال معطلة مؤقتًا)
       # - name: Run Data Collector Script
       #   run: |
       #     python3 training_scripts/data_collector.py --num_images 50 --output_dir collected_images
