@@ -7,18 +7,11 @@ jobs:
   build-and-train:
     runs-on: ubuntu-latest
 
-    # هنا نحدد مسار العمل الافتراضي لكل الخطوات في هذه المهمة
-    # هذا هو الحل الأنظف
-    defaults:
-      run:
-        working-directory: ./avatar-template
-
     steps:
-      # الخطوة 1: تنزيل الكود في مجلد 'avatar-template'
+      # الخطوة 1: فقط قم بتنزيل الكود. لا تحدد أي مسار أو اسم.
+      # سيتم تنزيله في المسار الافتراضي.
       - name: Checkout Repository Code
         uses: actions/checkout@v4
-        with:
-          path: 'avatar-template'
 
       # الخطوة 2: إعداد بايثون
       - name: Set up Python 3.9
@@ -27,10 +20,11 @@ jobs:
           python-version: '3.9'
 
       # الخطوة 3: تشغيل السكريبت
-      # لم نعد بحاجة لتحديد working-directory هنا لأنه تم تحديده في defaults
+      # بما أننا لم نغير أي مسارات، فالسكريبت موجود مباشرة في المسار المتوقع
       - name: Run Data Collector Script
         run: |
-          echo "Current working directory is: $(pwd)"
+          echo "Current directory: $(pwd)"
+          echo "Listing contents: $(ls -l)"
           echo "Starting the data collection step..."
           python3 training_scripts/data_collector.py --num_images 50 --output_dir collected_images
           echo "Data collection script has finished."
