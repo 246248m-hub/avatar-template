@@ -6,6 +6,8 @@ on:
 jobs:
   build-and-train:
     runs-on: ubuntu-latest
+    # زيادة المهلة الزمنية للمهمة بأكملها إلى ساعة واحدة
+    timeout-minutes: 60
 
     steps:
       # الخطوة 1: تنزيل الكود
@@ -20,38 +22,47 @@ jobs:
           target: google_apis
           arch: x86_64
           emulator-options: "-no-snapshot -no-window -no-audio -no-accel"
-          script: echo "Emulator is ready for game installation."
+          script: echo "Emulator is ready."
 
-      # الخطوة 3: تنزيل وتثبيت لعبة فري فاير (مع التخفي)
-      - name: Download and Install Free Fire
+      # الخطوة 3: (جديدة) إعداد بيئة التحايل (Node.js)
+      - name: Set up Node.js for Downloader
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # الخطوة 4: (جديدة) تثبيت Puppeteer وتشغيل سكريبت التحميل
+      - name: Download Game via Puppeteer
+        # حدد مجلد العمل الذي يحتوي على السكريبت
+        working-directory: ./downloader_scripts
         run: |
-          # <<<--- هذا هو السطر المهم الذي تم تعديله
-          # تنزيل ملف XAPK مع التظاهر بأننا متصفح Chrome
-          echo "Downloading Free Fire XAPK (Stealth Mode)..."
-          wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" -O freefire.xapk "https://d.apkpure.com/b/XAPK/com.dts.freefireth?version=latest"
+          echo "Installing Puppeteer..."
+          npm install puppeteer
+          echo "Running downloader script..."
+          node downloader.js
 
-          # فك ضغط ملف XAPK
+      # الخطوة 5: تثبيت لعبة فري فاير
+      - name: Install Free Fire
+        run: |
           echo "Unzipping XAPK..."
+          # الملف الآن موجود في المسار الرئيسي
           unzip freefire.xapk -d freefire_files
 
-          # تثبيت ملف APK الرئيسي
           echo "Installing base APK..."
           adb install freefire_files/*.apk
 
-          # نقل بيانات OBB
           echo "Pushing OBB data..."
           adb shell mkdir -p /sdcard/Android/obb/com.dts.freefireth
           adb push freefire_files/Android/obb/com.dts.freefireth/* /sdcard/Android/obb/com.dts.freefireth/
           
           echo "Game installation complete."
 
-      # الخطوة 4: تشغيل اللعبة والتقاط صورة
+      # الخطوة 6: تشغيل اللعبة والتقاط صورة
       - name: Launch Game and Take Screenshot
         run: |
           echo "Launching Free Fire..."
           adb shell monkey -p com.dts.freefireth -c android.intent.category.LAUNCHER 1
           
-          echo "Waiting for game to load..."
+          echo "Waiting 30 seconds for game to load..."
           sleep 30
           
           echo "Taking screenshot..."
@@ -59,9 +70,9 @@ jobs:
           
           adb pull /sdcard/screenshot.png .
 
-      # الخطوة 5: حفظ لقطة الشاشة كـ "دليل"
+      # الخطوة 7: حفظ لقطة الشاشة كـ "دليل"
       - name: Upload Screenshot Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: first-game-screenshot
+          name: final-game-screenshot
           path: screenshot.png
