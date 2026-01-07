@@ -6,15 +6,12 @@ on:
 jobs:
   build-and-train:
     runs-on: ubuntu-latest
-    # زيادة المهلة الزمنية للمهمة بأكملها إلى ساعة واحدة
     timeout-minutes: 60
 
     steps:
-      # الخطوة 1: تنزيل الكود
       - name: Checkout Repository Code
         uses: actions/checkout@v4
 
-      # الخطوة 2: تشغيل المحاكي باستخدام "الخبير"
       - name: Run Android Emulator
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
@@ -24,54 +21,56 @@ jobs:
           emulator-options: "-no-snapshot -no-window -no-audio -no-accel"
           script: echo "Emulator is ready."
 
-      # الخطوة 3: (جديدة) إعداد بيئة التحايل (Node.js)
       - name: Set up Node.js for Downloader
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      # الخطوة 4: (جديدة) تثبيت Puppeteer وتشغيل سكريبت التحميل
-      - name: Download Game via Puppeteer
-        # حدد مجلد العمل الذي يحتوي على السكريبت
+      # تعديل: تثبيت الإضافات الشبحية
+      - name: Download Game via Puppeteer (Stealth Mode)
         working-directory: ./downloader_scripts
         run: |
-          echo "Installing Puppeteer..."
-          npm install puppeteer
+          echo "Installing Puppeteer and Stealth Plugin..."
+          npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
           echo "Running downloader script..."
           node downloader.js
 
-      # الخطوة 5: تثبيت لعبة فري فاير
+      # إضافة خطوة جديدة لحفظ لقطات الشاشة التشخيصية
+      - name: Upload Debug Screenshot
+        # هذه الخطوة ستعمل دائمًا، حتى لو فشلت الخطوة السابقة
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-screenshots
+          path: |
+            debug_screenshot.png
+            debug_screenshot_failure.png
+          # تجاهل الخطأ إذا لم يتم العثور على الملفات
+          continue-on-error: true
+
       - name: Install Free Fire
         run: |
           echo "Unzipping XAPK..."
-          # الملف الآن موجود في المسار الرئيسي
           unzip freefire.xapk -d freefire_files
-
+          # ... (بقية الكود كما هو)
           echo "Installing base APK..."
           adb install freefire_files/*.apk
-
           echo "Pushing OBB data..."
           adb shell mkdir -p /sdcard/Android/obb/com.dts.freefireth
           adb push freefire_files/Android/obb/com.dts.freefireth/* /sdcard/Android/obb/com.dts.freefireth/
-          
           echo "Game installation complete."
 
-      # الخطوة 6: تشغيل اللعبة والتقاط صورة
       - name: Launch Game and Take Screenshot
         run: |
           echo "Launching Free Fire..."
           adb shell monkey -p com.dts.freefireth -c android.intent.category.LAUNCHER 1
-          
           echo "Waiting 30 seconds for game to load..."
           sleep 30
-          
           echo "Taking screenshot..."
           adb shell screencap -p /sdcard/screenshot.png
-          
           adb pull /sdcard/screenshot.png .
 
-      # الخطوة 7: حفظ لقطة الشاشة كـ "دليل"
-      - name: Upload Screenshot Artifact
+      - name: Upload Final Screenshot
         uses: actions/upload-artifact@v4
         with:
           name: final-game-screenshot
