@@ -1,0 +1,37 @@
+name: Phoenix Mind Training
+
+on:
+  # هذا يسمح لنا بتشغيله يدويًا من خلال واجهة GitHub
+  workflow_dispatch:
+
+jobs:
+  # اسم المهمة
+  build-and-train:
+    # استخدم أحدث نسخة من نظام Ubuntu Linux
+    runs-on: ubuntu-latest
+
+    # الخطوات التي يجب تنفيذها بالترتيب
+    steps:
+      # الخطوة 1: قم بتنزيل الكود من المستودع إلى الآلة الافتراضية
+      # (هذا سيجعل ملف data_collector.py متاحًا)
+      - name: Checkout Repository Code
+        uses: actions/checkout@v4
+
+      # الخطوة 2: قم بإعداد بيئة بايثون (لأن السكريبت مكتوب بلغة بايثون)
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      # الخطوة 3: قم بتشغيل سكريبت جامع البيانات الذي أنشأناه
+      - name: Run Data Collector Script
+        run: |
+          echo "Workflow is starting the data collection step..."
+          python3 training_scripts/data_collector.py --num_images 50 --output_dir collected_images
+          echo "Data collection script has finished."
+
+      # الخطوة 4: (جديدة) قم بعرض محتويات المجلدات لإثبات أن السكريبت عمل
+      - name: Verify Script Output
+        run: |
+          echo "Listing files and folders to verify the output:"
+          ls -R
