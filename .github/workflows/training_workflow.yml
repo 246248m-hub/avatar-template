@@ -1,4 +1,4 @@
-name: Phoenix Mind Training (Imitation Protocol)
+name: Phoenix Mind Training (Direct Viewing Protocol)
 
 on:
   workflow_dispatch:
@@ -6,15 +6,14 @@ on:
 jobs:
   build-and-train:
     runs-on: ubuntu-latest
-    # زيادة المهلة الزمنية للمهمة إلى 30 دقيقة
     timeout-minutes: 30
 
     steps:
-      # الخطوة 1: تنزيل الكود (لا تغيير)
+      # الخطوة 1: تنزيل الكود (بما في ذلك سكريبت puppeteer)
       - name: Checkout Repository Code
         uses: actions/checkout@v4
 
-      # الخطوة 2: تشغيل المحاكي (لا تغيير)
+      # الخطوة 2: تشغيل المحاكي
       - name: Run Android Emulator
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
@@ -22,46 +21,29 @@ jobs:
           target: google_apis
           arch: x86_64
           emulator-options: "-no-snapshot -no-window -no-audio -no-accel"
-          script: echo "Emulator is ready for YouTube installation."
+          script: echo "Emulator is ready for browser automation."
 
-      # الخطوة 3: (جديدة) تنزيل وتثبيت يوتيوب
-      - name: Download and Install YouTube
+      # الخطوة 3: تجهيز بيئة المتصفح الآلي
+      - name: Set up Node.js for Puppeteer
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # الخطوة 4: تشغيل سكريبت المشاهدة
+      - name: Run YouTube Viewer Script
+        # سنقوم بإنشاء هذا السكريبت في الخطوة التالية
+        working-directory: ./viewer_scripts 
         run: |
-          # تنزيل ملف APK الخاص بيوتيوب من رابط مباشر وموثوق
-          echo "Downloading YouTube APK..."
-          wget -O youtube.apk "https://www.apkmirror.com/apk/google-inc/youtube/youtube-19-05-36-release/youtube-19-05-36-2-android-apk-download/download/?key=2d21ad896aad338c75e2f75435f663336150f143"
-          
-          # التحقق من أن الملف تم تنزيله
-          if [ ! -f youtube.apk ]; then
-            echo "::error:: YouTube APK download failed."
-            exit 1
-          fi
-          
-          echo "YouTube APK downloaded successfully."
-          
-          # تثبيت التطبيق على المحاكي
-          echo "Installing YouTube on the emulator..."
-          adb install youtube.apk
-          
-          echo "YouTube installation complete."
+          echo "Installing Puppeteer..."
+          npm install puppeteer
+          echo "Running viewer script..."
+          node viewer.js
 
-      # الخطوة 4: (جديدة) التحقق من التثبيت والتقاط صورة
-      - name: Verify Installation and Take Screenshot
-        run: |
-          # التحقق من أن حزمة يوتيوب تم تثبيتها
-          echo "Verifying YouTube package installation..."
-          adb shell pm list packages | grep com.google.android.youtube
-          
-          # التقاط صورة للشاشة الرئيسية للمحاكي (للتأكد من أن كل شيء يعمل)
-          echo "Taking a screenshot of the home screen..."
-          adb shell screencap -p /sdcard/homescreen.png
-          
-          # سحب الصورة من المحاكي
-          adb pull /sdcard/homescreen.png .
-
-      # الخطوة 5: (جديدة) حفظ صورة التحقق كـ "دليل"
-      - name: Upload Verification Screenshot
+      # الخطوة 5: حفظ لقطة الشاشة كدليل على النجاح
+      - name: Upload Final Screenshot
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: youtube-install-verification
-          path: homescreen.png
+          name: youtube-viewer-screenshot
+          path: viewer_scripts/youtube_page.png
+          continue-on-error: true
