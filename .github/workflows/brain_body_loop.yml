@@ -1,51 +1,41 @@
-name: Brain-Body Loop 🧠💪
+name: Build and Install Android App 🤖
 
-# هذا يحدد متى سيعمل سير العمل
-# سنبدأ بتشغيله يدوياً لسهولة التحكم
 on:
   workflow_dispatch:
 
 jobs:
-  think_and_act:
-    runs-on: ubuntu-latest # الجسد (خادم لينكس قوي)
+  build_and_install:
+    runs-on: ubuntu-latest # الجسد
     steps:
-      # الخطوة 1: العقل يفكر ويقرر ماذا سيفعل
-      # هنا، العقل (Gemini) سيولد كود بايثون
-      - name: 🧠 Step 1 - The Brain Thinks (Generate Python Code)
-        id: brain_thought # نعطي هذه الخطوة معرفاً (ID) لنستخدم نتيجتها لاحقاً
-        run: |
-          # --- نستدعي الـ API باستخدام "القالب الذهبي" ---
-          # نطلب منه كتابة كود بايثون بسيط
-          # ثم نستخدم أدوات مثل 'jq' لاستخراج الكود النقي فقط من رد الـ API
-          AI_RESPONSE=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent" \
-               -H "Content-Type: application/json" \
-               -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" \
-               -X POST \
-               -d '{
-                 "contents": [{
-                   "parts": [{
-                     "text": "اكتب لي كود بايثون بسيط جداً يقوم بطباعة جملة `مرحباً من العقل الرقمي!`. لا تكتب أي شيء آخر غير الكود."
-                   }]
-                 }]
-               }')
-          
-          # --- استخراج الكود النقي من استجابة JSON ---
-          # هذا الجزء مهم جداً لفصل "كلام" الذكاء الاصطناعي عن الكود الفعلي
-          PURE_CODE=$(echo $AI_RESPONSE | jq -r '.candidates[0].content.parts[0].text')
+      # الخطوة 1: تجهيز الجسد (تنزيل كود المشروع)
+      - name: Check out repository
+        uses: actions/checkout@v3
 
-          # --- حفظ الكود في ملف ليتمكن الجسد من استخدامه ---
-          # نستخدم 'echo' لكتابة الكود الذي تم إنشاؤه في ملف جديد
-          echo "$PURE_CODE" > brain_output.py
+      # الخطوة 2: إعداد بيئة جافا (لأن أندرويد يستخدمها)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-          echo "🧠 العقل فكر وقرر كتابة الكود التالي في ملف brain_output.py:"
-          cat brain_output.py
+      # الخطوة 3: بناء الـ APK الحقيقي باستخدام Gradle
+      # هذه هي الخطوة التي كانت مفقودة.
+      # سيقوم Gradle بأخذ كود مشروع الأندرويد الخاص بك وبناء ملف APK صالح.
+      - name: Build APK with Gradle
+        run: ./gradlew assembleDebug
+        # بعد هذه الخطوة، سيكون ملف الـ APK موجوداً في app/build/outputs/apk/debug/app-debug.apk
 
-      # الخطوة 2: الجسد ينفذ ما قرره العقل
-      - name: 💪 Step 2 - The Body Acts (Execute the Generated Code)
-        run: |
-          echo "💪 الجسد الآن سينفذ الأوامر التي تلقاها من العقل..."
-          # نتأكد من وجود بايثون
-          sudo apt-get update && sudo apt-get install -y python3 jq
-          
-          # ننفذ ملف البايثون الذي تم إنشاؤه في الخطوة السابقة
-          python3 brain_output.py
+      # الخطوة 4: تشغيل محاكي الأندرويد
+      - name: Run Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29 # يمكنك اختيار أي مستوى API
+          script: |
+            echo "Emulator is ready. Installing the REAL APK..."
+            
+            # الخطوة 5: تثبيت الـ APK الذي تم بناؤه للتو
+            # لاحظ أننا نستخدم المسار الصحيح للملف الناتج
+            adb install app/build/outputs/apk/debug/app-debug.apk
+            
+            echo "APK Installed successfully!"
+            # يمكنك إضافة أوامر أخرى هنا لتشغيل التطبيق أو الاختبار
