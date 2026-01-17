@@ -1,4 +1,4 @@
-name: 🤖 AI Creates Flashlight App v9 (Correct Model Name)
+name: 🤖 AI Creates Flashlight App v10 (No Red Lines)
 
 on:
   workflow_dispatch:
@@ -7,21 +7,18 @@ jobs:
   create_build_and_install:
     runs-on: ubuntu-latest
     steps:
-      # -----------------------------------------------------------------
-      # 🛠️ المرحلة 1: إعداد البيئة وإنشاء الهيكل
-      # -----------------------------------------------------------------
       - name: 🛠️ 1. Prepare Environment & Structure
         run: |
-          sudo apt-get update && sudo apt-get install -y jq tree curl unzip
+          sudo apt-get update && sudo apt-get install -y jq tree
           mkdir -p app/src/main/java/com/example/creator
           mkdir -p gradle
           tree
 
-      # -----------------------------------------------------------------
-      # 🧠 المرحلة 2: العقل يكتب ملفات المشروع
-      # -----------------------------------------------------------------
       - name: 🧠 2. Brain writes all project files
         run: |
+          # --- تم دمج تعريف المتغير مع بقية الأوامر لتجنب أخطاء المحرر ---
+          MODEL_NAME="gemini-1.5-flash-latest";
+          
           extract_code() {
             jq -r '.candidates[0].content.parts[0].text' | \
             grep -o '```[a-zA-Z]*\n[^```]*```' | \
@@ -29,8 +26,8 @@ jobs:
             sed 's/```//g' | \
             sed '/^$/d'
           }
-
-          echo "Writing libs.versions.toml..."
+          
+          echo "Writing libs.versions.toml with fixed content...";
           cat > gradle/libs.versions.toml << 'EOF'
 [versions]
 agp = "8.2.0"
@@ -59,59 +56,31 @@ androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 EOF
 
-          MODEL_NAME="gemini-1.5-flash-latest"
-
-          echo "Writing settings.gradle.kts..."
-          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" \
-            -H "Content-Type: application/json" \
-            -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" \
-            -X POST \
-            -d '{"contents":[{"parts":[{"text":"Write a minimal `settings.gradle.kts` file for an Android project. Include the `:app` module. Provide only the raw code without any markdown formatting or explanations."}]}]}' \
-            | extract_code > settings.gradle.kts
-
-          echo "Writing app/build.gradle.kts..."
-          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" \
-            -H "Content-Type: application/json" \
-            -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" \
-            -X POST \
-            -d '{"contents":[{"parts":[{"text":"Write a `build.gradle.kts` for an Android app module using version catalog aliases (libs.plugins...). Use `com.example.creator` as namespace. Target SDK 34. Use Jetpack Compose. Provide only the raw kotlin code without any markdown formatting or explanations."}]}]}' \
-            | extract_code > app/build.gradle.kts
-
-          echo "Writing AndroidManifest.xml..."
-          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" \
-            -H "Content-Type: application/json" \
-            -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" \
-            -X POST \
-            -d '{"contents":[{"parts":[{"text":"Write a complete `AndroidManifest.xml` for a simple app. Use `com.example.creator` as package name. Add CAMERA permission and camera.flash feature. Provide only the raw XML code without any markdown formatting or explanations."}]}]}' \
-            | extract_code > app/src/main/AndroidManifest.xml
-
-          echo "Writing MainActivity.kt..."
-          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" \
-            -H "Content-Type: application/json" \
-            -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" \
-            -X POST \
-            -d '{"contents":[{"parts":[{"text":"Write a complete `MainActivity.kt` file for a Jetpack Compose app in package `com.example.creator` that toggles the camera flashlight with a button. Use CameraManager. Provide only the raw kotlin code without any markdown formatting or explanations."}]}]}' \
-            | extract_code > app/src/main/java/com/example/creator/MainActivity.kt
-
+          echo "Writing settings.gradle.kts...";
+          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a minimal `settings.gradle.kts` file for an Android project. Include the `:app` module. Provide only the raw code without any markdown formatting or explanations."}]}]}' | extract_code > settings.gradle.kts
+          
+          echo "Writing app/build.gradle.kts...";
+          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a `build.gradle.kts` for an Android app module using version catalog aliases (libs.plugins...). Use `com.example.creator` as namespace. Target SDK 34. Use Jetpack Compose. Provide only the raw kotlin code without any markdown formatting or explanations."}]}]}' | extract_code > app/build.gradle.kts
+          
+          echo "Writing AndroidManifest.xml...";
+          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a complete `AndroidManifest.xml` for a simple app. Use `com.example.creator` as package name. Add CAMERA permission and camera.flash feature. Provide only the raw XML code without any markdown formatting or explanations."}]}]}' | extract_code > app/src/main/AndroidManifest.xml
+          
+          echo "Writing MainActivity.kt...";
+          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a complete `MainActivity.kt` file for a Jetpack Compose app in package `com.example.creator` that toggles the camera flashlight with a button. Use CameraManager. Provide only the raw kotlin code without any markdown formatting or explanations."}]}]}' | extract_code > app/src/main/java/com/example/creator/MainActivity.kt
+          
           echo "✅ All project files created."
 
-      # -----------------------------------------------------------------
-      # 🏗️ المرحلة 3: الجسد يبني الـ APK
-      # -----------------------------------------------------------------
       - name: 🏗️ 3. Body Builds - Setup & Assemble
         run: |
           wget https://services.gradle.org/distributions/gradle-8.4-bin.zip -q
           unzip -q gradle-8.4-bin.zip
           export JAVA_HOME=$JAVA_HOME_17_X64
           export PATH=$JAVA_HOME/bin:$PATH
-          echo "Attempting to build the Flashlight APK (v9)..."
+          echo "Attempting to build the Flashlight APK (v10)..."
           ./gradle-8.4/bin/gradle -p . assembleDebug
 
-      # -----------------------------------------------------------------
-      # 📱 المرحلة 4: الجسد يثبت ويشغل
-      # -----------------------------------------------------------------
       - name: 📱 4. Body Installs - Run Emulator and Install APK
-        if: ${{ success() }}
+        if: success()
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
