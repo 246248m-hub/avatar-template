@@ -1,4 +1,4 @@
-name: 🤖 AI Creates a Flashlight App
+name: 🤖 AI Creates Flashlight App v2 (with Fix)
 
 on:
   workflow_dispatch:
@@ -14,54 +14,53 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y jq tree
           mkdir -p app/src/main/java/com/example/creator
+          mkdir -p gradle # <-- إنشاء مجلد gradle الجديد
           tree
 
       # -----------------------------------------------------------------
-      # المرحلة 2: العقل يكتب ملفات المشروع (مع طلبات جديدة)
+      # المرحلة 2: العقل يكتب ملفات المشروع
       # -----------------------------------------------------------------
-      - name: 🧠 2a. Brain writes build files
+      - name: 🧠 2a. Brain writes Gradle files (settings, build)
         run: |
-          # (للاختصار، سنجمع كتابة ملفات Gradle في خطوة واحدة)
           # settings.gradle.kts
-          AI_RESPONSE_SETTINGS=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a minimal `settings.gradle.kts` file for an Android project that includes the `:app` module. Provide only the raw code."}]}]}')
+          AI_RESPONSE_SETTINGS=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a `settings.gradle.kts` file for an Android project. Enable version catalogs by adding `enableFeaturePreview(\"VERSION_CATALOGS\")`. Include the `:app` module. Provide only the raw code."}]}]}')
           echo $AI_RESPONSE_SETTINGS | jq -r '.candidates[0].content.parts[0].text' | sed 's/```.*//g' > settings.gradle.kts
           
-          # build.gradle.kts (project)
-          AI_RESPONSE_BUILD=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a minimal top-level `build.gradle.kts` file for an Android project using plugins syntax. Provide only the raw code."}]}]}')
-          echo $AI_RESPONSE_BUILD | jq -r '.candidates.content.parts.text' | sed 's/```.*//g' > build.gradle.kts
+          # build.gradle.kts (project) - لا نحتاجه في البناء الحديث
+          # app/build.gradle.kts
+          AI_RESPONSE_APP_BUILD=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a `build.gradle.kts` for an Android app module using version catalog aliases (libs.plugins...). Use `com.example.creator` as namespace. Target SDK 34. Use Jetpack Compose. Provide only the raw kotlin code."}]}]}')
+          echo $AI_RESPONSE_APP_BUILD | jq -r '.candidates.content.parts.text' | sed 's/```.*//g' > app/build.gradle.kts
+          echo "✅ Gradle build scripts created."
 
-          # build.gradle.kts (app)
-          AI_RESPONSE_APP_BUILD=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a complete `build.gradle.kts` for an Android app module. Use `com.example.creator` as namespace. Target SDK 34. Use Jetpack Compose. Provide only the raw kotlin code."}]}]}')
-          echo $AI_RESPONSE_APP_BUILD | jq -r '.candidates[0].content.parts[0].text' | sed 's/```.*//g' > app/build.gradle.kts
-          echo "✅ All Gradle files created."
-
-      - name: 🧠 2b. Brain writes AndroidManifest.xml with Camera Permission
+      - name: 🧠 2b. Brain writes AndroidManifest.xml
         run: |
-          # طلب جديد: نطلب منه إضافة إذن الكاميرا
-          AI_RESPONSE=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a complete `AndroidManifest.xml` for a simple app. Use `com.example.creator` as package name. The main activity is `.MainActivity`. IMPORTANT: Add the `<uses-permission android:name=\"android.permission.CAMERA\" />` and `<uses-feature android:name=\"android.hardware.camera.flash\" />` permissions. Provide only the raw XML code."}]}]}')
-          echo $AI_RESPONSE | jq -r '.candidates.content.parts.text' | sed 's/```.*//g' > app/src/main/AndroidManifest.xml
-          echo "✅ AndroidManifest.xml with Camera permission created."
+          AI_RESPONSE=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a complete `AndroidManifest.xml` for a simple app. Use `com.example.creator` as package name. Add CAMERA permission and camera.flash feature. Provide only the raw XML code."}]}]}')
+          echo $AI_RESPONSE | jq -r '.candidates[0].content.parts[0].text' | sed 's/```.*//g' > app/src/main/AndroidManifest.xml
+          echo "✅ AndroidManifest.xml created."
 
-      - name: 🧠 2c. Brain writes MainActivity.kt with Flashlight Logic
+      - name: 🧠 2c. Brain writes MainActivity.kt
         run: |
-          # طلب جديد ومعقد: نطلب منه كتابة منطق الفلاش كاملاً
-          AI_RESPONSE=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a complete `MainActivity.kt` file for a Jetpack Compose app in package `com.example.creator`. The app should have a single button. When the button is clicked, it toggles the camera flashlight on and off. Use CameraManager to control the flash. Handle the context safely. Provide only the raw kotlin code."}]}]}')
-          echo $AI_RESPONSE | jq -r '.candidates[0].content.parts[0].text' | sed 's/```.*//g' > app/src/main/java/com/example/creator/MainActivity.kt
-          echo "✅ MainActivity.kt with flashlight logic created."
+          AI_RESPONSE=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a complete `MainActivity.kt` file for a Jetpack Compose app in package `com.example.creator` that toggles the camera flashlight with a button. Use CameraManager. Provide only the raw kotlin code."}]}]}')
+          echo $AI_RESPONSE | jq -r '.candidates.content.parts.text' | sed 's/```.*//g' > app/src/main/java/com/example/creator/MainActivity.kt
+          echo "✅ MainActivity.kt created."
+
+      # --- الخطوة الجديدة والمهمة ---
+      - name: 🧠 2d. Brain writes the missing libs.versions.toml file
+        run: |
+          AI_RESPONSE=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a complete `libs.versions.toml` file for a modern Android Jetpack Compose app. Include versions and libraries for android-application, kotlin-android, core-ktx, activity-compose, compose-bom, and material3. Provide only the raw TOML code."}]}]}')
+          echo $AI_RESPONSE | jq -r '.candidates[0].content.parts[0].text' | sed 's/```.*//g' > gradle/libs.versions.toml
+          echo "✅ The missing gradle/libs.versions.toml file has been created."
 
       # -----------------------------------------------------------------
       # المرحلة 3: الجسد يبني الـ APK
       # -----------------------------------------------------------------
       - name: 🏗️ 3. Body Builds - Setup & Assemble
         run: |
-          # تنزيل وتجهيز Gradle
           wget https://services.gradle.org/distributions/gradle-8.4-bin.zip -q
           unzip -q gradle-8.4-bin.zip
-          # إعداد JDK
           export JAVA_HOME=$JAVA_HOME_17_X64
           export PATH=$JAVA_HOME/bin:$PATH
-          # بناء الـ APK
-          echo "Attempting to build the Flashlight APK..."
+          echo "Attempting to build the Flashlight APK with the new TOML file..."
           ./gradle-8.4/bin/gradle -p . assembleDebug
 
       # -----------------------------------------------------------------
@@ -72,9 +71,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
-          # مهم: يجب تفعيل الكاميرا في المحاكي
           emulator-options: "-camera-back virtualscene"
           script: |
-            echo "Emulator is ready. Installing the Flashlight APK..."
             adb install app/build/outputs/apk/debug/app-debug.apk
             echo "✅ The Digital Mind has successfully created and installed its own Flashlight App."
