@@ -1,4 +1,4 @@
-name: 🤖 AI Creates, Builds, and Uploads App (Final v19)
+name: 🤖 AI Creates, Builds, and Uploads App (Final v20)
 
 on:
   workflow_dispatch:
@@ -11,6 +11,7 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y jq tree
           mkdir -p app/src/main/java/com/example/creator
+          mkdir -p app/src/main/res/values
           mkdir -p gradle
           tree
 
@@ -123,7 +124,7 @@ jobs:
           }
           EOF
 
-          # AndroidManifest.xml (بدون package + مع android:exported)
+          # AndroidManifest.xml (بدون package + مع android:exported + ثيم مخصص)
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -134,7 +135,7 @@ jobs:
                   android:allowBackup="true"
                   android:label="Flashlight App"
                   android:supportsRtl="true"
-                  android:theme="@style/Theme.Material3.DayNight.NoActionBar">
+                  android:theme="@style/Theme.Flashlight">
                   <activity
                       android:name=".MainActivity"
                       android:exported="true">
@@ -145,6 +146,16 @@ jobs:
                   </activity>
               </application>
           </manifest>
+          EOF
+
+          # themes.xml (ثيم مخصص بدون ActionBar)
+          cat << 'EOF' > app/src/main/res/values/themes.xml
+          <resources xmlns:tools="http://schemas.android.com/tools">
+              <style name="Theme.Flashlight" parent="Theme.Material3.DayNight">
+                  <item name="windowActionBar">false</item>
+                  <item name="windowNoTitle">true</item>
+              </style>
+          </resources>
           EOF
 
           # MainActivity.kt
