@@ -1,4 +1,4 @@
-name: 🤖 AI Creates Flashlight App v11 (YML Syntax Fix)
+name: 🤖 AI Creates, Builds, and Uploads App (v12)
 
 on:
   workflow_dispatch:
@@ -7,6 +7,7 @@ jobs:
   create_build_and_install:
     runs-on: ubuntu-latest
     steps:
+      # --- المرحلة 1 و 2 تبقى كما هي ---
       - name: 🛠️ 1. Prepare Environment & Structure
         run: |
           sudo apt-get update && sudo apt-get install -y jq tree
@@ -17,74 +18,66 @@ jobs:
       - name: 🧠 2. Brain writes all project files
         run: |
           MODEL_NAME="gemini-1.5-flash-latest"
-
-          echo "Writing libs.versions.toml with fixed content..."
           cat << 'EOF' > gradle/libs.versions.toml
-          [versions]
-          agp = "8.2.0"
-          kotlin = "1.9.22"
-          coreKtx = "1.12.0"
-          activityCompose = "1.8.2"
-          composeBom = "2024.02.01"
-          junit = "4.13.2"
-          androidxTestExtJunit = "1.1.5"
-          espressoCore = "3.5.1"
-
-          [libraries]
-          androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-          androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-          androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-          androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
-          androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-          androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-          androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-          junit = { group = "junit", name = "junit", version.ref = "junit" }
-          androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExtJunit" }
-          androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-
-          [plugins]
-          androidApplication = { id = "com.android.application", version.ref = "agp" }
-          kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-          EOF
-
+[versions]
+agp = "8.2.0"
+kotlin = "1.9.22"
+coreKtx = "1.12.0"
+activityCompose = "1.8.2"
+composeBom = "2024.02.01"
+junit = "4.13.2"
+androidxTestExtJunit = "1.1.5"
+espressoCore = "3.5.1"
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExtJunit" }
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+EOF
           extract_code() {
             jq -r '.candidates[0].content.parts[0].text' | sed 's/```.*//g' | sed '/^$/d'
           }
-
-          echo "Writing settings.gradle.kts..."
-          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" \
-            -H "Content-Type: application/json" \
-            -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" \
-            -X POST \
-            -d '{"contents": [{"parts": [{"text": "Write a minimal `settings.gradle.kts` file for an Android project. Include the `:app` module. Provide only the raw code without any markdown formatting or explanations."}]}]}' \
-            | extract_code > settings.gradle.kts
-          
-          echo "Writing app/build.gradle.kts..."
-          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" \
-            -H "Content-Type: application/json" \
-            -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" \
-            -X POST \
-            -d '{"contents": [{"parts": [{"text": "Write a `build.gradle.kts` for an Android app module using version catalog aliases (libs.plugins...). Use `com.example.creator` as namespace. Target SDK 34. Use Jetpack Compose. Provide only the raw kotlin code without any markdown formatting or explanations."}]}]}' \
-            | extract_code > app/build.gradle.kts
-          
-          echo "Writing AndroidManifest.xml..."
-          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" \
-            -H "Content-Type: application/json" \
-            -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" \
-            -X POST \
-            -d '{"contents": [{"parts": [{"text": "Write a complete `AndroidManifest.xml` for a simple app. Use `com.example.creator` as package name. Add CAMERA permission and camera.flash feature. Provide only the raw XML code without any markdown formatting or explanations."}]}]}' \
-            | extract_code > app/src/main/AndroidManifest.xml
-          
-          echo "Writing MainActivity.kt..."
-          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" \
-            -H "Content-Type: application/json" \
-            -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" \
-            -X POST \
-            -d '{"contents": [{"parts": [{"text": "Write a complete `MainActivity.kt` file for a Jetpack Compose app in package `com.example.creator` that toggles the camera flashlight with a button. Use CameraManager. Provide only the raw kotlin code without any markdown formatting or explanations."}]}]}' \
-            | extract_code > app/src/main/java/com/example/creator/MainActivity.kt
-          
+          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a minimal `settings.gradle.kts` file for an Android project. Include the `:app` module. Provide only the raw code without any markdown formatting or explanations."}]}]}' | extract_code > settings.gradle.kts
+          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a `build.gradle.kts` for an Android app module using version catalog aliases (libs.plugins...). Use `com.example.creator` as namespace. Target SDK 34. Use Jetpack Compose. Provide only the raw kotlin code without any markdown formatting or explanations."}]}]}' | extract_code > app/build.gradle.kts
+          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a complete `AndroidManifest.xml` for a simple app. Use `com.example.creator` as package name. Add CAMERA permission and camera.flash feature. Provide only the raw XML code without any markdown formatting or explanations."}]}]}' | extract_code > app/src/main/AndroidManifest.xml
+          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" -H "Content-Type: application/json" -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" -X POST -d '{"contents": [{"parts": [{"text": "Write a complete `MainActivity.kt` file for a Jetpack Compose app in package `com.example.creator` that toggles the camera flashlight with a button. Use CameraManager. Provide only the raw kotlin code without any markdown formatting or explanations."}]}]}' | extract_code > app/src/main/java/com/example/creator/MainActivity.kt
           echo "✅ All project files created."
 
+      # --- المرحلة 3 تبقى كما هي ---
       - name: 🏗️ 3. Body Builds - Setup & Assemble
         run: |
-          export JAVA_HOME=$JAVA_HOME_17
+          wget https://services.gradle.org/distributions/gradle-8.4-bin.zip -q
+          unzip -q gradle-8.4-bin.zip
+          export JAVA_HOME=$JAVA_HOME_17_X64
+          export PATH=$JAVA_HOME/bin:$PATH
+          echo "Attempting to build the Flashlight APK (v12)..."
+          ./gradle-8.4/bin/gradle -p . assembleDebug
+
+      # --- المرحلة 4 (التثبيت على المحاكي) أصبحت اختيارية الآن، ولكن سنبقيها ---
+      - name: 📱 4. Body Installs (Optional) - Run Emulator and Install APK
+        if: success()
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          script: |
+            adb install app/build/outputs/apk/debug/app-debug.apk
+
+      # -----------------------------------------------------------------
+      # المرحلة 5: رفع الـ APK كقطعة أثرية (Artifact)
+      # -----------------------------------------------------------------
+      - name: 📤 5. Upload APK Artifact
+        if: success() # تأكد من أن هذه الخطوة تعمل فقط إذا نجح البناء
+        uses: actions/upload-artifact@v4
+        with:
+          name: flashlight-app # اسم القطعة الأثرية التي ستظهر لك
+          path: app/build/outputs/apk/debug/app-debug.apk # المسار إلى الملف الذي تريد رفعه
+
