@@ -1,4 +1,4 @@
-name: 🤖 AI Creates, Builds, and Uploads App (Final v20)
+name: 🤖 AI Creates, Builds, and Uploads App (Final v21)
 
 on:
   workflow_dispatch:
@@ -148,12 +148,11 @@ jobs:
           </manifest>
           EOF
 
-          # themes.xml (ثيم مخصص بدون ActionBar)
+          # themes.xml (ثيم مخصص مبني على Material3)
           cat << 'EOF' > app/src/main/res/values/themes.xml
-          <resources xmlns:tools="http://schemas.android.com/tools">
-              <style name="Theme.Flashlight" parent="Theme.Material3.DayNight">
-                  <item name="windowActionBar">false</item>
-                  <item name="windowNoTitle">true</item>
+          <resources>
+              <style name="Theme.Flashlight" parent="Theme.Material3">
+                  <!-- يمكن إضافة تخصيصات للألوان هنا -->
               </style>
           </resources>
           EOF
