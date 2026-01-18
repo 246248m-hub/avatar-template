@@ -7,7 +7,6 @@ jobs:
   create_build_and_install:
     runs-on: ubuntu-latest
     steps:
-      # --- المرحلة 1 ---
       - name: 🛠️ 1. Prepare Environment & Structure
         run: |
           sudo apt-get update && sudo apt-get install -y jq tree
@@ -15,7 +14,6 @@ jobs:
           mkdir -p gradle
           tree
 
-      # --- المرحلة 2 ---
       - name: 🧠 2. Brain writes all project files
         run: |
           MODEL_NAME="gemini-1.5-flash-latest"
@@ -55,33 +53,32 @@ EOF
             -H "Content-Type: application/json" \
             -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" \
             -X POST \
-            -d '{"contents": [{"parts": [{"text": "Write a minimal `settings.gradle.kts` file for an Android project. Include the `:app` module. Provide only the raw code without any markdown formatting or explanations."}]}]}' \
+            -d '{"contents": [{"parts": [{"text": "Write a minimal `settings.gradle.kts` file for an Android project. Include the `:app` module."}]}]}' \
             | extract_code > settings.gradle.kts
 
           curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" \
             -H "Content-Type: application/json" \
             -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" \
             -X POST \
-            -d '{"contents": [{"parts": [{"text": "Write a `build.gradle.kts` for an Android app module using version catalog aliases (libs.plugins...). Use `com.example.creator` as namespace. Target SDK 34. Use Jetpack Compose. Provide only the raw kotlin code without any markdown formatting or explanations."}]}]}' \
+            -d '{"contents": [{"parts": [{"text": "Write a `build.gradle.kts` for an Android app module using version catalog aliases (libs.plugins...). Use `com.example.creator` as namespace. Target SDK 34. Use Jetpack Compose."}]}]}' \
             | extract_code > app/build.gradle.kts
 
           curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" \
             -H "Content-Type: application/json" \
             -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" \
             -X POST \
-            -d '{"contents": [{"parts": [{"text": "Write a complete `AndroidManifest.xml` for a simple app. Use `com.example.creator` as package name. Add CAMERA permission and camera.flash feature. Provide only the raw XML code without any markdown formatting or explanations."}]}]}' \
+            -d '{"contents": [{"parts": [{"text": "Write a complete `AndroidManifest.xml` for a simple app. Use `com.example.creator` as package name. Add CAMERA permission and camera.flash feature."}]}]}' \
             | extract_code > app/src/main/AndroidManifest.xml
 
           curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" \
             -H "Content-Type: application/json" \
             -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" \
             -X POST \
-            -d '{"contents": [{"parts": [{"text": "Write a complete `MainActivity.kt` file for a Jetpack Compose app in package `com.example.creator` that toggles the camera flashlight with a button. Use CameraManager. Provide only the raw kotlin code without any markdown formatting or explanations."}]}]}' \
+            -d '{"contents": [{"parts": [{"text": "Write a complete `MainActivity.kt` file for a Jetpack Compose app in package `com.example.creator` that toggles the camera flashlight with a button. Use CameraManager."}]}]}' \
             | extract_code > app/src/main/java/com/example/creator/MainActivity.kt
 
           echo "✅ All project files created."
 
-      # --- المرحلة 3 ---
       - name: 🏗️ 3. Body Builds - Setup & Assemble
         run: |
           export JAVA_HOME=$JAVA_HOME_17_X64
@@ -89,7 +86,6 @@ EOF
           echo "Attempting to build the Flashlight APK (v12)..."
           ./gradlew assembleDebug
 
-      # --- المرحلة 4 ---
       - name: 📱 4. Body Installs (Optional) - Run Emulator and Install APK
         if: ${{ success() }}
         uses: reactivecircus/android-emulator-runner@v2
@@ -98,7 +94,6 @@ EOF
           script: |
             adb install app/build/outputs/apk/debug/app-debug.apk
 
-      # --- المرحلة 5 ---
       - name: 📤 5. Upload APK Artifact
         if: ${{ success() }}
         uses: actions/upload-artifact@v4
