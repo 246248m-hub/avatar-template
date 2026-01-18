@@ -1,4 +1,4 @@
-name: 🤖 AI Creates, Builds, and Uploads App (Final v28)
+name: 🤖 AI Creates, Builds, and Uploads App (Final v28 - Fixed)
 
 on:
   workflow_dispatch:
@@ -34,198 +34,192 @@ jobs:
 
       - name: 🧠 Create Project Files
         run: |
-          # libs.versions.toml
-          cat <<EOF > gradle/libs.versions.toml
-[versions]
-agp = "8.2.0"
-kotlin = "1.9.22"
-coreKtx = "1.12.0"
-activityCompose = "1.8.2"
-composeBom = "2024.02.01"
-junit = "4.13.2"
-androidxTestExtJunit = "1.1.5"
-espressoCore = "3.5.1"
+          # لاحظ الإزاحة (Indentation) هنا لكل الأسطر القادمة
+          cat << 'EOF' > gradle/libs.versions.toml
+          [versions]
+          agp = "8.2.0"
+          kotlin = "1.9.22"
+          coreKtx = "1.12.0"
+          activityCompose = "1.8.2"
+          composeBom = "2024.02.01"
+          junit = "4.13.2"
+          androidxTestExtJunit = "1.1.5"
+          espressoCore = "3.5.1"
 
-[libraries]
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
-androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExtJunit" }
-androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+          [libraries]
+          androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+          androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+          androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+          androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+          androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+          androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+          androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+          junit = { group = "junit", name = "junit", version.ref = "junit" }
+          androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExtJunit" }
+          androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 
-[plugins]
-androidApplication = { id = "com.android.application", version.ref = "agp" }
-kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-EOF
+          [plugins]
+          androidApplication = { id = "com.android.application", version.ref = "agp" }
+          kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+          EOF
 
-          # settings.gradle.kts
-          cat <<EOF > settings.gradle.kts
-pluginManagement {
-  repositories { gradlePluginPortal(); google(); mavenCentral() }
-}
-dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories { google(); mavenCentral() }
-}
-rootProject.name = "flashlight-app"
-include(":app")
-EOF
+          cat << 'EOF' > settings.gradle.kts
+          pluginManagement {
+            repositories { gradlePluginPortal(); google(); mavenCentral() }
+          }
+          dependencyResolutionManagement {
+            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+            repositories { google(); mavenCentral() }
+          }
+          rootProject.name = "flashlight-app"
+          include(":app")
+          EOF
 
-          # gradle.properties
-          cat <<EOF > gradle.properties
-android.useAndroidX=true
-android.enableJetifier=true
-org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
-EOF
+          cat << 'EOF' > gradle.properties
+          android.useAndroidX=true
+          android.enableJetifier=true
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          EOF
 
-          # AndroidManifest.xml
-          cat <<EOF > app/src/main/AndroidManifest.xml
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-permission android:name="android.permission.CAMERA" />
-    <application android:label="Flashlight" android:theme="@style/Theme.Flashlight">
-        <activity android:name=".MainActivity" android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    </application>
-</manifest>
-EOF
+          cat << 'EOF' > app/src/main/AndroidManifest.xml
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.CAMERA" />
+              <application android:label="Flashlight" android:theme="@style/Theme.Flashlight">
+                  <activity android:name=".MainActivity" android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
 
-          # themes.xml
-          cat <<EOF > app/src/main/res/values/themes.xml
-<resources>
-    <style name="Theme.Flashlight" parent="@android:style/Theme.Material.Light.NoActionBar" />
-</resources>
-EOF
+          cat << 'EOF' > app/src/main/res/values/themes.xml
+          <resources>
+              <style name="Theme.Flashlight" parent="@android:style/Theme.Material.Light.NoActionBar" />
+          </resources>
+          EOF
 
-          # app/build.gradle.kts
-          cat <<EOF > app/build.gradle.kts
-plugins {
-  alias(libs.plugins.androidApplication)
-  alias(libs.plugins.kotlinAndroid)
-}
+          cat << 'EOF' > app/build.gradle.kts
+          plugins {
+            alias(libs.plugins.androidApplication)
+            alias(libs.plugins.kotlinAndroid)
+          }
 
-android {
-  namespace = "com.example.creator"
-  compileSdk = 34
+          android {
+            namespace = "com.example.creator"
+            compileSdk = 34
 
-  defaultConfig {
-    applicationId = "com.example.creator"
-    minSdk = 24
-    targetSdk = 34
-    versionCode = 1
-    versionName = "1.0"
-  }
-
-  buildFeatures { compose = true }
-
-  composeOptions {
-    kotlinCompilerExtensionVersion = "1.5.3"
-  }
-
-  compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-  }
-
-  kotlinOptions { jvmTarget = "17" }
-}
-
-dependencies {
-  implementation(libs.androidx.core.ktx)
-  implementation(libs.androidx.activity.compose)
-  implementation(platform(libs.androidx.compose.bom))
-  implementation(libs.androidx.compose.ui)
-  implementation(libs.androidx.compose.ui.graphics)
-  implementation(libs.androidx.compose.ui.tooling.preview)
-  implementation(libs.androidx.compose.material3)
-}
-EOF
-
-          # MainActivity.kt
-          cat <<EOF > app/src/main/java/com/example/creator/MainActivity.kt
-package com.example.creator
-
-import android.content.Context
-import android.hardware.camera2.CameraManager
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MaterialTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    FlashlightApp()
-                }
+            defaultConfig {
+              applicationId = "com.example.creator"
+              minSdk = 24
+              targetSdk = 34
+              versionCode = 1
+              versionName = "1.0"
             }
-        }
-    }
-}
 
-@Composable
-fun FlashlightApp() {
-    var isFlashlightOn by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+            buildFeatures { compose = true }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(if (isFlashlightOn) Color.Yellow else Color.Black),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = if (isFlashlightOn) "🔦 ON" else "🔦 OFF",
-            color = if (isFlashlightOn) Color.Black else Color.White,
-            fontSize = 40.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 40.dp)
-        )
+            composeOptions {
+              kotlinCompilerExtensionVersion = "1.5.3"
+            }
 
-        Button(
-            onClick = {
-                try {
-                    val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-                    val cameraId = cameraManager.cameraIdList.firstOrNull()
-                    if (cameraId != null) {
-                        isFlashlightOn = !isFlashlightOn
-                        cameraManager.setTorchMode(cameraId, isFlashlightOn)
-                    }
-                } catch (e: Exception) {
-                    isFlashlightOn = false
-                }
-            },
-            modifier = Modifier.size(width = 200.dp, height = 80.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (isFlashlightOn) Color.Red else Color.Green
-            )
-        ) {
-            Text(if (isFlashlightOn) "TURN OFF" else "TURN ON")
-        }
-    }
-}
-EOF
+            compileOptions {
+              sourceCompatibility = JavaVersion.VERSION_17
+              targetCompatibility = JavaVersion.VERSION_17
+            }
+
+            kotlinOptions { jvmTarget = "17" }
+          }
+
+          dependencies {
+            implementation(libs.androidx.core.ktx)
+            implementation(libs.androidx.activity.compose)
+            implementation(platform(libs.androidx.compose.bom))
+            implementation(libs.androidx.compose.ui)
+            implementation(libs.androidx.compose.ui.graphics)
+            implementation(libs.androidx.compose.ui.tooling.preview)
+            implementation(libs.androidx.compose.material3)
+          }
+          EOF
+
+          cat << 'EOF' > app/src/main/java/com/example/creator/MainActivity.kt
+          package com.example.creator
+
+          import android.content.Context
+          import android.hardware.camera2.CameraManager
+          import android.os.Bundle
+          import androidx.activity.ComponentActivity
+          import androidx.activity.compose.setContent
+          import androidx.compose.foundation.background
+          import androidx.compose.foundation.layout.*
+          import androidx.compose.material3.*
+          import androidx.compose.runtime.*
+          import androidx.compose.ui.Alignment
+          import androidx.compose.ui.Modifier
+          import androidx.compose.ui.graphics.Color
+          import androidx.compose.ui.platform.LocalContext
+          import androidx.compose.ui.text.font.FontWeight
+          import androidx.compose.ui.unit.dp
+          import androidx.compose.ui.unit.sp
+
+          class MainActivity : ComponentActivity() {
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  setContent {
+                      MaterialTheme {
+                          Surface(modifier = Modifier.fillMaxSize()) {
+                              FlashlightApp()
+                          }
+                      }
+                  }
+              }
+          }
+
+          @Composable
+          fun FlashlightApp() {
+              var isFlashlightOn by remember { mutableStateOf(false) }
+              val context = LocalContext.current
+
+              Column(
+                  modifier = Modifier
+                      .fillMaxSize()
+                      .background(if (isFlashlightOn) Color.Yellow else Color.Black),
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  verticalArrangement = Arrangement.Center
+              ) {
+                  Text(
+                      text = if (isFlashlightOn) "🔦 ON" else "🔦 OFF",
+                      color = if (isFlashlightOn) Color.Black else Color.White,
+                      fontSize = 40.sp,
+                      fontWeight = FontWeight.Bold,
+                      modifier = Modifier.padding(bottom = 40.dp)
+                  )
+
+                  Button(
+                      onClick = {
+                          try {
+                              val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                              val cameraId = cameraManager.cameraIdList.firstOrNull()
+                              if (cameraId != null) {
+                                  isFlashlightOn = !isFlashlightOn
+                                  cameraManager.setTorchMode(cameraId, isFlashlightOn)
+                              }
+                          } catch (e: Exception) {
+                              isFlashlightOn = false
+                          }
+                      },
+                      modifier = Modifier.size(width = 200.dp, height = 80.dp),
+                      colors = ButtonDefaults.buttonColors(
+                          containerColor = if (isFlashlightOn) Color.Red else Color.Green
+                      )
+                  ) {
+                      Text(if (isFlashlightOn) "TURN OFF" else "TURN ON")
+                  }
+              }
+          }
+          EOF
 
       - name: 🏗️ Build APK
         run: |
@@ -233,17 +227,9 @@ EOF
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: 📱 Run Emulator and Install APK
-        if: ${{ success() }}
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          script: |
-            adb install app/build/outputs/apk/debug/app-debug.apk
-            adb shell am start -n com.example.creator/.MainActivity
-
       - name: 📤 Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: flashlight-app
           path: app/build/outputs/apk/debug/app-debug.apk
+
