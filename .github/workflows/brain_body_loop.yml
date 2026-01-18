@@ -1,4 +1,4 @@
-name: 🤖 AI Creates, Builds, and Uploads App (Final v21)
+name: 🤖 AI Creates, Builds, and Uploads App (Final v22)
 
 on:
   workflow_dispatch:
@@ -124,7 +124,7 @@ jobs:
           }
           EOF
 
-          # AndroidManifest.xml (بدون package + مع android:exported + ثيم مخصص)
+          # AndroidManifest.xml
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -148,11 +148,11 @@ jobs:
           </manifest>
           EOF
 
-          # themes.xml (ثيم مخصص مبني على Material3)
+          # themes.xml (ثيم مخصص مبني على ثيم موجود فعليًا)
           cat << 'EOF' > app/src/main/res/values/themes.xml
           <resources>
-              <style name="Theme.Flashlight" parent="Theme.Material3">
-                  <!-- يمكن إضافة تخصيصات للألوان هنا -->
+              <style name="Theme.Flashlight" parent="android:Theme.Material.Light.NoActionBar">
+                  <!-- تخصيصات إضافية يمكن إضافتها هنا -->
               </style>
           </resources>
           EOF
