@@ -1,4 +1,4 @@
-name: 🤖 AI Creates, Builds, and Uploads App (Final v25)
+name: 🤖 AI Creates, Builds, and Uploads App (Final v26)
 
 on:
   workflow_dispatch:
@@ -35,32 +35,33 @@ jobs:
       - name: 🧠 Create Project Files
         run: |
           # libs.versions.toml
-          mkdir -p gradle
-          echo "[versions]" > gradle/libs.versions.toml
-          echo "agp = \"8.2.0\"" >> gradle/libs.versions.toml
-          echo "kotlin = \"1.9.22\"" >> gradle/libs.versions.toml
-          echo "coreKtx = \"1.12.0\"" >> gradle/libs.versions.toml
-          echo "activityCompose = \"1.8.2\"" >> gradle/libs.versions.toml
-          echo "composeBom = \"2024.02.01\"" >> gradle/libs.versions.toml
-          echo "junit = \"4.13.2\"" >> gradle/libs.versions.toml
-          echo "androidxTestExtJunit = \"1.1.5\"" >> gradle/libs.versions.toml
-          echo "espressoCore = \"3.5.1\"" >> gradle/libs.versions.toml
-          echo "" >> gradle/libs.versions.toml
-          echo "[libraries]" >> gradle/libs.versions.toml
-          echo "androidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }" >> gradle/libs.versions.toml
-          echo "androidx-activity-compose = { group = \"androidx.activity\", name = \"activity-compose\", version.ref = \"activityCompose\" }" >> gradle/libs.versions.toml
-          echo "androidx-compose-bom = { group = \"androidx.compose\", name = \"compose-bom\", version.ref = \"composeBom\" }" >> gradle/libs.versions.toml
-          echo "androidx-compose-ui = { group = \"androidx.compose.ui\", name = \"ui\" }" >> gradle/libs.versions.toml
-          echo "androidx-compose-ui-graphics = { group = \"androidx.compose.ui\", name = \"ui-graphics\" }" >> gradle/libs.versions.toml
-          echo "androidx-compose-ui-tooling-preview = { group = \"androidx.compose.ui\", name = \"ui-tooling-preview\" }" >> gradle/libs.versions.toml
-          echo "androidx-compose-material3 = { group = \"androidx.compose.material3\", name = \"material3\" }" >> gradle/libs.versions.toml
-          echo "junit = { group = \"junit\", name = \"junit\", version.ref = \"junit\" }" >> gradle/libs.versions.toml
-          echo "androidx-test-ext-junit = { group = \"androidx.test.ext\", name = \"junit\", version.ref = \"androidxTestExtJunit\" }" >> gradle/libs.versions.toml
-          echo "androidx-test-espresso-core = { group = \"androidx.test.espresso\", name = \"espresso-core\", version.ref = \"espressoCore\" }" >> gradle/libs.versions.toml
-          echo "" >> gradle/libs.versions.toml
-          echo "[plugins]" >> gradle/libs.versions.toml
-          echo "androidApplication = { id = \"com.android.application\", version.ref = \"agp\" }" >> gradle/libs.versions.toml
-          echo "kotlinAndroid = { id = \"org.jetbrains.kotlin.android\", version.ref = \"kotlin\" }" >> gradle/libs.versions.toml
+          cat << 'EOF' > gradle/libs.versions.toml
+[versions]
+agp = "8.2.0"
+kotlin = "1.9.22"
+coreKtx = "1.12.0"
+activityCompose = "1.8.2"
+composeBom = "2024.02.01"
+junit = "4.13.2"
+androidxTestExtJunit = "1.1.5"
+espressoCore = "3.5.1"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExtJunit" }
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+EOF
 
           # settings.gradle.kts
           cat << 'EOF' > settings.gradle.kts
@@ -86,7 +87,7 @@ EOF
           cat << 'EOF' > app/src/main/AndroidManifest.xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.CAMERA" />
-    <application android:label="Flashlight" android:theme="@android:style/Theme.Material.Light.NoActionBar">
+    <application android:label="Flashlight" android:theme="@style/Theme.Flashlight">
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -104,7 +105,7 @@ EOF
 </resources>
 EOF
 
-          # build.gradle.kts
+          # app/build.gradle.kts
           cat << 'EOF' > app/build.gradle.kts
 plugins {
   alias(libs.plugins.androidApplication)
@@ -213,3 +214,27 @@ fun FlashlightApp() {
                     }
                 } catch (e: Exception) {
                     isFlashlightOn = false
+                }
+            },
+            modifier = Modifier.size(width = 200.dp, height = 80.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (isFlashlightOn) Color.Red else Color.Green
+            )
+        ) {
+            Text(if (isFlashlightOn) "TURN OFF" else "TURN ON")
+        }
+    }
+}
+EOF
+
+      - name: 🏗️ Build APK
+        run: |
+          gradle wrapper --gradle-version 8.6
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: 📤 Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: flashlight-app
+          path: app/build/outputs/apk/debug/app-debug.apk
