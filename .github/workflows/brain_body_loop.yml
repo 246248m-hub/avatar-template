@@ -17,6 +17,8 @@ jobs:
       - name: 🧠 2. Brain writes all project files
         run: |
           MODEL_NAME="gemini-1.5-flash-latest"
+
+          # libs.versions.toml
           cat << 'EOF' > gradle/libs.versions.toml
           [versions]
           agp = "8.2.0"
@@ -45,10 +47,125 @@ jobs:
           kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
           EOF
 
-          echo "Writing settings.gradle.kts..."
+          # settings.gradle.kts
           cat << 'EOF' > settings.gradle.kts
           rootProject.name = "avatar-template"
           include(":app")
+          EOF
+
+          # build.gradle.kts for app module
+          cat << 'EOF' > app/build.gradle.kts
+          plugins {
+              alias(libs.plugins.androidApplication)
+              alias(libs.plugins.kotlinAndroid)
+          }
+
+          android {
+              namespace = "com.example.creator"
+              compileSdk = 34
+
+              defaultConfig {
+                  applicationId = "com.example.creator"
+                  minSdk = 24
+                  targetSdk = 34
+                  versionCode = 1
+                  versionName = "1.0"
+              }
+
+              buildTypes {
+                  release {
+                      isMinifyEnabled = false
+                  }
+              }
+
+              buildFeatures {
+                  compose = true
+              }
+
+              composeOptions {
+                  kotlinCompilerExtensionVersion = "1.5.3"
+              }
+          }
+
+          dependencies {
+              implementation(libs.androidx.core.ktx)
+              implementation(libs.androidx.activity.compose)
+              implementation(platform(libs.androidx.compose.bom))
+              implementation(libs.androidx.compose.ui)
+              implementation(libs.androidx.compose.ui.graphics)
+              implementation(libs.androidx.compose.ui.tooling.preview)
+              implementation(libs.androidx.compose.material3)
+              testImplementation(libs.junit)
+              androidTestImplementation(libs.androidx.test.ext.junit)
+              androidTestImplementation(libs.androidx.test.espresso.core)
+          }
+          EOF
+
+          # AndroidManifest.xml
+          cat << 'EOF' > app/src/main/AndroidManifest.xml
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+              package="com.example.creator">
+
+              <uses-permission android:name="android.permission.CAMERA" />
+              <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
+
+              <application
+                  android:allowBackup="true"
+                  android:label="Flashlight App"
+                  android:supportsRtl="true"
+                  android:theme="@style/Theme.Material3.DayNight.NoActionBar">
+                  <activity android:name=".MainActivity">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          # MainActivity.kt
+          cat << 'EOF' > app/src/main/java/com/example/creator/MainActivity.kt
+          package com.example.creator
+
+          import android.os.Bundle
+          import android.content.Context
+          import android.hardware.camera2.CameraManager
+          import androidx.activity.ComponentActivity
+          import androidx.activity.compose.setContent
+          import androidx.compose.material3.*
+          import androidx.compose.runtime.*
+          import androidx.compose.ui.tooling.preview.Preview
+
+          class MainActivity : ComponentActivity() {
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  setContent {
+                      FlashlightApp()
+                  }
+              }
+          }
+
+          @Composable
+          fun FlashlightApp() {
+              var isOn by remember { mutableStateOf(false) }
+              val context = LocalContext.current
+              val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+              val cameraId = cameraManager.cameraIdList[0]
+
+              Button(onClick = {
+                  isOn = !isOn
+                  cameraManager.setTorchMode(cameraId, isOn)
+              }) {
+                  Text(if (isOn) "Turn Off" else "Turn On")
+              }
+          }
+
+          @Preview
+          @Composable
+          fun PreviewFlashlightApp() {
+              FlashlightApp()
+          }
           EOF
 
           echo "✅ All project files created."
@@ -64,7 +181,7 @@ jobs:
           export JAVA_HOME=$JAVA_HOME_17_X64
           export PATH=$JAVA_HOME/bin:$PATH
           echo "Attempting to build the Flashlight APK (v16)..."
-          ./gradlew assembleDebug
+          ./gradlew :app:assembleDebug
 
       - name: 📱 5. Body Installs (Optional) - Run Emulator and Install APK
         if: ${{ success() }}
