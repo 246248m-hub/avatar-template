@@ -50,12 +50,10 @@ jobs:
           }
 
           echo "Writing settings.gradle.kts..."
-          curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" \
-            -H "Content-Type: application/json" \
-            -H "x-goog-api-key: ${{ secrets.GOOGLE_API_KEY }}" \
-            -X POST \
-            -d '{"contents": [{"parts": [{"text": "Write a minimal `settings.gradle.kts` file for an Android project. Include the `:app` module."}]}]}' \
-            | extract_code > settings.gradle.kts
+          cat << 'EOF' > settings.gradle.kts
+          rootProject.name = "avatar-template"
+          include(":app")
+          EOF
 
           echo "Writing app/build.gradle.kts..."
           curl -s "https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent" \
@@ -85,12 +83,10 @@ jobs:
 
       - name: 🏗️ 3. Body Builds - Setup & Assemble
         run: |
-          wget https://services.gradle.org/distributions/gradle-8.4-bin.zip -q
-          unzip -q gradle-8.4-bin.zip
           export JAVA_HOME=$JAVA_HOME_17_X64
           export PATH=$JAVA_HOME/bin:$PATH
           echo "Attempting to build the Flashlight APK (v15)..."
-          ./gradle-8.4/bin/gradle :app:assembleDebug
+          ./gradlew assembleDebug
 
       - name: 📱 4. Body Installs (Optional) - Run Emulator and Install APK
         if: ${{ success() }}
