@@ -1,3 +1,23 @@
+name: 🤖 AI Creates, Builds, Signs, and Uploads App (Final v33)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create_build_sign_and_upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: 📦 1. Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: ☕ 2. Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: 🏗️ 3. Initialize Project & Build
         run: |
           # أ- إنشاء هيكل المجلدات
@@ -5,14 +25,14 @@
           mkdir -p app/src/main/java/com/example/creator
           mkdir -p app/src/main/res/values
 
-          # ب- إنشاء ملف gradle.properties (هذا هو الملف الناقص!)
+          # ب- إصلاح خطأ AndroidX (الملف المسبب للفشل السابق)
           cat << 'EOF' > gradle.properties
           android.useAndroidX=true
           android.enableJetifier=true
           org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
           EOF
 
-          # ج- إنشاء ملف libs.versions.toml
+          # ج- إنشاء ملفات إعداد Gradle
           cat << 'EOF' > gradle/libs.versions.toml
           [versions]
           agp = "8.2.0"
@@ -20,7 +40,6 @@
           coreKtx = "1.12.0"
           activityCompose = "1.8.2"
           composeBom = "2024.02.01"
-
           [libraries]
           androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
           androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -28,13 +47,11 @@
           androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
           androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
           androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-
           [plugins]
           androidApplication = { id = "com.android.application", version.ref = "agp" }
           kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
           EOF
 
-          # د- إنشاء ملف settings.gradle.kts
           cat << 'EOF' > settings.gradle.kts
           pluginManagement { repositories { gradlePluginPortal(); google(); mavenCentral() } }
           dependencyResolutionManagement {
@@ -45,7 +62,6 @@
           include(":app")
           EOF
 
-          # هـ- إنشاء ملف build.gradle.kts للتطبيق
           cat << 'EOF' > app/build.gradle.kts
           plugins {
               alias(libs.plugins.androidApplication)
@@ -90,24 +106,52 @@
           }
           EOF
 
-          # و- إنشاء MainActivity.kt
+          # د- كود تطبيق الكشاف الحقيقي
           cat << 'EOF' > app/src/main/java/com/example/creator/MainActivity.kt
           package com.example.creator
+          import android.content.Context
+          import android.hardware.camera2.CameraManager
           import android.os.Bundle
           import androidx.activity.ComponentActivity
           import androidx.activity.compose.setContent
-          import androidx.compose.material3.Text
+          import androidx.compose.foundation.background
+          import androidx.compose.foundation.layout.*
+          import androidx.compose.material3.*
+          import androidx.compose.runtime.*
+          import androidx.compose.ui.*
+          import androidx.compose.ui.graphics.Color
+          import androidx.compose.ui.platform.LocalContext
+          import androidx.compose.ui.unit.dp
+          import androidx.compose.ui.unit.sp
+
           class MainActivity : ComponentActivity() {
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
-                  setContent { Text("Flashlight App Ready") }
+                  setContent {
+                      var isOn by remember { mutableStateOf(false) }
+                      val context = LocalContext.current
+                      Column(
+                          modifier = Modifier.fillMaxSize().background(if (isOn) Color.Yellow else Color.Black),
+                          verticalArrangement = Arrangement.Center,
+                          horizontalAlignment = Alignment.CenterHorizontally
+                      ) {
+                          Button(onClick = {
+                              val cm = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                              val id = cm.cameraIdList[0]
+                              isOn = !isOn
+                              cm.setTorchMode(id, isOn)
+                          }) {
+                              Text(if (isOn) "OFF" else "ON", fontSize = 24.sp)
+                          }
+                      }
+                  }
               }
           }
           EOF
 
-          # ز- إنشاء AndroidManifest.xml
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.CAMERA" />
               <application android:label="Flashlight">
                   <activity android:name=".MainActivity" android:exported="true">
                       <intent-filter>
@@ -119,12 +163,17 @@
           </manifest>
           EOF
 
-          # ح- توليد الـ Keystore
+          # هـ- توليد المفتاح والبناء
           keytool -genkey -v -keystore keystore.jks -keyalg RSA -keysize 2048 -validity 10000 \
             -alias myalias -storepass password -keypass password \
             -dname "CN=Example, OU=ID, O=Org, L=City, S=State, C=US"
 
-          # ط- تنفيذ البناء باستخدام Wrapper
           gradle wrapper --gradle-version 8.6
           chmod +x gradlew
           ./gradlew assembleRelease
+
+      - name: 📤 4. Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: flashlight-signed-app
+          path: app/build/outputs/apk/release/app-release.apk
