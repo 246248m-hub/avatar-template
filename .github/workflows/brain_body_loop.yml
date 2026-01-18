@@ -1,4 +1,4 @@
-name: 🤖 AI Creates, Builds, and Uploads App (Final v27)
+name: 🤖 AI Creates, Builds, and Uploads App (Final v28)
 
 on:
   workflow_dispatch:
@@ -35,7 +35,7 @@ jobs:
       - name: 🧠 Create Project Files
         run: |
           # libs.versions.toml
-          cat << 'EOF' > gradle/libs.versions.toml
+          cat <<EOF > gradle/libs.versions.toml
 [versions]
 agp = "8.2.0"
 kotlin = "1.9.22"
@@ -64,7 +64,7 @@ kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 EOF
 
           # settings.gradle.kts
-          cat << 'EOF' > settings.gradle.kts
+          cat <<EOF > settings.gradle.kts
 pluginManagement {
   repositories { gradlePluginPortal(); google(); mavenCentral() }
 }
@@ -77,14 +77,14 @@ include(":app")
 EOF
 
           # gradle.properties
-          cat << 'EOF' > gradle.properties
+          cat <<EOF > gradle.properties
 android.useAndroidX=true
 android.enableJetifier=true
 org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
 EOF
 
           # AndroidManifest.xml
-          cat << 'EOF' > app/src/main/AndroidManifest.xml
+          cat <<EOF > app/src/main/AndroidManifest.xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.CAMERA" />
     <application android:label="Flashlight" android:theme="@style/Theme.Flashlight">
@@ -99,14 +99,14 @@ EOF
 EOF
 
           # themes.xml
-          cat << 'EOF' > app/src/main/res/values/themes.xml
+          cat <<EOF > app/src/main/res/values/themes.xml
 <resources>
     <style name="Theme.Flashlight" parent="@android:style/Theme.Material.Light.NoActionBar" />
 </resources>
 EOF
 
           # app/build.gradle.kts
-          cat << 'EOF' > app/build.gradle.kts
+          cat <<EOF > app/build.gradle.kts
 plugins {
   alias(libs.plugins.androidApplication)
   alias(libs.plugins.kotlinAndroid)
@@ -150,7 +150,7 @@ dependencies {
 EOF
 
           # MainActivity.kt
-          cat << 'EOF' > app/src/main/java/com/example/creator/MainActivity.kt
+          cat <<EOF > app/src/main/java/com/example/creator/MainActivity.kt
 package com.example.creator
 
 import android.content.Context
