@@ -1,4 +1,4 @@
-name: 🤖 AI Creates, Builds, and Uploads App (Final v23)
+name: 🤖 AI Creates, Builds, and Uploads App (Final v24)
 
 on:
   workflow_dispatch:
@@ -12,14 +12,6 @@ jobs:
       - name: 📦 Checkout Repository
         uses: actions/checkout@v4
       
-      - name: 🛠️ 1. Prepare Environment & Structure
-        run: |
-          sudo apt-get update && sudo apt-get install -y jq tree
-          mkdir -p app/src/main/java/com/example/creator
-          mkdir -p app/src/main/res/values
-          mkdir -p gradle
-          tree
-
       - name: ☕ Setup Java 17
         uses: actions/setup-java@v4
         with:
@@ -29,359 +21,58 @@ jobs:
 
       - name: 📱 Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          build-tools-version: '34.0.0'
+          ndk-version: '26.1.10909125'
+          cmake-version: '3.22.1'
+
+      - name: 🛠️ 1. Prepare Environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq tree unzip
+          mkdir -p app/src/main/java/com/example/creator
+          mkdir -p app/src/main/res/values
+          mkdir -p gradle
 
       - name: 🧠 2. Create All Project Files
         run: |
-          # 1. libs.versions.toml
+          echo "Creating project structure..."
+          
+          # 1. Create directories
+          mkdir -p app/src/main/res/{drawable,layout,values,mipmap-anydpi-v26}
+          mkdir -p app/src/test/java/com/example/creator
+          mkdir -p app/src/androidTest/java/com/example/creator
+          
+          # 2. Create minimal libs.versions.toml first
           cat << 'EOF' > gradle/libs.versions.toml
-          [versions]
-          agp = "8.2.0"
-          kotlin = "1.9.22"
-          coreKtx = "1.12.0"
-          activityCompose = "1.8.2"
-          composeBom = "2024.02.01"
-          junit = "4.13.2"
-          androidxTestExtJunit = "1.1.5"
-          espressoCore = "3.5.1"
+[versions]
+agp = "8.2.0"
+kotlin = "1.9.22"
+coreKtx = "1.12.0"
+activityCompose = "1.8.2"
+composeBom = "2024.02.01"
+junit = "4.13.2"
+androidxTestExtJunit = "1.1.5"
+espressoCore = "3.5.1"
 
-          [libraries]
-          androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-          androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-          androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-          androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
-          androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-          androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-          androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-          junit = { group = "junit", name = "junit", version.ref = "junit" }
-          androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExtJunit" }
-          androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExtJunit" }
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 
-          [plugins]
-          androidApplication = { id = "com.android.application", version.ref = "agp" }
-          kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-          EOF
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+EOF
 
-          # 2. settings.gradle.kts
-          cat << 'EOF' > settings.gradle.kts
-          pluginManagement {
-              repositories {
-                  gradlePluginPortal()
-                  google()
-                  mavenCentral()
-              }
-          }
-
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
-
-          rootProject.name = "flashlight-app"
-          include(":app")
-          EOF
-
-          # 3. gradle.properties
-          cat << 'EOF' > gradle.properties
-          android.useAndroidX=true
-          android.enableJetifier=true
-          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
-          kotlin.code.style=official
-          EOF
-
-          # 4. build.gradle.kts for app module (FIXED VERSION)
-          cat << 'EOF' > app/build.gradle.kts
-          plugins {
-              alias(libs.plugins.androidApplication)
-              alias(libs.plugins.kotlinAndroid)
-          }
-
-          android {
-              namespace = "com.example.creator"
-              compileSdk = 34
-
-              defaultConfig {
-                  applicationId = "com.example.creator"
-                  minSdk = 24
-                  targetSdk = 34
-                  versionCode = 1
-                  versionName = "1.0"
-              }
-
-              buildTypes {
-                  release {
-                      isMinifyEnabled = false
-                  }
-              }
-
-              buildFeatures {
-                  compose = true
-              }
-
-              composeOptions {
-                  kotlinCompilerExtensionVersion = "1.5.3"
-              }
-
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_17
-                  targetCompatibility = JavaVersion.VERSION_17
-              }
-              
-              kotlinOptions {
-                  jvmTarget = "17"
-              }
-          }
-
-          dependencies {
-              implementation(libs.androidx.core.ktx)
-              implementation(libs.androidx.activity.compose)
-              implementation(platform(libs.androidx.compose.bom))
-              implementation(libs.androidx.compose.ui)
-              implementation(libs.androidx.compose.ui.graphics)
-              implementation(libs.androidx.compose.ui.tooling.preview)
-              implementation(libs.androidx.compose.material3)
-              testImplementation(libs.junit)
-              androidTestImplementation(libs.androidx.test.ext.junit)
-              androidTestImplementation(libs.androidx.test.espresso.core)
-          }
-
-          kotlin {
-              jvmToolchain(17)
-          }
-          EOF
-
-          # 5. AndroidManifest.xml
-          cat << 'EOF' > app/src/main/AndroidManifest.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              
-              <uses-permission android:name="android.permission.CAMERA" />
-              <uses-permission android:name="android.permission.FLASHLIGHT" />
-              <uses-feature android:name="android.hardware.camera" android:required="true" />
-              <uses-feature android:name="android.hardware.camera.flash" android:required="true" />
-
-              <application
-                  android:allowBackup="true"
-                  android:label="@string/app_name"
-                  android:icon="@mipmap/ic_launcher"
-                  android:supportsRtl="true"
-                  android:theme="@style/Theme.Flashlight">
-                  
-                  <activity
-                      android:name=".MainActivity"
-                      android:exported="true"
-                      android:screenOrientation="portrait">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
-                  </activity>
-                  
-              </application>
-          </manifest>
-          EOF
-
-          # 6. themes.xml
-          cat << 'EOF' > app/src/main/res/values/themes.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <style name="Theme.Flashlight" parent="android:Theme.Material.Light.NoActionBar">
-                  <item name="android:windowBackground">@color/white</item>
-                  <item name="android:statusBarColor">@color/black</item>
-              </style>
-          </resources>
-          EOF
-
-          # 7. colors.xml
-          cat << 'EOF' > app/src/main/res/values/colors.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <color name="white">#FFFFFFFF</color>
-              <color name="black">#FF000000</color>
-              <color name="primary">#FF6200EE</color>
-              <color name="primary_dark">#FF3700B3</color>
-          </resources>
-          EOF
-
-          # 8. strings.xml
-          cat << 'EOF' > app/src/main/res/values/strings.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <string name="app_name">فلاشلايت ساطع</string>
-              <string name="turn_on">تشغيل</string>
-              <string name="turn_off">إطفاء</string>
-              <string name="flashlight">مصباح يدوي</string>
-          </resources>
-          EOF
-
-          # 9. MainActivity.kt - IMPROVED VERSION
-          cat << 'EOF' > app/src/main/java/com/example/creator/MainActivity.kt
-          package com.example.creator
-
-          import android.content.Context
-          import android.hardware.camera2.CameraManager
-          import android.os.Bundle
-          import android.widget.Toast
-          import androidx.activity.ComponentActivity
-          import androidx.activity.compose.setContent
-          import androidx.compose.foundation.background
-          import androidx.compose.foundation.layout.Box
-          import androidx.compose.foundation.layout.Column
-          import androidx.compose.foundation.layout.fillMaxSize
-          import androidx.compose.foundation.layout.padding
-          import androidx.compose.foundation.layout.size
-          import androidx.compose.material3.Button
-          import androidx.compose.material3.ButtonDefaults
-          import androidx.compose.material3.MaterialTheme
-          import androidx.compose.material3.Surface
-          import androidx.compose.material3.Text
-          import androidx.compose.runtime.Composable
-          import androidx.compose.runtime.LaunchedEffect
-          import androidx.compose.runtime.getValue
-          import androidx.compose.runtime.mutableStateOf
-          import androidx.compose.runtime.remember
-          import androidx.compose.runtime.setValue
-          import androidx.compose.ui.Alignment
-          import androidx.compose.ui.Modifier
-          import androidx.compose.ui.graphics.Color
-          import androidx.compose.ui.platform.LocalContext
-          import androidx.compose.ui.text.font.FontWeight
-          import androidx.compose.ui.tooling.preview.Preview
-          import androidx.compose.ui.unit.dp
-          import androidx.compose.ui.unit.sp
-          import androidx.core.content.ContextCompat
-
-          class MainActivity : ComponentActivity() {
-              override fun onCreate(savedInstanceState: Bundle?) {
-                  super.onCreate(savedInstanceState)
-                  setContent {
-                      MaterialTheme {
-                          Surface(
-                              modifier = Modifier.fillMaxSize(),
-                              color = MaterialTheme.colorScheme.background
-                          ) {
-                              FlashlightApp()
-                          }
-                      }
-                  }
-              }
-          }
-
-          @Composable
-          fun FlashlightApp() {
-              var isFlashlightOn by remember { mutableStateOf(false) }
-              val context = LocalContext.current
-              var hasFlash by remember { mutableStateOf(true) }
-              var errorMessage by remember { mutableStateOf<String?>(null) }
-
-              LaunchedEffect(Unit) {
-                  val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-                  if (!cameraManager.cameraIdList.any { id ->
-                          cameraManager.getCameraCharacteristics(id)
-                              .get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
-                      }) {
-                      hasFlash = false
-                      errorMessage = "جهازك لا يدعم الفلاش!"
-                  }
-              }
-
-              Column(
-                  modifier = Modifier
-                      .fillMaxSize()
-                      .background(if (isFlashlightOn) Color.Yellow else Color.Black),
-                  horizontalAlignment = Alignment.CenterHorizontally
-              ) {
-                  Text(
-                      text = if (isFlashlightOn) "💡 الضوء مشتعل" else "🔦 مصباح يدوي",
-                      color = if (isFlashlightOn) Color.Black else Color.White,
-                      fontSize = 32.sp,
-                      fontWeight = FontWeight.Bold,
-                      modifier = Modifier.padding(top = 100.dp, bottom = 50.dp)
-                  )
-
-                  Box(
-                      modifier = Modifier
-                          .size(200.dp)
-                          .background(
-                              if (isFlashlightOn) Color.Yellow.copy(alpha = 0.3f)
-                              else Color.Gray.copy(alpha = 0.2f)
-                          ),
-                      contentAlignment = Alignment.Center
-                  ) {
-                      Text(
-                          text = if (isFlashlightOn) "💡" else "🔦",
-                          fontSize = 80.sp
-                      )
-                  }
-
-                  Button(
-                      onClick = {
-                          if (hasFlash) {
-                              try {
-                                  val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-                                  val cameraId = cameraManager.cameraIdList.firstOrNull()
-                                  if (cameraId != null) {
-                                      isFlashlightOn = !isFlashlightOn
-                                      cameraManager.setTorchMode(cameraId, isFlashlightOn)
-                                  }
-                              } catch (e: Exception) {
-                                  errorMessage = "خطأ: ${e.message}"
-                                  isFlashlightOn = false
-                              }
-                          }
-                      },
-                      modifier = Modifier
-                          .padding(top = 50.dp)
-                          .size(width = 200.dp, height = 60.dp),
-                      colors = ButtonDefaults.buttonColors(
-                          containerColor = if (isFlashlightOn) Color.Red else Color.Green,
-                          contentColor = Color.White
-                      ),
-                      enabled = hasFlash
-                  ) {
-                      Text(
-                          text = if (isFlashlightOn) "إطفاء الضوء" else "تشغيل الضوء",
-                          fontSize = 20.sp,
-                          fontWeight = FontWeight.Bold
-                      )
-                  }
-
-                  if (!hasFlash) {
-                      Text(
-                          text = "⚠️ جهازك لا يدعم الفلاش!",
-                          color = Color.Red,
-                          modifier = Modifier.padding(top = 20.dp)
-                      )
-                  }
-
-                  errorMessage?.let {
-                      Text(
-                          text = it,
-                          color = Color.Red,
-                          modifier = Modifier.padding(top = 20.dp)
-                      )
-                  }
-              }
-          }
-
-          @Preview(showBackground = true)
-          @Composable
-          fun FlashlightAppPreview() {
-              FlashlightApp()
-          }
-          EOF
-
-          # 10. gradlew permissions
-          chmod +x gradlew
-
-          echo "✅ All project files created successfully!"
-
-      - name: 🏗️ 3. Generate Gradle Wrapper
-        run: |
-          echo "Setting up Gradle wrapper..."
-          gradle wrapper --gradle-version 8.6 --distribution-type bin
+          echo "✅ Created libs.versions.toml"
 
       - name: 🔄 Cache Dependencies
         uses: actions/cache@v4
@@ -389,63 +80,358 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          key: gradle-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml', 'gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             gradle-${{ runner.os }}-
 
-      - name: 🏗️ 4. Build APK
+      - name: 📝 3. Create Remaining Files
         run: |
-          echo "Java version:"
-          java -version
+          # Create remaining files AFTER cache step
           
-          echo "Gradle version:"
-          ./gradlew -v
-          
-          echo "Building APK..."
-          ./gradlew :app:assembleDebug --stacktrace --no-daemon
+          # settings.gradle.kts
+          cat << 'EOF' > settings.gradle.kts
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
 
-      - name: 📱 5. Create Emulator and Install APK (Optional)
-        if: success()
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          arch: x86_64
-          profile: pixel_4
-          disable-animations: false
-          script: |
-            echo "Installing APK..."
-            adb install app/build/outputs/apk/debug/app-debug.apk
-            echo "Starting app..."
-            adb shell am start -n com.example.creator/.MainActivity
-            sleep 10
-            echo "Taking screenshot..."
-            adb exec-out screencap -p > screenshot.png
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "flashlight-app"
+include(":app")
+EOF
+
+          # gradle.properties
+          cat << 'EOF' > gradle.properties
+android.useAndroidX=true
+android.enableJetifier=true
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+kotlin.code.style=official
+org.gradle.parallel=true
+org.gradle.caching=true
+org.gradle.daemon=true
+EOF
+
+          # gradle-wrapper.properties
+          cat << 'EOF' > gradle/wrapper/gradle-wrapper.properties
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.6-bin.zip
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+EOF
+
+          # app/build.gradle.kts
+          cat << 'EOF' > app/build.gradle.kts
+plugins {
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.kotlinAndroid)
+}
+
+android {
+    namespace = "com.example.creator"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "com.example.creator"
+        minSdk = 24
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+        
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            debuggable = true
+        }
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.11"
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+EOF
+
+          # AndroidManifest.xml
+          cat << 'EOF' > app/src/main/AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Flashlight"
+        android:icon="@mipmap/ic_launcher">
+        
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+    </application>
+</manifest>
+EOF
+
+          # Create simple resources
+          
+          # themes.xml
+          cat << 'EOF' > app/src/main/res/values/themes.xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Flashlight" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:navigationBarColor">@color/black</item>
+    </style>
+</resources>
+EOF
+
+          # colors.xml
+          cat << 'EOF' > app/src/main/res/values/colors.xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+</resources>
+EOF
+
+          # strings.xml
+          cat << 'EOF' > app/src/main/res/values/strings.xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Flashlight App</string>
+    <string name="turn_on">TURN ON</string>
+    <string name="turn_off">TURN OFF</string>
+</resources>
+EOF
+
+          # Create launcher icon (minimal)
+          cat << 'EOF' > app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/purple_500"/>
+    <foreground android:drawable="@drawable/ic_launcher_foreground"/>
+</adaptive-icon>
+EOF
+
+          cat << 'EOF' > app/src/main/res/drawable/ic_launcher_foreground.xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,27L63,45L81,45L67,57L76,75L54,63L32,75L41,57L27,45L45,45Z"/>
+</vector>
+EOF
+
+          # Simplified MainActivity.kt
+          cat << 'EOF' > app/src/main/java/com/example/creator/MainActivity.kt
+package com.example.creator
+
+import android.content.Context
+import android.hardware.camera2.CameraManager
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MaterialTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    FlashlightApp()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun FlashlightApp() {
+    var isFlashlightOn by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(if (isFlashlightOn) Color.Yellow else Color.Black),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = if (isFlashlightOn) "🔦 ON" else "🔦 OFF",
+            color = if (isFlashlightOn) Color.Black else Color.White,
+            fontSize = 40.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 40.dp)
+        )
+        
+        Button(
+            onClick = {
+                try {
+                    val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                    val cameraId = cameraManager.cameraIdList.firstOrNull()
+                    if (cameraId != null) {
+                        isFlashlightOn = !isFlashlightOn
+                        cameraManager.setTorchMode(cameraId, isFlashlightOn)
+                    }
+                } catch (e: Exception) {
+                    // Handle error silently in production
+                    isFlashlightOn = false
+                }
+            },
+            modifier = Modifier
+                .size(width = 200.dp, height = 80.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (isFlashlightOn) Color.Red else Color.Green,
+                contentColor = Color.White
+            )
+        ) {
+            Text(
+                text = if (isFlashlightOn) "TURN OFF" else "TURN ON",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+EOF
+
+          echo "✅ All project files created!"
+
+      - name: 🏗️ 4. Generate Gradle Wrapper
+        run: |
+          chmod +x gradlew || true
+          if [ ! -f "gradlew" ]; then
+            echo "Creating gradlew wrapper..."
+            gradle wrapper --gradle-version 8.6 --distribution-type bin
+          fi
+          
+          # Make sure wrapper is executable
+          chmod +x gradlew
+
+      - name: 🧪 5. Build APK
+        run: |
+          echo "=== System Information ==="
+          echo "Java:"
+          java -version
+          echo ""
+          echo "Android SDK:"
+          sdkmanager --list | head -20
+          echo ""
+          echo "Building APK..."
+          
+          # Clean and build
+          ./gradlew clean
+          ./gradlew :app:assembleDebug --stacktrace --no-daemon
 
       - name: 📤 6. Upload APK Artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: flashlight-app-apk
+          name: flashlight-app
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 7
+          if-no-files-found: error
 
-      - name: 📸 7. Upload Screenshot (Optional)
-        if: success() && steps.emulator.outcome == 'success'
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-screenshot
-          path: screenshot.png
-          retention-days: 7
-
-      - name: 📋 8. Build Summary
+      - name: 📋 7. Build Report
         if: always()
         run: |
-          echo "=== BUILD SUMMARY ==="
-          echo "Build Date: $(date)"
-          echo "Build Status: ${{ job.status }}"
+          echo "=== BUILD REPORT ==="
+          echo "Workflow: ${{ github.workflow }}"
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Status: ${{ job.status }}"
+          echo "Time: $(date)"
+          
           if [ -f "app/build/outputs/apk/debug/app-debug.apk" ]; then
-            echo "APK Size: $(ls -lh app/build/outputs/apk/debug/app-debug.apk | awk '{print $5}')"
-            echo "APK Location: app/build/outputs/apk/debug/app-debug.apk"
+            APK_SIZE=$(ls -lh app/build/outputs/apk/debug/app-debug.apk | awk '{print $5}')
+            echo "✅ APK built successfully!"
+            echo "📦 APK Size: $APK_SIZE"
+            echo "📍 Location: app/build/outputs/apk/debug/app-debug.apk"
           else
-            echo "APK not found!"
+            echo "❌ APK not found!"
+            echo "Listing build directory:"
+            ls -la app/build/outputs/apk/ || true
           fi
+          
+          echo "=== Memory Usage ==="
+          free -h
