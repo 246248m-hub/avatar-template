@@ -1,4 +1,4 @@
-name: 🤖 AI Creates, Builds, and Uploads App (Final v17)
+name: 🤖 AI Creates, Builds, and Uploads App (Final v18)
 
 on:
   workflow_dispatch:
@@ -65,6 +65,14 @@ jobs:
 
           rootProject.name = "avatar-template"
           include(":app")
+          EOF
+
+          # gradle.properties
+          cat << 'EOF' > gradle.properties
+          android.useAndroidX=true
+          android.enableJetifier=true
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          kotlin.code.style=official
           EOF
 
           # build.gradle.kts for app module
