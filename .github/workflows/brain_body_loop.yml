@@ -1,10 +1,10 @@
-name: 🤖 AI Creates, Builds, Signs, Runs, and Uploads App (Final v30)
+name: 🤖 AI Creates, Builds, Signs, and Uploads App (Final v30 - Fixed)
 
 on:
   workflow_dispatch:
 
 jobs:
-  create_build_sign_run_and_upload:
+  create_build_sign_and_upload:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -17,6 +17,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'gradle'
 
       - name: 📱 Setup Android SDK
         uses: android-actions/setup-android@v3
@@ -33,232 +34,194 @@ jobs:
 
       - name: 🧠 Create Project Files
         run: |
-          # libs.versions.toml
-          cat <<EOF > gradle/libs.versions.toml
-[versions]
-agp = "8.2.0"
-kotlin = "1.9.22"
-coreKtx = "1.12.0"
-activityCompose = "1.8.2"
-composeBom = "2024.02.01"
-junit = "4.13.2"
-androidxTestExtJunit = "1.1.5"
-espressoCore = "3.5.1"
+          # 1. Create libs.versions.toml (لاحظ الإزاحة هنا!)
+          cat << 'EOF' > gradle/libs.versions.toml
+          [versions]
+          agp = "8.2.0"
+          kotlin = "1.9.22"
+          coreKtx = "1.12.0"
+          activityCompose = "1.8.2"
+          composeBom = "2024.02.01"
+          junit = "4.13.2"
+          androidxTestExtJunit = "1.1.5"
+          espressoCore = "3.5.1"
 
-[libraries]
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
-androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExtJunit" }
-androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+          [libraries]
+          androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+          androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+          androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+          androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+          androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+          androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+          androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+          junit = { group = "junit", name = "junit", version.ref = "junit" }
+          androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExtJunit" }
+          androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 
-[plugins]
-androidApplication = { id = "com.android.application", version.ref = "agp" }
-kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-EOF
+          [plugins]
+          androidApplication = { id = "com.android.application", version.ref = "agp" }
+          kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+          EOF
 
-          # settings.gradle.kts
-          cat <<EOF > settings.gradle.kts
-pluginManagement {
-  repositories { gradlePluginPortal(); google(); mavenCentral() }
-}
-dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories { google(); mavenCentral() }
-}
-rootProject.name = "flashlight-app"
-include(":app")
-EOF
+          # 2. Create KeyStore (ضروري للتوقيع)
+          keytool -genkey -v -keystore keystore.jks -keyalg RSA -keysize 2048 -validity 10000 \
+            -alias flashlight -storepass android -keypass android \
+            -dname "CN=Example, OU=ID, O=Org, L=City, S=State, C=US"
 
-          # gradle.properties
-          cat <<EOF > gradle.properties
-android.useAndroidX=true
-android.enableJetifier=true
-org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
-EOF
+          # 3. Create signing.properties
+          cat << 'EOF' > signing.properties
+          storeFile=keystore.jks
+          storePassword=android
+          keyAlias=flashlight
+          keyPassword=android
+          EOF
 
-          # signing.properties (مفاتيح افتراضية للتوقيع)
-          cat <<EOF > signing.properties
-storeFile=keystore.jks
-storePassword=android
-keyAlias=flashlight
-keyPassword=android
-EOF
+          # 4. Create settings.gradle.kts
+          cat << 'EOF' > settings.gradle.kts
+          pluginManagement { repositories { gradlePluginPortal(); google(); mavenCentral() } }
+          dependencyResolutionManagement {
+            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+            repositories { google(); mavenCentral() }
+          }
+          rootProject.name = "flashlight-app"
+          include(":app")
+          EOF
 
-          # AndroidManifest.xml
-          cat <<EOF > app/src/main/AndroidManifest.xml
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-permission android:name="android.permission.CAMERA" />
-    <application android:label="Flashlight" android:theme="@style/Theme.Flashlight">
-        <activity android:name=".MainActivity" android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    </application>
-</manifest>
-EOF
+          # 5. Create AndroidManifest.xml
+          cat << 'EOF' > app/src/main/AndroidManifest.xml
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.CAMERA" />
+              <application android:label="Flashlight" android:theme="@style/Theme.Flashlight">
+                  <activity android:name=".MainActivity" android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
 
-          # themes.xml
-          cat <<EOF > app/src/main/res/values/themes.xml
-<resources>
-    <style name="Theme.Flashlight" parent="@android:style/Theme.Material.Light.NoActionBar" />
-</resources>
-EOF
+          # 6. Create themes.xml
+          cat << 'EOF' > app/src/main/res/values/themes.xml
+          <resources>
+              <style name="Theme.Flashlight" parent="@android:style/Theme.Material.Light.NoActionBar" />
+          </resources>
+          EOF
 
-          # app/build.gradle.kts
-          cat <<EOF > app/build.gradle.kts
-plugins {
-  alias(libs.plugins.androidApplication)
-  alias(libs.plugins.kotlinAndroid)
-}
-
-android {
-  namespace = "com.example.creator"
-  compileSdk = 34
-
-  defaultConfig {
-    applicationId = "com.example.creator"
-    minSdk = 24
-    targetSdk = 34
-    versionCode = 1
-    versionName = "1.0"
-  }
-
-  signingConfigs {
-    release {
-      val props = java.util.Properties()
-      val file = rootProject.file("signing.properties")
-      if (file.exists()) {
-        props.load(java.io.FileInputStream(file))
-      }
-      storeFile = rootProject.file(props["storeFile"] as String)
-      storePassword = props["storePassword"] as String
-      keyAlias = props["keyAlias"] as String
-      keyPassword = props["keyPassword"] as String
-    }
-  }
-
-  buildTypes {
-    release {
-      isMinifyEnabled = false
-      signingConfig = signingConfigs.getByName("release")
-    }
-    debug {
-      signingConfig = signingConfigs.getByName("release")
-    }
-  }
-
-  buildFeatures { compose = true }
-
-  composeOptions {
-    kotlinCompilerExtensionVersion = "1.5.3"
-  }
-
-  compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-  }
-
-  kotlinOptions { jvmTarget = "17" }
-}
-
-dependencies {
-  implementation(libs.androidx.core.ktx)
-  implementation(libs.androidx.activity.compose)
-  implementation(platform(libs.androidx.compose.bom))
-  implementation(libs.androidx.compose.ui)
-  implementation(libs.androidx.compose.ui.graphics)
-  implementation(libs.androidx.compose.ui.tooling.preview)
-  implementation(libs.androidx.compose.material3)
-}
-EOF
-
-          # MainActivity.kt
-          cat <<EOF > app/src/main/java/com/example/creator/MainActivity.kt
-package com.example.creator
-
-import android.content.Context
-import android.hardware.camera2.CameraManager
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MaterialTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    FlashlightApp()
-                }
+          # 7. Create app/build.gradle.kts
+          cat << 'EOF' > app/build.gradle.kts
+          plugins {
+            alias(libs.plugins.androidApplication)
+            alias(libs.plugins.kotlinAndroid)
+          }
+          android {
+            namespace = "com.example.creator"
+            compileSdk = 34
+            defaultConfig {
+              applicationId = "com.example.creator"
+              minSdk = 24
+              targetSdk = 34
+              versionCode = 1
+              versionName = "1.0"
             }
-        }
-    }
-}
+            signingConfigs {
+              create("release") {
+                val props = java.util.Properties()
+                val file = rootProject.file("signing.properties")
+                if (file.exists()) props.load(java.io.FileInputStream(file))
+                storeFile = rootProject.file(props["storeFile"] as String)
+                storePassword = props["storePassword"] as String
+                keyAlias = props["keyAlias"] as String
+                keyPassword = props["keyPassword"] as String
+              }
+            }
+            buildTypes {
+              getByName("release") {
+                isMinifyEnabled = false
+                signingConfig = signingConfigs.getByName("release")
+              }
+              getByName("debug") {
+                signingConfig = signingConfigs.getByName("release")
+              }
+            }
+            buildFeatures { compose = true }
+            composeOptions { kotlinCompilerExtensionVersion = "1.5.11" }
+            compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
+            kotlinOptions { jvmTarget = "17" }
+          }
+          dependencies {
+            implementation(libs.androidx.core.ktx)
+            implementation(libs.androidx.activity.compose)
+            implementation(platform(libs.androidx.compose.bom))
+            implementation(libs.androidx.compose.ui)
+            implementation(libs.androidx.compose.ui.graphics)
+            implementation(libs.androidx.compose.ui.tooling.preview)
+            implementation(libs.androidx.compose.material3)
+          }
+          EOF
 
-@Composable
-fun FlashlightApp() {
-    var isFlashlightOn by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+          # 8. Create MainActivity.kt
+          cat << 'EOF' > app/src/main/java/com/example/creator/MainActivity.kt
+          package com.example.creator
+          import android.content.Context
+          import android.hardware.camera2.CameraManager
+          import android.os.Bundle
+          import androidx.activity.ComponentActivity
+          import androidx.activity.compose.setContent
+          import androidx.compose.foundation.background
+          import androidx.compose.foundation.layout.*
+          import androidx.compose.material3.*
+          import androidx.compose.runtime.*
+          import androidx.compose.ui.Alignment
+          import androidx.compose.ui.Modifier
+          import androidx.compose.ui.graphics.Color
+          import androidx.compose.ui.platform.LocalContext
+          import androidx.compose.ui.text.font.FontWeight
+          import androidx.compose.ui.unit.dp
+          import androidx.compose.ui.unit.sp
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(if (isFlashlightOn) Color.Yellow else Color.Black),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = if (isFlashlightOn) "🔦 ON" else "🔦 OFF",
-            color = if (isFlashlightOn) Color.Black else Color.White,
-            fontSize = 40.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 40.dp)
-        )
+          class MainActivity : ComponentActivity() {
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  setContent {
+                      MaterialTheme { Surface(modifier = Modifier.fillMaxSize()) { FlashlightApp() } }
+                  }
+              }
+          }
 
-        Button(
-            onClick = {
-                try {
-                    val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-                    val cameraId = cameraManager.cameraIdList.firstOrNull()
-                    if (cameraId != null) {
-                        isFlashlightOn = !isFlashlightOn
-                        cameraManager.setTorchMode(cameraId, isFlashlightOn)
-                    }
-                } catch (e: Exception) {
-                    isFlashlightOn = false
-                }
-            },
-            modifier = Modifier.size(width = 200.dp, height = 80.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (isFlashlightOn) Color.Red else Color.Green
-            )
-        ) {
-            Text(if (isFlashlightOn) "TURN OFF" else "TURN ON")
-        }
-    }
-}
-EOF
+          @Composable
+          fun FlashlightApp() {
+              var isOn by remember { mutableStateOf(false) }
+              val context = LocalContext.current
+              Column(
+                  modifier = Modifier.fillMaxSize().background(if (isOn) Color.Yellow else Color.Black),
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  verticalArrangement = Arrangement.Center
+              ) {
+                  Text(if (isOn) "🔦 ON" else "🔦 OFF", color = if (isOn) Color.Black else Color.White, fontSize = 40.sp)
+                  Spacer(modifier = Modifier.height(40.dp))
+                  Button(onClick = {
+                      try {
+                          val cm = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                          val id = cm.cameraIdList[0]
+                          isOn = !isOn
+                          cm.setTorchMode(id, isOn)
+                      } catch (e: Exception) { isOn = false }
+                  }) { Text(if (isOn) "TURN OFF" else "TURN ON") }
+              }
+          }
+          EOF
 
       - name: 🏗️ Build Signed APK
         run: |
           gradle wrapper --gradle-version 8.6
-          chmod +x
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: 📤 Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: flashlight-signed-app
+          path: app/build/outputs/apk/release/app-release.apk
+
