@@ -1,4 +1,4 @@
-name: 🤖 AI Creates, Builds, Signs, and Uploads App (Final v31)
+name: 🤖 AI Creates, Builds, Signs, and Uploads App (Final v32)
 
 on:
   workflow_dispatch:
@@ -12,14 +12,20 @@ jobs:
       - name: 📦 1. Checkout Repository
         uses: actions/checkout@v4
 
-      # انقل خطوة إنشاء الملفات إلى هنا (قبل الجافا)
-      - name: 🛠 2. Prepare & Create Project Files
+      - name: ☕ 2. Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 🏗️ 3. Initialize Project & Build
         run: |
+          # أ- إنشاء هيكل المجلدات
+          mkdir -p gradle
           mkdir -p app/src/main/java/com/example/creator
           mkdir -p app/src/main/res/values
-          mkdir -p gradle
-          
-          # إنشاء libs.versions.toml أولاً لكي يراها الأكشن في الخطوة التالية
+
+          # ب- إنشاء ملف libs.versions.toml (تأكد من الإزاحة بـ 10 مسافات)
           cat << 'EOF' > gradle/libs.versions.toml
           [versions]
           agp = "8.2.0"
@@ -27,9 +33,6 @@ jobs:
           coreKtx = "1.12.0"
           activityCompose = "1.8.2"
           composeBom = "2024.02.01"
-          junit = "4.13.2"
-          androidxTestExtJunit = "1.1.5"
-          espressoCore = "3.5.1"
 
           [libraries]
           androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,42 +42,112 @@ jobs:
           androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
           androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
           androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-          junit = { group = "junit", name = "junit", version.ref = "junit" }
-          androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExtJunit" }
-          androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 
           [plugins]
           androidApplication = { id = "com.android.application", version.ref = "agp" }
           kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
           EOF
 
-          # بقية الملفات (AndroidManifest, MainActivity, build.gradle...)
-          # تأكد من إضافة كل ملفات الـ cat << 'EOF' هنا كما في النسخ السابقة
+          # ج- إنشاء ملف settings.gradle.kts في المجلد الرئيسي
+          cat << 'EOF' > settings.gradle.kts
+          pluginManagement { repositories { gradlePluginPortal(); google(); mavenCentral() } }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories { google(); mavenCentral() }
+          }
+          rootProject.name = "flashlight-app"
+          include(":app")
+          EOF
 
-      - name: ☕ 3. Setup Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'gradle' # الآن سيجد الملفات ولن يظهر الخطأ
+          # د- إنشاء ملف build.gradle.kts للتطبيق
+          cat << 'EOF' > app/build.gradle.kts
+          plugins {
+              alias(libs.plugins.androidApplication)
+              alias(libs.plugins.kotlinAndroid)
+          }
+          android {
+              namespace = "com.example.creator"
+              compileSdk = 34
+              defaultConfig {
+                  applicationId = "com.example.creator"
+                  minSdk = 24
+                  targetSdk = 34
+                  versionCode = 1
+                  versionName = "1.0"
+              }
+              signingConfigs {
+                  create("release") {
+                      storeFile = rootProject.file("keystore.jks")
+                      storePassword = "password"
+                      keyAlias = "myalias"
+                      keyPassword = "password"
+                  }
+              }
+              buildTypes {
+                  release {
+                      isMinifyEnabled = false
+                      signingConfig = signingConfigs.getByName("release")
+                  }
+              }
+              buildFeatures { compose = true }
+              composeOptions { kotlinCompilerExtensionVersion = "1.5.10" }
+              compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
+              kotlinOptions { jvmTarget = "17" }
+          }
+          dependencies {
+              implementation(libs.androidx.core.ktx)
+              implementation(libs.androidx.activity.compose)
+              implementation(platform(libs.androidx.compose.bom))
+              implementation(libs.androidx.compose.ui)
+              implementation(libs.androidx.compose.ui.graphics)
+              implementation(libs.androidx.compose.material3)
+          }
+          EOF
 
-      - name: 📱 4. Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          build-tools-version: '34.0.0'
+          # هـ- إنشاء الكود البرمجي (MainActivity)
+          cat << 'EOF' > app/src/main/java/com/example/creator/MainActivity.kt
+          package com.example.creator
+          import android.os.Bundle
+          import androidx.activity.ComponentActivity
+          import androidx.activity.compose.setContent
+          import androidx.compose.material3.Text
+          class MainActivity : ComponentActivity() {
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  setContent { Text("Flashlight App Ready") }
+              }
+          }
+          EOF
 
-      - name: 🏗️ 5. Build Signed APK
-        run: |
-          # توليد الـ Keystore لو لم يكن موجوداً
+          # و- إنشاء ملف Manifest بسيط
+          cat << 'EOF' > app/src/main/AndroidManifest.xml
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <application android:label="Flashlight">
+                  <activity android:name=".MainActivity" android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          # ز- توليد الـ Keystore
           keytool -genkey -v -keystore keystore.jks -keyalg RSA -keysize 2048 -validity 10000 \
-            -alias flashlight -storepass android -keypass android \
+            -alias myalias -storepass password -keypass password \
             -dname "CN=Example, OU=ID, O=Org, L=City, S=State, C=US"
-          
+
+          # ح- فحص وجود الملفات قبل البناء (للإصلاح)
+          echo "Checking directory structure:"
+          ls -R
+
+          # ط- تنفيذ البناء
           gradle wrapper --gradle-version 8.6
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      - name: 📤 6. Upload APK
+      - name: 📤 4. Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: flashlight-signed-app
