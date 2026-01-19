@@ -1,157 +1,113 @@
-name: 🚀 Atomic_Installer_v75_SafeMode
+name: 🔗 Atomic_Linker_AI_v80
 
 on:
   workflow_dispatch:
+    inputs:
+      prompt:
+        description: 'ماذا تريد أن يصنع لك المحرك؟ (مثلاً: Flashlight App أو 3D Game)'
+        required: true
+        default: 'Flashlight App'
 
 jobs:
-  build_apk:
+  sculpt_and_build:
     runs-on: ubuntu-latest
     steps:
       - name: 📦 1. Checkout
         uses: actions/checkout@v4
 
-      - name: ☕ 2. Setup Java 17
+      - name: 🧠 2. AI Brain Processing (Prompt Analysis)
+        run: |
+          echo "تحليل البرومبت: ${{ github.event.inputs.prompt }}"
+          # هنا المحرك يقرأ البرومبت ويحدد "جينات" التطبيق
+          if [[ "${{ github.event.inputs.prompt }}" == *"Flash"* ]] || [[ "${{ github.event.inputs.prompt }}" == *"فلاش"* ]]; then
+            echo "MODE=FLASH" >> $GITHUB_ENV
+          else
+            echo "MODE=GENERIC" >> $GITHUB_ENV
+          fi
+
+      - name: ☕ 3. Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🏗️ 3. Structure Project
+      - name: 🏗️ 4. Structure Linked Project
         run: |
-          mkdir -p app/src/main/java/com/atomic/engine
-          mkdir -p app/src/main/res/layout
-          mkdir -p app/src/main/res/xml
+          mkdir -p app/src/main/java/com/atomic/linker
           mkdir -p app/src/main/res/values
-
+          
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
           echo "include ':app'" > settings.gradle
-          
+
           cat << 'EOF' > build.gradle
-          buildscript {
-              repositories { google(); mavenCentral() }
-              dependencies {
-                  classpath 'com.android.tools.build:gradle:8.1.0'
-                  classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10'
-              }
+          plugins {
+              id 'com.android.application' version '8.1.0' apply false
+              id 'org.jetbrains.kotlin.android' version '1.8.10' apply false
           }
-          allprojects { repositories { google(); mavenCentral() } }
           EOF
 
           cat << 'EOF' > app/build.gradle
-          plugins { id 'com.android.application'; id 'kotlin-android' }
+          plugins { id 'com.android.application'; id 'org.jetbrains.kotlin.android' }
           android {
-              namespace "com.atomic.engine"
+              namespace "com.atomic.linker"
               compileSdk 33
-              defaultConfig {
-                  applicationId "com.atomic.engine"
-                  minSdk 24
-                  targetSdk 33
-                  versionCode 75
-                  versionName "75.0"
-              }
-              compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
-              kotlinOptions { jvmTarget = '17' }
+              defaultConfig { applicationId "com.atomic.linker"; minSdk 24; targetSdk 33; versionCode 80; versionName "80.0" }
           }
-          dependencies {
-              implementation 'androidx.core:core-ktx:1.10.1'
-              implementation 'androidx.appcompat:appcompat:1.6.1'
-              implementation 'com.google.android.material:material:1.9.0'
-          }
+          dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' }
           EOF
 
-      - name: 📝 4. Inject Ultra-Safe Logic
+      - name: 📝 5. Dynamic Code Injection (The Sculpting)
         run: |
-          cat << 'EOF' > app/src/main/res/xml/file_paths.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <paths>
-              <external-path name="external_files" path="."/>
-          </paths>
-          EOF
+          # حقن المانيفست بناءً على الوضع المختار
+          if [ "$MODE" = "FLASH" ]; then
+            PERM="<uses-permission android:name='android.permission.CAMERA' />"
+            LABEL="Atomic Flash AI"
+          else
+            PERM=""
+            LABEL="Atomic Generic AI"
+          fi
 
-          cat << 'EOF' > app/src/main/AndroidManifest.xml
+          cat << EOF > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
-              <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
-              <application android:label="Atomic v75" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-                  <activity android:name="com.atomic.engine.MainActivity" android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
+              $PERM
+              <application android:label="$LABEL" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+                  <activity android:name="com.atomic.linker.MainActivity" android:exported="true">
+                      <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
                   </activity>
-                  <provider
-                      android:name="androidx.core.content.FileProvider"
-                      android:authorities="com.atomic.engine.fileprovider"
-                      android:exported="false"
-                      android:grantUriPermissions="true">
-                      <meta-data android:name="android.support.FILE_PATHS" android:resource="@xml/file_paths" />
-                  </provider>
               </application>
           </manifest>
           EOF
 
-          cat << 'EOF' > app/src/main/java/com/atomic/engine/MainActivity.kt
-          package com.atomic.engine
-          import android.content.Intent
-          import android.net.Uri
-          import android.os.*
-          import android.provider.Settings
+          # حقن كود الـ Activity ديناميكياً
+          cat << 'EOF' > app/src/main/java/com/atomic/linker/MainActivity.kt
+          package com.atomic.linker
+          import android.os.Bundle
           import android.widget.*
           import androidx.appcompat.app.AppCompatActivity
-          import androidx.core.content.FileProvider
-          import java.io.*
+          import android.graphics.Color
 
           class MainActivity : AppCompatActivity() {
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
-                  
                   val layout = LinearLayout(this).apply {
                       orientation = LinearLayout.VERTICAL
-                      setBackgroundColor(0xFF121212.toInt())
-                      setPadding(50, 50, 50, 50)
+                      setBackgroundColor(Color.DKGRAY)
+                      gravity = android.view.Gravity.CENTER
                   }
-                  
                   val tv = TextView(this).apply { 
-                      text = "⚛️ Atomic Installer v75\nStatus: STANDBY (Waiting for Files)\n"
-                      setTextColor(0xFF00FF00.toInt()) 
+                      text = "تم نحت هذا التطبيق من البرومبت:\n${{ github.event.inputs.prompt }}"
+                      setTextColor(Color.WHITE)
+                      textSize = 18f
+                      setPadding(20,20,20,20)
                   }
-                  
-                  val btnPerm = Button(this).apply { text = "1. إعطاء صلاحية الملفات" }
-                  val btnInstall = Button(this).apply { text = "2. نحت وتثبيت (يحتاج brain.bin)" }
-                  
-                  layout.addView(tv); layout.addView(btnPerm); layout.addView(btnInstall)
+                  layout.addView(tv)
                   setContentView(layout)
-
-                  btnPerm.setOnClickListener {
-                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                          val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                          intent.data = Uri.parse("package:" + packageName)
-                          startActivity(intent)
-                      } else { Toast.makeText(this, "هاتفك لا يحتاج هذه الصلاحية", Toast.LENGTH_SHORT).show() }
-                  }
-
-                  btnInstall.setOnClickListener {
-                      val projectDir = File(Environment.getExternalStorageDirectory(), "AI_Project")
-                      if (!projectDir.exists()) projectDir.mkdirs()
-                      
-                      val brain = File(projectDir, "brain.bin")
-                      
-                      if (!brain.exists()) {
-                          tv.append("\n❌ ملف brain.bin غير موجود في AI_Project!")
-                          tv.append("\nيرجى تحميل الملفات الـ 25 ودمجها أولاً.")
-                      } else {
-                          try {
-                              tv.append("\n⚙️ جاري النحت...")
-                              // كود النحت...
-                          } catch (e: Exception) { tv.append("\n⚠️ خطأ: ${e.message}") }
-                      }
-                  }
               }
           }
           EOF
 
-      - name: 🛠️ 5. Build APK
+      - name: 🛠️ 6. Final Build Execution
         run: |
           wget -q https://services.gradle.org/distributions/gradle-8.1-bin.zip
           unzip -q gradle-8.1-bin.zip
@@ -159,8 +115,8 @@ jobs:
           chmod +x gradlew
           ./gradlew :app:assembleDebug --no-daemon
 
-      - name: 📤 6. Export
+      - name: 📤 7. Export Linked APK
         uses: actions/upload-artifact@v4
         with:
-          name: Atomic-Installer-v75
+          name: Linked-AI-App
           path: app/build/outputs/apk/debug/*.apk
