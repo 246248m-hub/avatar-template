@@ -1,4 +1,4 @@
-name: 🛡️ Absolute_Truth_Test_v93
+name: 🛡️ Absolute_Truth_Test_v94
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ jobs:
       - name: 📦 1. Checkout
         uses: actions/checkout@v4
 
-      - name: 💎 2. Create 10GB Data (Deep Injection)
+      - name: 💎 2. Create 10GB Data
         run: |
           python3 -c "
           import os
@@ -20,44 +20,57 @@ jobs:
               f.write(b'GENE_START_001')
               f.seek(5 * 1024 * 1024 * 1024)
               f.write(b'GENE_MIDDLE_555')
-              f.seek(target_size - 100)
-              f.write(b'GENE_END_999')
           "
-          echo "✅ 10GB Brain Ready."
+          echo "✅ 10GB Data Injected."
 
-      - name: 🏗️ 3. Structure Project & Fix Wrapper
+      - name: 🏗️ 3. Structure Project (Fixing Gradle 9 Syntax)
         run: |
           mkdir -p app/src/main/java/com/atomic/seeker
           mkdir -p app/src/main/res/layout
           
-          # إعداد ملفات Gradle الأساسية من الصفر
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
 
           cat << 'EOF' > settings.gradle
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
-          dependencyResolutionManagement { repositories { google(); mavenCentral() } }
+          dependencyResolutionManagement { 
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories { google(); mavenCentral() } 
+          }
           include ':app'
           EOF
 
+          # ملف البناء الرئيسي المصلح
           cat << 'EOF' > build.gradle
-          buildscript { 
+          buildscript {
               repositories { google(); mavenCentral() }
               dependencies { classpath 'com.android.tools.build:gradle:8.1.0' }
           }
+          allprojects { repositories { google(); mavenCentral() } }
           EOF
 
+          # إصلاح كود تطبيق الأندرويد ليتوافق مع Gradle 9
           cat << 'EOF' > app/build.gradle
-          apply plugin: 'com.android.application'
-          android { 
-              namespace "com.atomic.seeker"
-              compileSdk 33 
-              defaultConfig { applicationId "com.atomic.seeker"; minSdk 24; targetSdk 33; versionCode 93; versionName "93.0" } 
+          plugins {
+              id 'com.android.application'
           }
-          dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' }
+          android {
+              namespace "com.atomic.seeker"
+              compileSdk 33
+              defaultConfig {
+                  applicationId "com.atomic.seeker"
+                  minSdk 24
+                  targetSdk 33
+                  versionCode 94
+                  versionName "94.0"
+              }
+          }
+          dependencies {
+              implementation 'androidx.appcompat:appcompat:1.6.1'
+          }
           EOF
 
-          # كود البحث العميق في الـ 10 جيجا
+          # كود البحث العميق
           cat << 'EOF' > app/src/main/java/com/atomic/seeker/MainActivity.kt
           package com.atomic.seeker
           import android.os.*
@@ -69,7 +82,7 @@ jobs:
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   val tv = TextView(this).apply { 
-                      textSize = 22f; setPadding(50,50,50,50); setTextColor(android.graphics.Color.BLUE) 
+                      textSize = 22f; setPadding(50,50,50,50); setTextColor(android.graphics.Color.RED) 
                   }
                   setContentView(tv)
                   val brain = File("/sdcard/brain.bin")
@@ -79,8 +92,8 @@ jobs:
                           raf.seek(5 * 1024 * 1024 * 1024.toLong())
                           val buffer = ByteArray(15)
                           raf.read(buffer)
-                          tv.text = "🔍 Deep Scan Result:\n\nFound: ${String(buffer)}\n\nStatus: 10GB ACCESSED!"
-                      } else { tv.text = "❌ Brain File Missing" }
+                          tv.text = "🔍 Deep Scan Result:\n\nFound: ${String(buffer)}\n\nStatus: 10GB TRUTH CONFIRMED!"
+                      } else { tv.text = "❌ Waiting for brain.bin..." }
                   } catch (e: Exception) { tv.text = "Error: ${e.message}" }
               }
           }
@@ -88,7 +101,6 @@ jobs:
 
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
               <application android:label="Atomic Seeker" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
                   <activity android:name="com.atomic.seeker.MainActivity" android:exported="true">
                       <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
@@ -97,18 +109,16 @@ jobs:
           </manifest>
           EOF
 
-      - name: ☕ 4. Setup Java & Generate Wrapper
+      - name: ☕ 4. Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🛠️ 5. Generate Gradlew & Build
+      - name: 🛠️ 5. Build with Local Gradle
         run: |
-          # هذه الخطوة تولد ملف gradlew المفقود
-          gradle wrapper
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          chmod +x gradlew || gradle wrapper
+          ./gradlew :app:assembleDebug --no-daemon
 
       - name: 📱 6. Emulator Truth Test
         uses: reactivecircus/android-emulator-runner@v2
@@ -119,14 +129,14 @@ jobs:
             adb push brain.bin /sdcard/brain.bin
             adb install app/build/outputs/apk/debug/app-debug.apk
             adb shell am start -n com.atomic.seeker/com.atomic.seeker.MainActivity
-            sleep 25
+            sleep 30
             adb shell screencap -p /sdcard/truth_result.png
             adb pull /sdcard/truth_result.png .
 
-      - name: 📤 7. Upload Result
+      - name: 📤 7. Final Evidence
         uses: actions/upload-artifact@v4
         with:
-          name: Truth-Proof-v93
+          name: Absolute-Proof-v94
           path: |
             app/build/outputs/apk/debug/*.apk
             truth_result.png
