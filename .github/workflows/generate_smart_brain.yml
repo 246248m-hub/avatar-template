@@ -1,21 +1,21 @@
-name: 🚀 PHOENIX_BINARY_INJECTOR
+name: 🧠 PHOENIX_BRAIN_FILLER
 
 on:
   workflow_dispatch:
 
 jobs:
-  generate_binary_logic:
+  fill_brain:
     runs-on: ubuntu-latest
     steps:
-      - name: 📦 1. Checkout
+      - name: 📦 Checkout
         uses: actions/checkout@v4
 
-      - name: 🐍 2. Setup Python
+      - name: 🐍 Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: 🧠 3. Transform Knowledge to Binary (Hex Logic)
+      - name: 🤖 Gemini Python Logic Generation
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
@@ -23,53 +23,37 @@ jobs:
           python - <<EOF
           import google.generativeai as genai
           import os
-          import struct
 
-          # إعداد المحرك
           genai.configure(api_key=os.environ.get('GEMINI_API_KEY'))
           model = genai.GenerativeModel('gemini-pro')
           
-          os.makedirs('AI_BIN', exist_ok=True)
+          os.makedirs('AI_PYTHON', exist_ok=True)
           
-          # فئات بناء اللعبة (ذرة ذرة)
-          logic_map = {
-              1: "ARM64 Instruction Set for Gravity and Physics",
-              2: "Binary logic for Chemical Reactions (Combustion/Oxidation)",
-              3: "Machine code for Procedural Bio-generation",
-              4: "Hex values for Material Hardness and Light Refraction",
-              5: "Data tables for Species DNA and Evolution logic",
-              # سيتم تكرار العملية لبقية الـ 25 ملف
+          # تعريف التخصصات لكل ملف
+          tasks = {
+              1: "Advanced Physics Engine: Gravity, Collision, and Velocity logic in Python.",
+              2: "Chemical Interaction System: Fire, Water, and Acid reactions in Python.",
+              3: "Cellular Bio-Engine: DNA and Species growth algorithms in Python.",
+              4: "Material Hex-Generator: Texture and Hardness properties logic.",
+              5: "World Architect: Procedural landscape generation math in Python."
           }
 
-          def text_to_hex_binary(text):
-              # تحويل استجابة جيمني إلى بايتات حقيقية (Binary Encoding)
-              return text.encode('utf-8').hex()
-
-          print("--- البدء بتخليق الأكواد الثنائية ---")
-
           for i in range(1, 26):
-              category = logic_map.get(i, f"Advanced Sub-system Logic Part {i}")
-              prompt = f"Convert this concept into low-level machine logic (Hexadecimal bytes only): {category}. I need the output to be only hex codes that represent the logic."
+              desc = tasks.get(i, f"Advanced Sub-system Logic Part {i}")
+              prompt = f"Write a professional Python module for: {desc}. The code must be high-level and ready for compilation into machine code."
               
               try:
                   response = model.generate_content(prompt)
-                  # تنظيف النص ليبقى الهيكس فقط
-                  hex_data = "".join(c for c in response.text if c in "0123456789ABCDEFabcdef")
-                  # تحويل الهيكس إلى بايتات ثنائية حقيقية
-                  binary_data = bytes.fromhex(hex_data if len(hex_data) % 2 == 0 else hex_data[:-1])
+                  content = response.text
               except:
-                  # في حال فشل الاتصال، نقوم بتوليد بايتات فيزيائية افتراضية
-                  binary_data = struct.pack('d', 9.80665) * 128 
+                  content = "# Phoenix Offline Logic Placeholder"
 
-              with open(f'AI_BIN/part{i}.dat', 'wb') as f:
-                  f.write(binary_data)
-              
-              print(f"✅ تم حقن الملف {i} بأكواد ثنائية حقيقية.")
-
+              with open(f'AI_PYTHON/part{i}.py', 'w', encoding='utf-8') as f:
+                  f.write(content)
           EOF
 
-      - name: 📤 4. Export Binary Brain
+      - name: 📤 Export Python Brain
         uses: actions/upload-artifact@v4
         with:
-          name: Phoenix_Binary_Brain
-          path: AI_BIN/
+          name: Phoenix_Python_Brain
+          path: AI_PYTHON/
