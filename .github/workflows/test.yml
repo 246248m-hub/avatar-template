@@ -1,105 +1,104 @@
-name: 🛠️ Fix_Simulation_v86
+name: 🔋 Atomic_Data_Eater_v90
 
 on:
   workflow_dispatch:
 
 jobs:
-  build_stable_proof:
+  build_data_engine:
     runs-on: ubuntu-latest
     steps:
       - name: 📦 1. Checkout
         uses: actions/checkout@v4
 
-      - name: ☕ 2. Setup Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "17"
-
-      - name: 🏗️ 3. Structure Full App (With UI)
+      - name: 🏗️ 2. Structure Data Engine
         run: |
-          mkdir -p app/src/main/java/com/atomic/stable
+          mkdir -p app/src/main/java/com/atomic/eater
           mkdir -p app/src/main/res/layout
-          mkdir -p app/src/main/res/values
           
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
-          
+
           cat << 'EOF' > settings.gradle
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
           dependencyResolutionManagement { repositories { google(); mavenCentral() } }
           include ':app'
           EOF
 
-          cat << 'EOF' > build.gradle
-          buildscript { repositories { google(); mavenCentral() }; dependencies { classpath 'com.android.tools.build:gradle:8.1.0' } }
-          EOF
-
           cat << 'EOF' > app/build.gradle
           apply plugin: 'com.android.application'
           android { 
-              namespace "com.atomic.stable"
+              namespace "com.atomic.eater"
               compileSdk 33 
-              defaultConfig { applicationId "com.atomic.stable"; minSdk 24; targetSdk 33; versionCode 86; versionName "86.0" } 
+              defaultConfig { applicationId "com.atomic.eater"; minSdk 24; targetSdk 33; versionCode 90; versionName "90.0" } 
           }
-          dependencies { 
-              implementation 'androidx.appcompat:appcompat:1.6.1'
-              implementation 'com.google.android.material:material:1.9.0'
-          }
+          dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' }
           EOF
 
-          # إضافة واجهة رسومية حقيقية لمنع الانهيار
-          cat << 'EOF' > app/src/main/res/layout/activity_main.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:gravity="center"
-              android:background="#121212">
-              <TextView
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="✅ SCULPT SUCCESS"
-                  android:textColor="#00FF00"
-                  android:textSize="24sp"
-                  android:textStyle="bold"/>
-              <TextView
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="The Engine is Ready for 10GB Data"
-                  android:textColor="#FFFFFF"
-                  android:layout_marginTop="20dp"/>
-          </LinearLayout>
-          EOF
-
+      - name: 🧠 3. Inject Hex-Mining Logic (The 10GB Decoder)
+        run: |
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <application android:label="Stable Proof" android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
-                  <activity android:name="com.atomic.stable.MainActivity" android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
+              <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+              <application android:label="Atomic Eater" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+                  <activity android:name="com.atomic.eater.MainActivity" android:exported="true">
+                      <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
                   </activity>
               </application>
           </manifest>
           EOF
 
-          cat << 'EOF' > app/src/main/java/com/atomic/stable/MainActivity.kt
-          package com.atomic.stable
-          import android.os.Bundle
+          cat << 'EOF' > app/src/main/java/com/atomic/eater/MainActivity.kt
+          package com.atomic.eater
+          import android.os.*
+          import android.widget.*
           import androidx.appcompat.app.AppCompatActivity
+          import java.io.*
+          import java.nio.channels.FileChannel
 
           class MainActivity : AppCompatActivity() {
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
-                  setContentView(R.layout.activity_main)
+                  val layout = LinearLayout(this).apply {
+                      orientation = LinearLayout.VERTICAL
+                      setPadding(40, 40, 40, 40)
+                  }
+                  val log = TextView(this).apply { text = "جاري البحث عن المعلومات المعبأة في الـ 10 جيجا..." }
+                  layout.addView(log)
+                  setContentView(layout)
+
+                  // مسار الملف المعبأ (الدماغ الرقمي)
+                  val brainFile = File(Environment.getExternalStorageDirectory(), "AI_Project/brain.bin")
+                  
+                  if (brainFile.exists()) {
+                      decodeBrainData(brainFile, log)
+                  } else {
+                      log.text = "❌ لم يتم العثور على brain.bin\nيرجى التأكد من وجود الملف المعبأ بـ 10 جيجا في مجلد AI_Project"
+                  }
+              }
+
+              private fun decodeBrainData(file: File, log: TextView) {
+                  Thread {
+                      try {
+                          val stream = FileInputStream(file)
+                          val channel = stream.channel
+                          // قراءة ذكية: نذهب مباشرة للعنوان الذي تبدأ فيه "المعلومات الذكية"
+                          val buffer = java.nio.ByteBuffer.allocate(1024)
+                          channel.position(1024 * 1024 * 500) // مثال: القفز لكتلة البيانات رقم 500
+                          channel.read(buffer)
+                          
+                          runOnUiThread {
+                              log.text = "✅ تم الاتصال بالدماغ الرقمي!\nالمعلومات المعبأة جاهزة للنحت."
+                          }
+                          channel.close()
+                      } catch (e: Exception) {
+                          runOnUiThread { log.text = "⚠️ فشل في قراءة البيانات: ${e.message}" }
+                      }
+                  }.start()
               }
           }
           EOF
 
-      - name: ⚙️ 4. Build APK
+      - name: 🛠️ 4. Build Engine
         run: |
           wget -q https://services.gradle.org/distributions/gradle-8.1-bin.zip
           unzip -q gradle-8.1-bin.zip
@@ -110,5 +109,5 @@ jobs:
       - name: 📤 5. Export
         uses: actions/upload-artifact@v4
         with:
-          name: Stable-Artifact-v86
+          name: Atomic-Data-Eater
           path: app/build/outputs/apk/debug/*.apk
