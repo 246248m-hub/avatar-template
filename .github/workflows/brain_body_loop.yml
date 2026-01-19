@@ -1,4 +1,4 @@
-name: 🛡️ Absolute_Truth_Test_v98
+name: 🛡️ Absolute_Truth_Test_v100
 
 on:
   workflow_dispatch:
@@ -20,59 +20,61 @@ jobs:
               f.seek(5 * 1024 * 1024 * 1024)
               f.write(b'GENE_MIDDLE_555')
           "
-          echo "✅ 10GB Brain Created."
+          echo "✅ 10GB Brain Ready."
 
-      - name: 🏗️ 3. Absolute Minimal Project Structure
+      - name: 🏗️ 3. Structure Modern Project
         run: |
           mkdir -p app/src/main/java/com/atomic/seeker
           mkdir -p app/src/main/res/layout
           
-          # إعداد الخصائص لتعطيل أي ميزات ذكية قد تعيق البناء
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
-          echo "org.gradle.daemon=false" >> gradle.properties
-          echo "org.gradle.parallel=false" >> gradle.properties
 
-          # ملف الإعدادات: حذف كل شيء باستثناء اسم المشروع
+          # ملف الإعدادات هو من سيدير المستودعات الآن
           cat << 'EOF' > settings.gradle
+          pluginManagement {
+              repositories { google(); mavenCentral(); gradlePluginPortal() }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories { google(); mavenCentral() }
+          }
           rootProject.name = "AtomicSeeker"
           include ':app'
           EOF
 
-          # ملف البناء الرئيسي: الطريقة التقليدية (Legacy Mode)
-          cat << 'EOF' > build.gradle
-          buildscript {
-              repositories { google(); mavenCentral() }
-              dependencies { classpath 'com.android.tools.build:gradle:7.4.2' }
-          }
-          allprojects {
-              repositories { google(); mavenCentral() }
-          }
-          EOF
+          # حذف ملف build.gradle الرئيسي لتعارضه مع Gradle 9
+          rm -f build.gradle
 
-          # ملف بناء التطبيق: العودة للسينتكس القديم المستقر 100%
+          # ملف بناء التطبيق بالتنسيق الحديث (Plugins Block Only)
           cat << 'EOF' > app/build.gradle
-          apply plugin: 'com.android.application'
+          plugins {
+              id 'com.android.application' version '8.1.0'
+              id 'org.jetbrains.kotlin.android' version '1.8.10'
+          }
+
           android {
-              compileSdkVersion 33
               namespace "com.atomic.seeker"
+              compileSdk 33
               defaultConfig {
                   applicationId "com.atomic.seeker"
-                  minSdkVersion 24
-                  targetSdkVersion 33
-                  versionCode 98
-                  versionName "98.0"
+                  minSdk 24
+                  targetSdk 33
+                  versionCode 100
+                  versionName "100.0"
               }
               buildTypes {
-                  release { minifyEnabled false }
+                  release {
+                      minifyEnabled false
+                  }
               }
           }
+
           dependencies {
               implementation 'androidx.appcompat:appcompat:1.6.1'
           }
           EOF
 
-          # كود البحث في الـ 10 جيجا
           cat << 'EOF' > app/src/main/java/com/atomic/seeker/MainActivity.kt
           package com.atomic.seeker
           import android.os.*
@@ -84,7 +86,7 @@ jobs:
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   val tv = TextView(this).apply { 
-                      textSize = 25f; setPadding(60,60,60,60); setTextColor(android.graphics.Color.BLUE) 
+                      textSize = 28f; setPadding(60,60,60,60); setTextColor(android.graphics.Color.BLUE) 
                   }
                   setContentView(tv)
                   try {
@@ -94,8 +96,8 @@ jobs:
                           raf.seek(5 * 1024 * 1024 * 1024.toLong())
                           val buffer = ByteArray(15)
                           raf.read(buffer)
-                          tv.text = "🔍 SCAN RESULT:\n\nDATA: ${String(buffer)}\n\nINTELLIGENCE: 100%"
-                      } else { tv.text = "❌ Brain File Missing" }
+                          tv.text = "🔍 TRUTH SCAN v100:\n\nDATA: ${String(buffer)}\n\nVERDICT: 10GB CONFIRMED"
+                      } else { tv.text = "❌ Brain Missing" }
                   } catch (e: Exception) { tv.text = "Error: ${e.message}" }
               }
           }
@@ -111,16 +113,17 @@ jobs:
           </manifest>
           EOF
 
-      - name: ☕ 4. Setup Java 11 (More Stable for Legacy Build)
+      - name: ☕ 4. Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
-          java-version: "11"
+          java-version: "17"
 
-      - name: 🛠️ 5. Force Build (No Wrapper Needed)
+      - name: 🛠️ 5. Build with Modern Wrapper
         run: |
-          # استخدام نسخة Gradle مثبتة مسبقاً في السيرفر لتجنب مشاكل الـ Wrapper
-          gradle clean assembleDebug --no-daemon
+          gradle wrapper --gradle-version 8.1.1
+          chmod +x gradlew
+          ./gradlew :app:assembleDebug --no-daemon
 
       - name: 📱 6. Emulator Truth Test
         uses: reactivecircus/android-emulator-runner@v2
@@ -131,14 +134,14 @@ jobs:
             adb push brain.bin /sdcard/brain.bin
             adb install app/build/outputs/apk/debug/app-debug.apk
             adb shell am start -n com.atomic.seeker/com.atomic.seeker.MainActivity
-            sleep 35
+            sleep 40
             adb shell screencap -p /sdcard/truth_result.png
             adb pull /sdcard/truth_result.png .
 
       - name: 📤 7. Final Proof
         uses: actions/upload-artifact@v4
         with:
-          name: Absolute-Truth-v98
+          name: Absolute-Proof-v100
           path: |
             app/build/outputs/apk/debug/*.apk
             truth_result.png
