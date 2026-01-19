@@ -1,28 +1,81 @@
-      - name: 🚀 6. Run Emulator & Capture Screenshot
+name: 💉 🧪 PHOENIX_QUICK_LAUNCH_TEST
+
+on:
+  workflow_dispatch:
+
+jobs:
+  surgery_and_screenshot:
+    runs-on: macos-latest
+    steps:
+      - name: 📦 1. Checkout
+        uses: actions/checkout@v4
+
+      - name: 🛠️ 2. Install Tools
+        run: |
+          brew install zip unzip apktool
+          wget https://github.com/patrickfav/uber-apk-signer/releases/download/v1.3.0/uber-apk-signer-1.3.0.jar -O signer.jar
+
+      - name: 🧠 3. Download Brain (135MB)
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          repo: 246248m-hub/avatar-template
+          run_id: 21146976650
+          name: Phoenix_Ultra_Brain
+          path: ./brain_files
+
+      - name: 📥 4. Download Body
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          repo: 246248m-hub/avatar-template
+          run_id: 21146013013
+          name: Phoenix-Hex-Compiler-v146
+          path: ./temp_body
+
+      - name: 🧬 5. Surgical Injection
+        run: |
+          find ./temp_body -name "*.apk" -exec mv {} ./original_body.apk \;
+          mkdir -p assets/AI_ULTRA
+          cp -r ./brain_files/* assets/AI_ULTRA/
+          zip -ur original_body.apk assets/
+          java -jar signer.jar --apks original_body.apk
+          find . -name "*aligned-debugSigned.apk" -exec mv {} Phoenix_Ready.apk \;
+          echo "✅ Surgery Complete. Ready to Fire Up!"
+
+      - name: 🚀 6. The Launch Button (Emulator Test)
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 27 # إصدار أخف وأسرع
-          target: default # نسخة بدون خدمات جوجل لتقليل الحمل
-          arch: x86_64
+          api-level: 24 # نسخة سريعة جداً وخفيفة
+          target: default
+          arch: x86
           force-avd-creation: false
-          emulator-boot-timeout: 1200 # زيادة الوقت لضمان الإقلاع
-          emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-boot-anim -camera-back none
+          emulator-boot-timeout: 600
+          emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-boot-anim
           script: |
-            # الانتظار حتى يستقر النظام تماماً
+            # انتظار استجابة النظام
             adb wait-for-device
             
             # تثبيت التطبيق
-            echo "Installing Phoenix..."
+            echo "Installing APK..."
             adb install Phoenix_Ready.apk
             
-            # تشغيل التطبيق
-            echo "Launching App..."
+            # زر التشغيل: فتح التطبيق قسرياً
+            echo "Pressing the Launch Button..."
             adb shell monkey -p org.test.phoenix -c android.intent.category.LAUNCHER 1
             
-            # انتظار كافٍ لتحميل الـ 135 ميجابايت
-            sleep 45
+            # الانتظار لرؤية الواجهة (30 ثانية)
+            sleep 30
             
-            # التقاط الصورة وحفظها
-            echo "Capturing Screenshot..."
-            adb shell screencap -p /sdcard/result.png
-            adb pull /sdcard/result.png .
+            # التقاط لقطة الشاشة النهائية
+            echo "Taking Screenshot..."
+            adb shell screencap -p /sdcard/phoenix_screen.png
+            adb pull /sdcard/phoenix_screen.png .
+
+      - name: 📤 7. Export APK & Screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: Phoenix_Test_Result
+          path: |
+            Phoenix_Ready.apk
+            phoenix_screen.png
