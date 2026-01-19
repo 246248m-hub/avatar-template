@@ -1,4 +1,4 @@
-name: 🛡️ Absolute_Truth_Test_v104
+name: 🛡️ Absolute_Truth_Test_v105
 
 on:
   workflow_dispatch:
@@ -13,7 +13,6 @@ jobs:
       - name: 💎 2. Create 10GB Data
         run: |
           python3 -c "
-          import os
           with open('brain.bin', 'wb') as f:
               f.write(b'GENE_START_001')
               f.seek(5 * 1024 * 1024 * 1024)
@@ -21,12 +20,11 @@ jobs:
           "
           echo "✅ 10GB Brain Ready."
 
-      - name: 🏗️ 3. Manual APK Carving (No Gradle)
+      - name: 🏗️ 3. Prepare Source Code
         run: |
-          # تجهيز المجلدات
-          mkdir -p build/gen build/obj build/apk/res/layout
+          mkdir -p build/obj build/apk/res/layout
+          mkdir -p src/com/atomic/seeker
           
-          # 1. صنع ملف AndroidManifest بسيط جداً
           cat << 'EOF' > build/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.atomic.seeker">
               <application android:label="Atomic Manual">
@@ -37,8 +35,6 @@ jobs:
           </manifest>
           EOF
 
-          # 2. كود النشاط (الذي سيقرأ الـ 10 جيجا)
-          mkdir -p src/com/atomic/seeker
           cat << 'EOF' > src/com/atomic/seeker/MainActivity.kt
           package com.atomic.seeker
           import android.app.Activity
@@ -59,34 +55,37 @@ jobs:
                           raf.seek(5 * 1024 * 1024 * 1024L)
                           val buffer = ByteArray(15)
                           raf.read(buffer)
-                          tv.text = "🔍 MANUAL BUILD OK:\n\nDATA: " + String(buffer)
-                      } else { tv.text = "❌ File Not Found" }
+                          tv.text = "🔍 V105 SUCCESS:\n\nDATA: " + String(buffer)
+                      } else { tv.text = "❌ Brain Not Found" }
                   } catch (e: Exception) { tv.text = "Error: " + e.message }
                   setContentView(tv)
               }
           }
           EOF
 
-      - name: 🛠️ 4. Compile with Android Tools Directly
+      - name: 🛠️ 4. Dynamic Build (Searching for Tools)
         run: |
-          # تحديد مسار أدوات الأندرويد في السيرفر
-          SDK=$ANDROID_HOME
-          PLATFORM=$SDK/platforms/android-33/android.jar
-          BUILD_TOOLS=$SDK/build-tools/33.0.0
+          # العثور على المسارات الحقيقية للأدوات في macOS السحابي
+          AAPT2=$(find $ANDROID_HOME/build-tools -name aapt2 | sort -r | head -n 1)
+          D8=$(find $ANDROID_HOME/build-tools -name d8 | sort -r | head -n 1)
+          PLATFORM=$(find $ANDROID_HOME/platforms -name android.jar | sort -r | head -n 1)
           
-          echo "🔨 Compiling Resources..."
-          $BUILD_TOOLS/aapt2 compile --dir build/apk/res -o build/res.zip || true
-          $BUILD_TOOLS/aapt2 link --manifest build/AndroidManifest.xml -I $PLATFORM -o build/base.apk
-          
-          echo "🔨 Compiling Kotlin Code..."
+          echo "📍 Using AAPT2: $AAPT2"
+          echo "📍 Using D8: $D8"
+          echo "📍 Using Platform: $PLATFORM"
+
+          echo "🔨 Packaging Resources..."
+          $AAPT2 link --manifest build/AndroidManifest.xml -I $PLATFORM -o build/base.apk --java build/gen
+
+          echo "🔨 Compiling Kotlin..."
           kotlinc src/com/atomic/seeker/MainActivity.kt -cp $PLATFORM -d build/obj
-          
-          echo "🔨 Converting to Dex (The Engine)..."
-          $BUILD_TOOLS/d8 build/obj/com/atomic/seeker/MainActivity.class --lib $PLATFORM --output build/
-          
-          echo "🔨 Merging into Final APK..."
+
+          echo "🔨 Dexing..."
+          $D8 build/obj/com/atomic/seeker/MainActivity.class --lib $PLATFORM --output build/
+
+          echo "🔨 Merging Final APK..."
           zip -uj build/base.apk build/classes.dex
-          mv build/base.apk seeker_manual.apk
+          cp build/base.apk seeker_v105.apk
 
       - name: 📱 5. Emulator Truth Test
         uses: reactivecircus/android-emulator-runner@v2
@@ -95,16 +94,16 @@ jobs:
           arch: x86_64
           script: |
             adb push brain.bin /sdcard/brain.bin
-            adb install seeker_manual.apk
+            adb install seeker_v105.apk
             adb shell am start -n com.atomic.seeker/.MainActivity
             sleep 45
             adb shell screencap -p /sdcard/truth_result.png
             adb pull /sdcard/truth_result.png .
 
-      - name: 📤 6. Final Result
+      - name: 📤 6. Upload Proof
         uses: actions/upload-artifact@v4
         with:
-          name: Absolute-No-Gradle-Proof
+          name: Truth-Result-v105
           path: |
-            seeker_manual.apk
+            seeker_v105.apk
             truth_result.png
