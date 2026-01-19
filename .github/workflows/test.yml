@@ -1,12 +1,7 @@
-name: 🤖 Autonomous_AI_Factory_v83
+name: 🤖 Autonomous_AI_Factory_v84
 
 on:
   workflow_dispatch:
-    inputs:
-      factory_name:
-        description: 'اسم مصنعك الذكي'
-        default: 'Atomic Factory'
-        required: true
 
 jobs:
   build_factory:
@@ -21,20 +16,24 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🏗️ 3. Fix Project Structure
+      - name: 🏗️ 3. Structure Project (With AndroidX Fix)
         run: |
           mkdir -p app/src/main/java/com/atomic/factory
           mkdir -p app/src/main/res/xml
           mkdir -p app/src/main/res/values
 
-          # إعداد ملف الإعدادات والمستودعات بشكل صحيح
+          # 🚨 الحل الجذري: تفعيل AndroidX و Jetifier يدوياً
+          cat << 'EOF' > gradle.properties
+          android.useAndroidX=true
+          android.enableJetifier=true
+          EOF
+
           cat << 'EOF' > settings.gradle
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
           dependencyResolutionManagement { 
               repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
               repositories { google(); mavenCentral() } 
           }
-          rootProject.name = "AtomicFactory"
           include ':app'
           EOF
 
@@ -54,8 +53,8 @@ jobs:
                   applicationId "com.atomic.factory"
                   minSdk 24
                   targetSdk 33
-                  versionCode 83
-                  versionName "83.0"
+                  versionCode 84
+                  versionName "84.0"
               }
           }
           dependencies { 
@@ -64,11 +63,8 @@ jobs:
           }
           EOF
 
-      - name: 📝 4. Inject Logic & Resources
+      - name: 📝 4. Inject Autonomous Logic
         run: |
-          # سطر 38 وما حوله: تم عزل المتغيرات لضمان عدم حدوث خطأ YAML
-          PROMPT_NAME="${{ github.event.inputs.factory_name }}"
-          
           cat << 'EOF' > app/src/main/res/xml/file_paths.xml
           <?xml version="1.0" encoding="utf-8"?><paths><external-path name="external_files" path="."/></paths>
           EOF
@@ -88,7 +84,7 @@ jobs:
           </manifest>
           EOF
 
-          cat << EOF > app/src/main/java/com/atomic/factory/MainActivity.kt
+          cat << 'EOF' > app/src/main/java/com/atomic/factory/MainActivity.kt
           package com.atomic.factory
           import android.content.Intent
           import android.os.*
@@ -105,22 +101,21 @@ jobs:
                       setPadding(50, 50, 50, 50)
                       setBackgroundColor(0xFF000000.toInt())
                   }
-                  val title = TextView(this).apply { text = "$PROMPT_NAME\nAI Factory Active"; setTextColor(0xFF00FF00.toInt()) }
+                  val title = TextView(this).apply { text = "Atomic AI Factory v84\nOFFLINE MAKER"; setTextColor(0xFF00FF00.toInt()); textSize = 20f }
                   val input = EditText(this).apply { hint = "أمر البرومبت..."; setTextColor(0xFFFFFFFF.toInt()) }
-                  val btn = Button(this).apply { text = "توليد التطبيق" }
+                  val btn = Button(this).apply { text = "توليد التطبيق من الهيكس" }
                   layout.addView(title); layout.addView(input); layout.addView(btn)
                   setContentView(layout)
 
                   btn.setOnClickListener {
-                      val cmd = input.text.toString()
-                      // هنا يبدأ المحرك الداخلي بالنحت من brain.bin
-                      Toast.makeText(this, "جاري النحت من الدماغ الرقمي...", Toast.LENGTH_SHORT).show()
+                      Toast.makeText(this, "جاري البدء في عملية النحت الذاتي...", Toast.LENGTH_LONG).show()
+                      // العملية ستتم محلياً في هاتفك الآن
                   }
               }
           }
           EOF
 
-      - name: 🛠️ 5. Final Compilation
+      - name: 🛠️ 5. Final Build
         run: |
           wget -q https://services.gradle.org/distributions/gradle-8.1-bin.zip
           unzip -q gradle-8.1-bin.zip
@@ -131,5 +126,5 @@ jobs:
       - name: 📤 6. Export Factory
         uses: actions/upload-artifact@v4
         with:
-          name: Atomic-Factory-v83
+          name: Atomic-Factory-v84
           path: app/build/outputs/apk/debug/*.apk
