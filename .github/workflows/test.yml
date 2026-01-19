@@ -1,92 +1,85 @@
-name: 🧠 PHOENIX_AI_ENGINE_v142
+name: 💉 PHOENIX_IMPLANTATION_SURGERY_v2
 
 on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-22.04
+  implant_brain:
+    runs-on: ubuntu-latest
     steps:
-      - name: 📦 1. Checkout
+      - name: 📦 1. Checkout Current Repo
         uses: actions/checkout@v4
 
-      - name: ☕ 2. Setup Java 17
-        uses: actions/setup-java@v4
+      - name: 🛠️ 2. Install Tools (APKTool, Java, Unzip)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apktool default-jre unzip
+          echo "✅ Tools Installed."
+
+      - name: 🧠 3. Download The "Brain" Artifact (135MB)
+        uses: dawidd6/action-download-artifact@v6
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          repo: 246248m-hub/avatar-template
+          run_id: 21146976650 # <-- رقم تشغيل العقل
+          # اسم القطعة الأثرية للعقل (تأكد من أنه صحيح)
+          name: Phoenix_Ultra_Brain_Tested
+          path: ./temp_brain
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🏗️ 3. Pre-Setup Android SDK Manager
+      - name: 📥 4. Download The "Body" Artifact (APK)
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          repo: 246248m-hub/avatar-template
+          run_id: 21146013013 # <-- رقم تشغيل التطبيق
+          # اسم القطعة الأثرية للتطبيق (تأكد من أنه صحيح)
+          name: Phoenix-Test-Cell-1 
+          path: ./temp_body
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📂 5. Prepare The "Brain" and "Body"
         run: |
-          export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
-          mkdir -p $ANDROID_HOME/cmdline-tools/latest
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip
-          unzip -q tools.zip
-          mv cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/
-          mkdir -p $ANDROID_HOME/tools/bin
-          ln -s $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=$ANDROID_HOME
-
-      - name: 🐍 4. Install Dependencies
-        run: |
-          pip install --user Cython==0.29.33 buildozer
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: 📝 5. Create AI-Ready main.py (نظام الـ 25 ملف)
-        run: |
-          cat << 'EOF' > main.py
-          import os
-          from kivy.app import App
-          from kivy.uix.label import Label
-          from kivy.uix.boxlayout import BoxLayout
-          from kivy.utils import platform
-
-          class PhoenixApp(App):
-              def build(self):
-                  layout = BoxLayout(orientation='vertical')
-                  self.lbl = Label(text="Initializing Phoenix AI...", font_size='18sp', halign='center')
-                  layout.add_widget(self.lbl)
-                  
-                  # تحديد المسار ومسح المجلد
-                  ai_path = "/sdcard/Documents/AI" if platform == 'android' else "./AI"
-                  
-                  if not os.path.exists(ai_path):
-                      self.lbl.text = f"❌ Folder Missing!\nPlease create: Documents/AI"
-                  else:
-                      parts_found = []
-                      for i in range(1, 26):
-                          # يبحث عن ملفات باسم part1.dat, part2.dat...
-                          if os.path.exists(os.path.join(ai_path, f"part{i}.dat")):
-                              parts_found.append(i)
-                      
-                      count = len(parts_found)
-                      if count == 25:
-                          self.lbl.text = "🔥 PHOENIX SYSTEM\n✅ All 25 AI Parts Loaded\nRAM Optimized Mode: Active"
-                      else:
-                          self.lbl.text = f"🔥 PHOENIX SYSTEM\n⚠️ Status: {count}/25 Parts Found\nCheck file naming (part1.dat...)"
-                  
-                  return layout
-
-          if __name__ == '__main__':
-              PhoenixApp().run()
-          EOF
-
-      - name: 🔨 6. Optimized Build & Permissions
-        run: |
-          buildozer init
-          # الإعدادات الأساسية
-          sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
-          sed -i 's/android.api = 31/android.api = 33/' buildozer.spec
-          sed -i 's/#android.build_tools_version = 31.0.0/android.build_tools_version = 33.0.1/' buildozer.spec
+          echo "Unzipping the brain..."
+          unzip ./temp_brain/Phoenix_Ultra_Brain_Tested.zip -d ./final_brain
+          # الآن لدينا مجلد final_brain/AI_ULTRA
           
-          # إضافة صلاحيات الوصول للملفات في أندرويد 13
-          sed -i 's/android.permissions = PACKAGE_USAGE_STATS/android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,MANAGE_EXTERNAL_STORAGE/' buildozer.spec
+          echo "Locating the body..."
+          # نقل الـ APK إلى المسار الرئيسي لسهولة الوصول
+          mv ./temp_body/*.apk ./body.apk
           
-          # تشغيل البناء
-          buildozer -v android debug
+          echo "✅ Brain and Body are ready for surgery."
 
-      - name: 📤 7. Export APK
+      - name: 🔪 6. Decompile The "Body"
+        run: |
+          echo "Decompiling the APK..."
+          apktool d -f body.apk -o decompiled_apk
+          echo "✅ APK decompiled."
+
+      - name: 🧬 7. Perform The Implantation
+        run: |
+          echo "Injecting the brain into the body..."
+          # التأكد من وجود مجلد الأصول، وإنشائه إذا لم يكن موجوداً
+          mkdir -p ./decompiled_apk/assets/
+          # نسخ مجلد العقل بالكامل إلى مجلد الأصول في الـ APK
+          cp -r ./final_brain/AI_ULTRA ./decompiled_apk/assets/
+          echo "✅ Implantation successful. The brain is now in the assets folder."
+
+      - name: 🩹 8. Recompile & Sign The Final APK
+        run: |
+          echo "Recompiling the final form..."
+          apktool b decompiled_apk -o Phoenix_Final_Form_unsigned.apk
+          
+          echo "Generating a new signature..."
+          keytool -genkey -v -keystore phoenix.keystore -alias phoenix_key -keyalg RSA -keysize 2048 -validity 10000 -storepass 123456 -keypass 123456 -dname "CN=Phoenix, OU=AI, O=Self, L=Digital, S=World, C=XX"
+          
+          echo "Signing the final APK..."
+          apksigner sign --ks phoenix.keystore --ks-pass pass:123456 Phoenix_Final_Form_unsigned.apk
+          mv Phoenix_Final_Form_unsigned.apk Phoenix_Final_Form.apk
+          echo "✅ Final APK is recompiled and signed."
+
+      - name: 📤 9. Export The Final Product
         uses: actions/upload-artifact@v4
         with:
-          name: Phoenix-AI-A32
-          path: bin/*.apk
+          name: Phoenix_Final_Form
+          path: Phoenix_Final_Form.apk
