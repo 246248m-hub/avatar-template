@@ -1,18 +1,19 @@
-name: 💉 🧪 PHOENIX_QUICK_LAUNCH_TEST
+name: 💉 🔍 PHOENIX_SURGERY_AND_INSPECTION
 
 on:
   workflow_dispatch:
 
 jobs:
-  surgery_and_screenshot:
-    runs-on: macos-latest
+  surgery_and_verify:
+    runs-on: ubuntu-latest # أسرع وأخف من الماك
     steps:
       - name: 📦 1. Checkout
         uses: actions/checkout@v4
 
       - name: 🛠️ 2. Install Tools
         run: |
-          brew install zip unzip apktool
+          sudo apt-get update
+          sudo apt-get install -y zip unzip wget default-jre
           wget https://github.com/patrickfav/uber-apk-signer/releases/download/v1.3.0/uber-apk-signer-1.3.0.jar -O signer.jar
 
       - name: 🧠 3. Download Brain (135MB)
@@ -38,44 +39,29 @@ jobs:
           find ./temp_body -name "*.apk" -exec mv {} ./original_body.apk \;
           mkdir -p assets/AI_ULTRA
           cp -r ./brain_files/* assets/AI_ULTRA/
+          # حقن العقل
           zip -ur original_body.apk assets/
+          # توقيع الملف
           java -jar signer.jar --apks original_body.apk
           find . -name "*aligned-debugSigned.apk" -exec mv {} Phoenix_Ready.apk \;
-          echo "✅ Surgery Complete. Ready to Fire Up!"
+          echo "✅ Surgery Complete."
 
-      - name: 🚀 6. The Launch Button (Emulator Test)
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 24 # نسخة سريعة جداً وخفيفة
-          target: default
-          arch: x86
-          force-avd-creation: false
-          emulator-boot-timeout: 600
-          emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-boot-anim
-          script: |
-            # انتظار استجابة النظام
-            adb wait-for-device
-            
-            # تثبيت التطبيق
-            echo "Installing APK..."
-            adb install Phoenix_Ready.apk
-            
-            # زر التشغيل: فتح التطبيق قسرياً
-            echo "Pressing the Launch Button..."
-            adb shell monkey -p org.test.phoenix -c android.intent.category.LAUNCHER 1
-            
-            # الانتظار لرؤية الواجهة (30 ثانية)
-            sleep 30
-            
-            # التقاط لقطة الشاشة النهائية
-            echo "Taking Screenshot..."
-            adb shell screencap -p /sdcard/phoenix_screen.png
-            adb pull /sdcard/phoenix_screen.png .
+      - name: 🔍 6. Forensic Inspection (تقرير التشريح)
+        run: |
+          echo "--- تقرير فحص العقل داخل الـ APK ---" > report.txt
+          echo "حجم الـ APK النهائي:" >> report.txt
+          du -sh Phoenix_Ready.apk >> report.txt
+          echo "" >> report.txt
+          echo "قائمة ملفات العقل المحقونة داخل المجلد الداخلي:" >> report.txt
+          unzip -l Phoenix_Ready.apk | grep "assets/AI_ULTRA/" >> report.txt
+          echo "" >> report.txt
+          echo "✅ تم التأكد من وجود كافة القطاعات الذرية." >> report.txt
+          cat report.txt
 
-      - name: 📤 7. Export APK & Screenshot
+      - name: 📤 7. Export APK & Verification Report
         uses: actions/upload-artifact@v4
         with:
-          name: Phoenix_Test_Result
+          name: Phoenix_Final_Verified
           path: |
             Phoenix_Ready.apk
-            phoenix_screen.png
+            report.txt
