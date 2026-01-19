@@ -1,11 +1,11 @@
-name: 🚀 PHOENIX_OPTIMIZED_v140
+name: 🛠️ PHOENIX_FIX_PATH_FINAL
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04 # بيئة مستقرة جداً ومجربة
+    runs-on: ubuntu-22.04
     steps:
       - name: 📦 1. Checkout
         uses: actions/checkout@v4
@@ -16,19 +16,29 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 🛡️ 3. Pre-Accept Optimized Licenses
+      - name: 🏗️ 3. Pre-Install Android SDK Manager
         run: |
-          mkdir -p ~/.android
-          touch ~/.android/repositories.cfg
-          # حقن التراخيص للنسخ المستقرة (API 33/34)
-          mkdir -p $HOME/.buildozer/android/platform/android-sdk/licenses
-          echo -e "8933bad161af4178b1185d1a37fbf41ea5269c55\nd56f5187479451e0f0f766e07503a702039db007" > $HOME/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+          # إنشاء المجلدات التي يبحث عنها Buildozer
+          export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
+          mkdir -p $ANDROID_HOME/cmdline-tools/latest
+          
+          # تحميل أدوات سطر الأوامر (الإصدار المستقر والأنسب)
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip
+          unzip -q tools.zip
+          mv cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/
+          
+          # خدعة المسار: ربط المسار القديم بالجديد ليرضى Buildozer
+          mkdir -p $ANDROID_HOME/tools/bin
+          ln -s $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
+          
+          # الموافقة على التراخيص مسبقاً
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=$ANDROID_HOME
 
-      - name: 🐍 4. Install Stable Buildozer
+      - name: 🐍 4. Install Dependencies
         run: |
-          # نستخدم إصدارات مثبتة الكفاءة
-          pip install --user Cython==0.29.33 buildozer==1.5.0
+          pip install --user Cython==0.29.33 buildozer
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+          sudo apt-get install -y build-essential libffi-dev libssl-dev pkg-config
 
       - name: 📝 5. Application Code
         run: |
@@ -37,25 +47,24 @@ jobs:
           from kivy.uix.label import Label
           class PhoenixApp(App):
               def build(self):
-                  return Label(text="🔥 PHOENIX SYSTEM\nOptimized for Samsung A32", font_size='20sp')
+                  return Label(text="🔥 PHOENIX SYSTEM\nReady & Verified", font_size='20sp')
           if __name__ == '__main__':
               PhoenixApp().run()
           EOF
 
-      - name: 🔨 6. Building with API 33 (The Sweet Spot)
+      - name: 🔨 6. Build APK (API 33)
         run: |
           buildozer init
-          # ضبط الإعدادات للنسخة الأكثر توافقاً مع هواتف الفئة المتوسطة
+          # ضبط الإعدادات للهروب من فخ النسخة 36.1
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
           sed -i 's/android.api = 31/android.api = 33/' buildozer.spec
           sed -i 's/#android.build_tools_version = 31.0.0/android.build_tools_version = 33.0.1/' buildozer.spec
-          sed -i 's/#android.ndk = 25b/android.ndk = 25b/' buildozer.spec
           
-          # البدء بالبناء مع الموافقة التلقائية
-          yes | buildozer -v android debug
+          # تنفيذ البناء مع عرض التفاصيل
+          buildozer -v android debug
 
       - name: 📤 7. Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: Phoenix-Optimized-A32
+          name: Phoenix-Success-APK
           path: bin/*.apk
