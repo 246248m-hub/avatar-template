@@ -13,8 +13,16 @@ jobs:
       - name: 🛠️ 2. Install Dependencies (المواد الخام)
         run: |
           sudo apt update
-          sudo apt install -y python3-pip build-essential git python3 dev ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev
-          sudo apt install -y libgstreamer1.0-gstreamer-lite1.0-dev libgstreamer-plugins-base1.0-dev
+          # تصحيح اسم الحزم وإضافة حزم الـ GL والـ JDK الضرورية
+          sudo apt install -y build-essential git python3-dev python3-pip \
+          ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
+          libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev \
+          libgstreamer1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
+          libsqlite3-dev sqlite3 bzip2 libbz2-dev libssl-dev openssl libffi-dev \
+          libncurses5-dev libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev \
+          liblzma-dev openjdk-17-jdk-headless unzip zip
+          
+          # تثبيت Cython و Buildozer
           pip3 install --user --upgrade Cython==0.29.33 buildozer
           echo "export PATH=\$PATH:~/.local/bin" >> $GITHUB_PATH
 
@@ -27,21 +35,21 @@ jobs:
           name: Phoenix_Ultra_Brain
           path: ./game_project/brain_assets
 
-      - name: 🏗️ 4. Create Game Files
+      - name: 🏗️ 4. Create Game Project
         run: |
           mkdir -p game_project
-          # كود اللعبة المولد
+          # كود اللعبة المولد من العقل
           cat <<EOF > game_project/main.py
           from kivy.app import App
           from kivy.uix.label import Label
           class PhoenixGame(App):
               def build(self):
-                  return Label(text='Phoenix Bit Engine\nStatus: Game Generated')
+                  return Label(text='Phoenix Bit Engine\nStatus: APK Generated from Brain')
           if __name__ == '__main__':
               PhoenixGame().run()
           EOF
 
-          # ملف التعليمات البرمجية
+          # إنشاء ملف buildozer.spec مُحسّن
           cat <<EOF > game_project/buildozer.spec
           [app]
           title = PhoenixGame
@@ -50,15 +58,20 @@ jobs:
           source.dir = .
           source.include_exts = py,png,jpg,kv,atlas
           version = 1.0
-          requirements = python3,kivy
+          requirements = python3,kivy==2.2.1
           orientation = portrait
           android.archs = arm64-v8a
           android.accept_sdk_license = True
+          android.api = 33
+          android.minapi = 21
+          android.sdk = 33
+          p4a.branch = master
           EOF
 
-      - name: 🚀 5. Start Manual Construction (Build APK)
+      - name: 🚀 5. Start Construction (Build APK)
         run: |
           cd game_project
+          # تشغيل البناء في وضع debug لمعرفة أي خطأ فوراً
           ~/.local/bin/buildozer -v android debug
         continue-on-error: false
 
