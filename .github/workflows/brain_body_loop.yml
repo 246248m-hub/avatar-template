@@ -1,4 +1,4 @@
-name: 🚀 Atomic_Installer_Final_v73
+name: 🚀 Atomic_Installer_v74_NoCrash
 
 on:
   workflow_dispatch:
@@ -16,20 +16,15 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🏗️ 3. Structure Android Project
+      - name: 🏗️ 3. Structure Project
         run: |
-          # إنشاء المجلدات بمسار أندرويد القياسي
           mkdir -p app/src/main/java/com/atomic/engine
           mkdir -p app/src/main/res/layout
           mkdir -p app/src/main/res/xml
           mkdir -p app/src/main/res/values
 
-          # تفعيل AndroidX
-          cat << 'EOF' > gradle.properties
-          android.useAndroidX=true
-          android.enableJetifier=true
-          EOF
-
+          echo "android.useAndroidX=true" > gradle.properties
+          echo "android.enableJetifier=true" >> gradle.properties
           echo "include ':app'" > settings.gradle
           
           cat << 'EOF' > build.gradle
@@ -44,10 +39,7 @@ jobs:
           EOF
 
           cat << 'EOF' > app/build.gradle
-          plugins {
-              id 'com.android.application'
-              id 'kotlin-android'
-          }
+          plugins { id 'com.android.application'; id 'kotlin-android' }
           android {
               namespace "com.atomic.engine"
               compileSdk 33
@@ -55,8 +47,8 @@ jobs:
                   applicationId "com.atomic.engine"
                   minSdk 24
                   targetSdk 33
-                  versionCode 73
-                  versionName "73.0"
+                  versionCode 74
+                  versionName "74.0"
               }
               compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
               kotlinOptions { jvmTarget = '17' }
@@ -68,9 +60,8 @@ jobs:
           }
           EOF
 
-      - name: 📝 4. Inject Manifest & XML Resources
+      - name: 📝 4. Inject Safe Logic & Manifest
         run: |
-          # 🚨 إصلاح الخطأ: حقن ملف المسارات في المجلد الصحيح وباسم صحيح
           cat << 'EOF' > app/src/main/res/xml/file_paths.xml
           <?xml version="1.0" encoding="utf-8"?>
           <paths>
@@ -78,12 +69,14 @@ jobs:
           </paths>
           EOF
 
-          # المانيفست
           cat << 'EOF' > app/src/main/AndroidManifest.xml
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+              <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+              <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+              <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage"/>
               <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
-              <application android:label="Atomic Maker v73" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+              
+              <application android:label="Atomic v74" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
                   <activity android:name="com.atomic.engine.MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -101,11 +94,12 @@ jobs:
           </manifest>
           EOF
 
-          # كود المحرك
           cat << 'EOF' > app/src/main/java/com/atomic/engine/MainActivity.kt
           package com.atomic.engine
           import android.content.Intent
+          import android.net.Uri
           import android.os.*
+          import android.provider.Settings
           import android.widget.*
           import androidx.appcompat.app.AppCompatActivity
           import androidx.core.content.FileProvider
@@ -114,12 +108,22 @@ jobs:
           class MainActivity : AppCompatActivity() {
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
+                  
+                  // طلب صلاحية الوصول للملفات فور التشغيل لمنع الخروج المفاجئ
+                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                      if (!Environment.isExternalStorageManager()) {
+                          val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                          intent.data = Uri.parse("package:" + packageName)
+                          startActivity(intent)
+                      }
+                  }
+
                   val layout = LinearLayout(this).apply {
                       orientation = LinearLayout.VERTICAL
                       setBackgroundColor(0xFF121212.toInt())
                       setPadding(50, 50, 50, 50)
                   }
-                  val tv = TextView(this).apply { text = "⚛️ Atomic Maker v73\nHex Engine Active\n"; setTextColor(0xFF00FF00.toInt()) }
+                  val tv = TextView(this).apply { text = "⚛️ Atomic Maker v74\nStatus: Active\n"; setTextColor(0xFF00FF00.toInt()) }
                   val input = EditText(this).apply { hint = "Game description..."; setTextColor(0xFFFFFFFF.toInt()) }
                   val btn = Button(this).apply { text = "SCULPT & INSTALL" }
                   layout.addView(tv); layout.addView(input); layout.addView(btn)
@@ -132,24 +136,24 @@ jobs:
                           if(brain.exists()){
                               val raf = RandomAccessFile(brain, "r")
                               val out = FileOutputStream(outputApk)
-                              val buffer = ByteArray(1024 * 1024 * 30)
+                              val buffer = ByteArray(1024 * 1024 * 10) // 10MB test
                               raf.seek(0); raf.read(buffer); out.write(buffer)
                               out.close(); raf.close()
 
                               val apkUri = FileProvider.getUriForFile(this, "com.atomic.engine.fileprovider", outputApk)
-                              val intent = Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
-                                  data = apkUri
-                                  flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                              val installIntent = Intent(Intent.ACTION_VIEW).apply {
+                                  setDataAndType(apkUri, "application/vnd.android.package-archive")
+                                  flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
                               }
-                              startActivity(intent)
-                          } else { tv.append("\n❌ brain.bin not found!") }
+                              startActivity(installIntent)
+                          } else { Toast.makeText(this, "brain.bin not found!", Toast.LENGTH_LONG).show() }
                       } catch(e: Exception) { tv.append("\n⚠️ Error: ${e.message}") }
                   }
               }
           }
           EOF
 
-      - name: 🛠️ 5. Final Compilation
+      - name: 🛠️ 5. Final Build
         run: |
           wget -q https://services.gradle.org/distributions/gradle-8.1-bin.zip
           unzip -q gradle-8.1-bin.zip
@@ -157,8 +161,8 @@ jobs:
           chmod +x gradlew
           ./gradlew :app:assembleDebug --no-daemon
 
-      - name: 📤 6. Export APK
+      - name: 📤 6. Export
         uses: actions/upload-artifact@v4
         with:
-          name: Atomic-Installer-v73
+          name: Atomic-Installer-v74
           path: app/build/outputs/apk/debug/*.apk
