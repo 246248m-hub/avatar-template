@@ -1,4 +1,4 @@
-name: 🏗️ BUILD_REAL_PHOENIX_APK
+name: 🏗️ FINAL_PHOENIX_SUCCESS_v123
 
 on:
   workflow_dispatch:
@@ -10,77 +10,55 @@ jobs:
       - name: 📦 1. Checkout Code
         uses: actions/checkout@v4
 
-      - name: ☕ 2. Setup Java 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: 🛠️ 3. Setup Android SDK & Gradle
-        uses: android-actions/setup-android@v3
-
-      - name: 📝 4. Create Android Project Structure
+      - name: 🐍 2. Install Python Dependencies
         run: |
-          # إنشاء هيكل مشروع أندرويد حقيقي
-          mkdir -p app/src/main/res/layout
-          mkdir -p app/src/main/java/com/gemini/phoenix
-          
-          # إنشاء ملف Manifest
-          cat << 'EOF' > app/src/main/AndroidManifest.xml
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.gemini.phoenix">
-              <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-              <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-              <uses-permission android:name="android.permission.INTERNET"/>
-              <application android:label="Gemini Phoenix" android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
-                  <activity android:name=".MainActivity" android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
-                  </activity>
-              </application>
-          </manifest>
-          EOF
+          pip install Cython==0.29.33
+          pip install buildozer
 
-          # إنشاء كود الواجهة والمنطق (ميزة العنقاء)
-          cat << 'EOF' > app/src/main/java/com/gemini/phoenix/MainActivity.kt
-          package com.gemini.phoenix
-          import android.app.Activity
-          import android.os.Bundle
-          import android.widget.TextView
-          import android.graphics.Color
-          import java.io.File
+      - name: 📝 3. Create Phoenix App (Python/Kivy)
+        run: |
+          # إنشاء ملف التطبيق الأساسي مع ميزة العنقاء
+          cat << 'EOF' > main.py
+          from kivy.app import App
+          from kivy.uix.label import Label
+          from kivy.core.window import Window
+          import os
 
-          class MainActivity : Activity() {
-              override fun onCreate(savedInstanceState: Bundle?) {
-                  super.onCreate(savedInstanceState)
-                  val tv = TextView(this)
-                  tv.setBackgroundColor(Color.BLACK)
-                  tv.setTextColor(Color.parseColor("#FF3300"))
-                  tv.textSize = 14f
-                  tv.text = "🔥 PHOENIX SYSTEM ACTIVE\nScanning 10GB Brain Shards...\n"
-                  setContentView(tv)
+          class PhoenixApp(App):
+              def build(self):
+                  Window.clearcolor = (0, 0, 0, 1) # خلفية سوداء
+                  path = "/sdcard/Documents/Brain_AI/"
+                  status = "🔥 PHOENIX SYSTEM ACTIVE\n\n"
                   
-                  // منطق فحص الملفات
-                  val path = "/sdcard/Documents/Brain_AI/"
-                  val folder = File(path)
-                  if (!folder.exists()) {
-                      tv.append("\n⚠️ Directory not found!")
-                  } else {
-                      tv.append("\n✅ Brain Linked Successfully.")
-                  }
-              }
-          }
+                  if os.path.exists(path):
+                      files = os.listdir(path)
+                      status += f"✅ Brain Linked: {len(files)} Shards Found\n"
+                      status += "System Status: CORE READY"
+                  else:
+                      status += "⚠️ FOLDER NOT FOUND\n"
+                      status += "Path: " + path + "\n"
+                      status += "Please Move Shards to Documents/Brain_AI"
+                  
+                  return Label(text=status, color=(1, 0.2, 0, 1), font_size='18sp', halign='center')
+
+          if __name__ == '__main__':
+              PhoenixApp().run()
           EOF
 
-      - name: 🔨 5. Build APK with Gradle
+      - name: 🔨 4. Build Real APK (Using Buildozer)
         run: |
-          # هذه الخطوة ستقوم بإنشاء ملف APK حقيقي (سيستغرق 2-4 دقائق)
-          chmod +x gradlew
-          ./gradlew assembleDebug
-
-      - name: 📤 6. Export Real APK
+          # إنشاء إعدادات البناء بسرعة
+          buildozer init
+          # تعديل الإعدادات لتناسب المشروع
+          sed -i 's/package.name = myapp/package.name = geminiphoenix/' buildozer.spec
+          sed -i 's/package.domain = org.test/package.domain = com.gemini/' buildozer.spec
+          
+          # تشغيل البناء (هذا سيستغرق بضع دقائق لإنشاء ملف APK حقيقي)
+          # ملاحظة: سنستخدم نسخة أندرويد بسيطة لضمان النجاح من أول مرة
+          buildozer android debug
+          
+      - name: 📤 5. Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gemini-Phoenix-App
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: Gemini-Phoenix-Final
+          path: bin/*.apk
