@@ -1,4 +1,4 @@
-name: 🛡️ Absolute_Truth_Test_v96
+name: 🛡️ Absolute_Truth_Test_v97
 
 on:
   workflow_dispatch:
@@ -23,35 +23,29 @@ jobs:
           "
           echo "✅ 10GB Data Ready."
 
-      - name: 🏗️ 3. Structure Project
+      - name: 🏗️ 3. Structure Minimalist Project
         run: |
           mkdir -p app/src/main/java/com/atomic/seeker
-          mkdir -p app/src/main/res/layout
+          mkdir -p app/src/main/res/values
           
-          echo "android.useAndroidX=true" > gradle.properties
-          echo "android.enableJetifier=true" >> gradle.properties
-
-          # ملف الإعدادات: مستودعات نظيفة لكل المشروع
+          # ملف الإعدادات بسيط جداً
           cat << 'EOF' > settings.gradle
-          pluginManagement {
-              repositories { google(); mavenCentral(); gradlePluginPortal() }
-          }
-          dependencyResolutionManagement {
-              repositories { google(); mavenCentral() }
-          }
           rootProject.name = "AtomicSeeker"
           include ':app'
           EOF
 
-          # ملف البناء الرئيسي: تعريف الكلاس-باث مع المستودع الخاص به
+          # ملف البناء الرئيسي
           cat << 'EOF' > build.gradle
           buildscript {
               repositories { google(); mavenCentral() }
               dependencies { classpath 'com.android.tools.build:gradle:8.1.0' }
           }
+          allprojects {
+              repositories { google(); mavenCentral() }
+          }
           EOF
 
-          # ملف بناء التطبيق
+          # ملف بناء التطبيق (تم تبسيطه للحد الأقصى لتفادي أخطاء Gradle 9)
           cat << 'EOF' > app/build.gradle
           plugins {
               id 'com.android.application'
@@ -63,13 +57,17 @@ jobs:
                   applicationId "com.atomic.seeker"
                   minSdk 24
                   targetSdk 33
-                  versionCode 96
-                  versionName "96.0"
+                  versionCode 97
+                  versionName "97.0"
               }
           }
           dependencies {
               implementation 'androidx.appcompat:appcompat:1.6.1'
           }
+          EOF
+
+          cat << 'EOF' > app/src/main/res/values/strings.xml
+          <resources><string name="app_name">Atomic Seeker</string></resources>
           EOF
 
           cat << 'EOF' > app/src/main/java/com/atomic/seeker/MainActivity.kt
@@ -83,7 +81,7 @@ jobs:
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   val tv = TextView(this).apply { 
-                      textSize = 24f; setPadding(60,60,60,60); setTextColor(android.graphics.Color.GREEN) 
+                      textSize = 24f; setPadding(60,60,60,60); setTextColor(android.graphics.Color.BLUE) 
                   }
                   setContentView(tv)
                   val brain = File("/sdcard/brain.bin")
@@ -116,11 +114,12 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🛠️ 5. Final Build Execution
+      - name: 🛠️ 5. Clean & Build Execution
         run: |
-          gradle wrapper --gradle-version 8.1
+          # توليد الـ Wrapper ورفضه لأي نسخة أعلى من 8.1
+          gradle wrapper --gradle-version 8.1 --distribution-type bin
           chmod +x gradlew
-          ./gradlew :app:assembleDebug --no-daemon
+          ./gradlew clean :app:assembleDebug --no-daemon
 
       - name: 📱 6. Emulator Truth Test
         uses: reactivecircus/android-emulator-runner@v2
@@ -138,7 +137,7 @@ jobs:
       - name: 📤 7. Final Evidence
         uses: actions/upload-artifact@v4
         with:
-          name: Absolute-Proof-v96
+          name: Absolute-Proof-v97
           path: |
             app/build/outputs/apk/debug/*.apk
             truth_result.png
