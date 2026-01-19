@@ -1,13 +1,13 @@
-name: 🚀 Brain_Body_Loop_Final
+name: 🚀 Final_Atomic_Engine_Ultra_v56
 
 on:
   workflow_dispatch:
 
 jobs:
-  build_core:
+  build_apk:
     runs-on: ubuntu-latest
     steps:
-      - name: 📦 1. Checkout
+      - name: 📦 1. Checkout Code
         uses: actions/checkout@v4
 
       - name: ☕ 2. Setup Java 17
@@ -16,11 +16,28 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🏗️ 3. Initialize Engine (Fixing Line 13 & Structure)
+      - name: 🏗️ 3. Initialize Project & Force Repositories
         run: |
-          # إنشاء الملفات الأساسية بترتيب يمنع انهيار الـ YAML
-          echo "include(\":app\")" > settings.gradle.kts
-          
+          # حل مشكلة السطر 1: تعريف المستودعات بشكل كامل وصارم
+          cat << 'EOF' > settings.gradle.kts
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          include(":app")
+          EOF
+
+          # حل مشكلة تعريف البلجن في الجذر
           cat << 'EOF' > build.gradle.kts
           plugins {
               id("com.android.application") version "8.1.0" apply false
@@ -28,9 +45,22 @@ jobs:
           }
           EOF
 
+          # بناء مجلدات التطبيق (الجسد)
           mkdir -p app/src/main/java/com/atomic/engine
           mkdir -p app/src/main/res/values
 
+          # حل مشكلة بناء التطبيق الداخلي
+          cat << 'EOF' > app/build.gradle.kts
+          plugins {
+              id("com.atomic.application") {
+                  id("com.android.application")
+                  id("org.jetbrains.kotlin.android")
+              }
+          }
+          // تصحيح: استخدام بلوك الملحقات المباشر لتفادي أخطاء التداخل
+          EOF
+          
+          # إعادة كتابة app/build.gradle.kts بشكل أنظف
           cat << 'EOF' > app/build.gradle.kts
           plugins {
               id("com.android.application")
@@ -43,8 +73,8 @@ jobs:
                   applicationId = "com.atomic.engine"
                   minSdk = 24
                   targetSdk = 33
-                  versionCode = 55
-                  versionName = "55.0"
+                  versionCode = 56
+                  versionName = "56.0"
               }
               buildFeatures { compose = true }
               composeOptions { kotlinCompilerExtensionVersion = "1.4.3" }
@@ -57,15 +87,15 @@ jobs:
           }
           EOF
 
-      - name: 🛠️ 4. Setup Wrapper
-        run: gradle wrapper --gradle-version 8.1
+      - name: 🛠️ 4. Generate Wrapper (Force Version 8.1)
+        run: gradle wrapper --gradle-version 8.1 --distribution-type all
 
-      - name: 📝 5. Write App Code
+      - name: 📝 5. Inject Manifest & Core Logic
         run: |
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.atomic.engine">
               <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
-              <application android:label="Atomic Loop" android:requestLegacyExternalStorage="true">
+              <application android:label="Atomic Engine" android:requestLegacyExternalStorage="true">
                   <activity android:name=".MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -86,19 +116,19 @@ jobs:
           class MainActivity : ComponentActivity() {
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
-                  setContent { Text("Brain-Body Engine v55: Online") }
+                  setContent { Text("Atomic Engine v56 Online") }
               }
           }
           EOF
 
-      - name: 🔨 6. Final Compilation
+      - name: 🔨 6. Assemble Debug APK (Safety Mode)
         run: |
-          echo "org.gradle.jvmargs=-Xmx2048m" > gradle.properties
+          echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" > gradle.properties
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --no-daemon
 
-      - name: 📤 7. Upload APK
+      - name: 📤 7. Artifact Release
         uses: actions/upload-artifact@v4
         with:
-          name: Brain-Body-v55
+          name: Atomic-Engine-v56
           path: app/build/outputs/apk/debug/*.apk
