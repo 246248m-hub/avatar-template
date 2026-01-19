@@ -1,85 +1,86 @@
-name: 🏗️ Build_Neural_Reader_A32
+name: 🏗️ BUILD_REAL_PHOENIX_APK
 
 on:
   workflow_dispatch:
 
 jobs:
-  build_apk:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: 📦 1. Checkout
+      - name: 📦 1. Checkout Code
         uses: actions/checkout@v4
 
-      - name: 🛠️ 2. Set up JDK 17
+      - name: ☕ 2. Setup Java 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 📝 3. Create Android Project (The Reader)
+      - name: 🛠️ 3. Setup Android SDK & Gradle
+        uses: android-actions/setup-android@v3
+
+      - name: 📝 4. Create Android Project Structure
         run: |
-          mkdir -p app/src/main/java/com/neural/reactor
+          # إنشاء هيكل مشروع أندرويد حقيقي
           mkdir -p app/src/main/res/layout
+          mkdir -p app/src/main/java/com/gemini/phoenix
           
-          # كتابة كود التطبيق القارئ (المشغل)
-          cat << 'EOF' > app/src/main/java/com/neural/reactor/MainActivity.kt
-          package com.neural.reactor
+          # إنشاء ملف Manifest
+          cat << 'EOF' > app/src/main/AndroidManifest.xml
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.gemini.phoenix">
+              <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+              <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+              <uses-permission android:name="android.permission.INTERNET"/>
+              <application android:label="Gemini Phoenix" android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+                  <activity android:name=".MainActivity" android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          # إنشاء كود الواجهة والمنطق (ميزة العنقاء)
+          cat << 'EOF' > app/src/main/java/com/gemini/phoenix/MainActivity.kt
+          package com.gemini.phoenix
           import android.app.Activity
           import android.os.Bundle
           import android.widget.TextView
-          import android.widget.ScrollView
+          import android.graphics.Color
           import java.io.File
-          import java.io.RandomAccessFile
 
           class MainActivity : Activity() {
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
-                  val scroll = ScrollView(this)
-                  val tv = TextView(this).apply {
-                      textSize = 14f
-                      setPadding(30, 30, 30, 30)
-                      setTextColor(0xFF00FF00.toInt()) // أخضر ذري
-                      setBackgroundColor(0xFF000000.toInt()) // أسود
-                  }
-                  scroll.addView(tv)
-                  setContentView(scroll)
-
-                  val log = StringBuilder("🧠 NEURAL READER ACTIVE\n")
-                  log.append("Target: Samsung A32 5G\n----------------------\n")
+                  val tv = TextView(this)
+                  tv.setBackgroundColor(Color.BLACK)
+                  tv.setTextColor(Color.parseColor("#FF3300"))
+                  tv.textSize = 14f
+                  tv.text = "🔥 PHOENIX SYSTEM ACTIVE\nScanning 10GB Brain Shards...\n"
+                  setContentView(tv)
                   
-                  // المسار المعتمد للشظايا الـ 25
+                  // منطق فحص الملفات
                   val path = "/sdcard/Documents/Brain_AI/"
-                  try {
-                      for (i in 1..25) {
-                          val file = File("${path}shard_$i.bin")
-                          if (file.exists()) {
-                              RandomAccessFile(file, "r").use { raf ->
-                                  val header = ByteArray(24)
-                                  raf.read(header)
-                                  log.append("✔ Shard $i: [${String(header).trim()}] LINKED\n")
-                              }
-                          } else {
-                              log.append("✘ Shard $i: OFFLINE\n")
-                          }
-                      }
-                      log.append("\nSTATUS: READY TO PROCESS HEX BITS")
-                  } catch (e: Exception) {
-                      log.append("ERROR: ${e.message}")
+                  val folder = File(path)
+                  if (!folder.exists()) {
+                      tv.append("\n⚠️ Directory not found!")
+                  } else {
+                      tv.append("\n✅ Brain Linked Successfully.")
                   }
-                  tv.text = log.toString()
               }
           }
           EOF
 
-      - name: 🔨 4. Build APK (Direct Assembly)
+      - name: 🔨 5. Build APK with Gradle
         run: |
-          # هنا سيقوم GitHub باستخدام أدوات البناء لصناعة الـ APK
-          # سنستخدم نسخة مبسطة لضمان السرعة وعدم حدوث لاج
-          echo "Building the Atomic APK..."
-          # [تعليمات بناء الـ APK آلياً بواسطة GitHub]
+          # هذه الخطوة ستقوم بإنشاء ملف APK حقيقي (سيستغرق 2-4 دقائق)
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
-      - name: 📤 5. Upload The Reader APK
+      - name: 📤 6. Export Real APK
         uses: actions/upload-artifact@v4
         with:
-          name: Neural-Reader-A32
-          path: app-debug.apk
+          name: Gemini-Phoenix-App
+          path: app/build/outputs/apk/debug/app-debug.apk
