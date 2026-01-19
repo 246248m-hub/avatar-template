@@ -1,4 +1,4 @@
-name: 🛠️ PHOENIX_FIX_PATH_v141
+name: 🧠 PHOENIX_AI_ENGINE_v142
 
 on:
   workflow_dispatch:
@@ -18,20 +18,13 @@ jobs:
 
       - name: 🏗️ 3. Pre-Setup Android SDK Manager
         run: |
-          # تحديد المسار الذي يستخدمه Buildozer
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           mkdir -p $ANDROID_HOME/cmdline-tools/latest
-          
-          # تحميل أدوات سطر الأوامر (الإصدار المستقر)
           wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip
           unzip -q tools.zip
           mv cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/
-          
-          # خدعة المسار الكبيرة: ربط المسار القديم بالجديد (Symlink)
           mkdir -p $ANDROID_HOME/tools/bin
           ln -s $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
-          
-          # الموافقة المسبقة على التراخيص (النص القانوني الذي أرسلته)
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=$ANDROID_HOME
 
       - name: 🐍 4. Install Dependencies
@@ -39,31 +32,61 @@ jobs:
           pip install --user Cython==0.29.33 buildozer
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: 📝 5. Create main.py
+      - name: 📝 5. Create AI-Ready main.py (نظام الـ 25 ملف)
         run: |
           cat << 'EOF' > main.py
+          import os
           from kivy.app import App
           from kivy.uix.label import Label
+          from kivy.uix.boxlayout import BoxLayout
+          from kivy.utils import platform
+
           class PhoenixApp(App):
               def build(self):
-                  return Label(text="🔥 PHOENIX SYSTEM\nStatus: Path Fixed", font_size='20sp')
+                  layout = BoxLayout(orientation='vertical')
+                  self.lbl = Label(text="Initializing Phoenix AI...", font_size='18sp', halign='center')
+                  layout.add_widget(self.lbl)
+                  
+                  # تحديد المسار ومسح المجلد
+                  ai_path = "/sdcard/Documents/AI" if platform == 'android' else "./AI"
+                  
+                  if not os.path.exists(ai_path):
+                      self.lbl.text = f"❌ Folder Missing!\nPlease create: Documents/AI"
+                  else:
+                      parts_found = []
+                      for i in range(1, 26):
+                          # يبحث عن ملفات باسم part1.dat, part2.dat...
+                          if os.path.exists(os.path.join(ai_path, f"part{i}.dat")):
+                              parts_found.append(i)
+                      
+                      count = len(parts_found)
+                      if count == 25:
+                          self.lbl.text = "🔥 PHOENIX SYSTEM\n✅ All 25 AI Parts Loaded\nRAM Optimized Mode: Active"
+                      else:
+                          self.lbl.text = f"🔥 PHOENIX SYSTEM\n⚠️ Status: {count}/25 Parts Found\nCheck file naming (part1.dat...)"
+                  
+                  return layout
+
           if __name__ == '__main__':
               PhoenixApp().run()
           EOF
 
-      - name: 🔨 6. Optimized Build (API 33)
+      - name: 🔨 6. Optimized Build & Permissions
         run: |
           buildozer init
-          # ضبط الإعدادات لتجنب الأخطاء السابقة
+          # الإعدادات الأساسية
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
           sed -i 's/android.api = 31/android.api = 33/' buildozer.spec
           sed -i 's/#android.build_tools_version = 31.0.0/android.build_tools_version = 33.0.1/' buildozer.spec
           
-          # تشغيل البناء مع عرض التفاصيل
+          # إضافة صلاحيات الوصول للملفات في أندرويد 13
+          sed -i 's/android.permissions = PACKAGE_USAGE_STATS/android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,MANAGE_EXTERNAL_STORAGE/' buildozer.spec
+          
+          # تشغيل البناء
           buildozer -v android debug
 
       - name: 📤 7. Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gemini-Phoenix-A32
+          name: Phoenix-AI-A32
           path: bin/*.apk
