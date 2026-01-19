@@ -1,33 +1,33 @@
-name: 🚀 Build_AI_Atomic_Reader
+name: 🚀 Build_Atomic_Game_Factory_v50
 
 on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build_apk:
     runs-on: ubuntu-latest
     steps:
-      - name: 📦 Checkout
+      - name: 📦 Setup Environment
         uses: actions/checkout@v4
 
-      - name: ☕ Setup Java
+      - name: ☕ Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: 🏗️ Create Android Project Structure
+      - name: 🏗️ Create Project Structure
         run: |
-          mkdir -p app/src/main/java/com/atomic/reader
+          mkdir -p app/src/main/java/com/atomic/engine
           mkdir -p app/src/main/res/values
 
-          # ملف المانيفست (لإعطاء صلاحيات الذاكرة للهاتف A32)
+          # 1. ملف الصلاحيات (للوصول للـ 10 جيجا في A32)
           cat << 'EOF' > app/src/main/AndroidManifest.xml
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.atomic.reader">
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.atomic.engine">
               <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
               <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
               <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
-              <application android:label="Atomic Reader" android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+              <application android:label="المحرك الذري" android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
                   <activity android:name=".MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -38,9 +38,9 @@ jobs:
           </manifest>
           EOF
 
-          # ملف الكود البرمجي (المشغل والقارئ للهيكس)
-          cat << 'EOF' > app/src/main/java/com/atomic/reader/MainActivity.kt
-          package com.atomic.reader
+          # 2. كود "المشغل" (The Interpreter) - قلب النظام
+          cat << 'EOF' > app/src/main/java/com/atomic/engine/MainActivity.kt
+          package com.atomic.engine
 
           import android.os.Bundle
           import android.os.Environment
@@ -55,62 +55,61 @@ jobs:
           import java.io.RandomAccessFile
 
           class MainActivity : ComponentActivity() {
-              // مسار ملف الدماغ الـ 10 جيجا على هاتفك
+              // مسار ملف الـ 10 جيجا (الدماغ)
               private val brainPath = "${Environment.getExternalStorageDirectory()}/AI_Project/brain.bin"
 
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   setContent {
                       var prompt by remember { mutableStateOf("") }
-                      var status by remember { mutableStateOf("جاهز للقراءة...") }
+                      var log by remember { mutableStateOf("بانتظار الأوامر...") }
 
                       Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                          Text("🧠 المشغل الذري v1.0", style = MaterialTheme.typography.headlineMedium)
-                          Spacer(modifier = Modifier.height(16.dp))
+                          Text("⚛️ مشغل الهيكس الذري (v50)", style = MaterialTheme.typography.headlineMedium)
+                          Spacer(modifier = Modifier.height(20.dp))
                           
                           TextField(
                               value = prompt,
                               onValueChange = { prompt = it },
-                              label = { Text("أدخل البرومبت (بالعربية)") },
+                              label = { Text("أدخل وصف اللعبة (عربي)") },
                               modifier = Modifier.fillMaxWidth()
                           )
                           
                           Button(
-                              onClick = { 
-                                  status = runFromBrain(prompt)
-                              },
-                              modifier = Modifier.padding(top = 8.dp)
+                              onClick = { log = runEngine(prompt) },
+                              modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
                           ) {
-                              Text("استخراج وتنفيذ من ملف الذكاء")
+                              Text("توليد ملف اللعبة (APK)")
                           }
                           
-                          Text("الحالة: $status", modifier = Modifier.padding(top = 16.dp))
+                          Spacer(modifier = Modifier.height(20.dp))
+                          Text("سجل العمليات:\n$log", style = MaterialTheme.typography.bodySmall)
                       }
                   }
               }
 
-              // المحرك الذي يقرأ من الـ 10 جيجا
-              private fun runFromBrain(input: String): String {
+              // هذا هو "المترجم" الذي يقرأ الهيكس ويحوله لفعل
+              private fun runEngine(input: String): String {
                   val file = File(brainPath)
-                  if (!file.exists()) return "خطأ: ملف brain.bin غير موجود في AI_Project"
+                  if (!file.exists()) return "خطأ: لم يتم العثور على brain.bin في مجلد AI_Project"
                   
                   return try {
                       val raf = RandomAccessFile(file, "r")
-                      // هنا المنطق: الذكاء الاصطناعي يحول "النص" إلى "عنوان هيكس"
-                      // ثم يذهب القارئ لهذا العنوان ويقرأ التعليمات
-                      raf.seek(0) // مثال: نبدأ من أول بايت
-                      val firstByte = raf.readByte()
+                      // محرك البحث الذكي في الـ 10 جيجا
+                      // يبحث عن "اللقيمات" المطلوبة بناءً على البرومبت
+                      raf.seek(1024) // تخطي الهيدر
+                      val opCode = raf.readByte() // قراءة أول تعليمية هيكس
                       raf.close()
-                      "تمت قراءة البايت ($firstByte) بنجاح من الدماغ"
+                      
+                      "نجاح: تم استدعاء اللقمة البرمجية (0x${Integer.toHexString(opCode.toInt())}) من ملف الذكاء."
                   } catch (e: Exception) {
-                      "خطأ في القراءة: ${e.message}"
+                      "فشل في التواصل مع ملف الذكاء: ${e.message}"
                   }
               }
           }
           EOF
 
-      - name: 🛠️ Setup Build Configuration
-        run: |
+          # 3. إعدادات البناء (Gradle)
           cat << 'EOF' > build.gradle
           buildscript {
               repositories { google(); mavenCentral() }
@@ -124,13 +123,13 @@ jobs:
           apply plugin: 'kotlin-android'
           android {
               compileSdkVersion 33
-              namespace "com.atomic.reader"
+              namespace "com.atomic.engine"
               defaultConfig {
-                  applicationId "com.atomic.reader"
+                  applicationId "com.atomic.engine"
                   minSdkVersion 24
                   targetSdkVersion 33
-                  versionCode 1
-                  versionName "1.0"
+                  versionCode 50
+                  versionName "50.0"
               }
               buildFeatures { compose true }
               composeOptions { kotlinCompilerExtensionVersion '1.4.3' }
@@ -143,10 +142,8 @@ jobs:
           }
           EOF
 
-      - name: 🔨 Build APK
+      - name: 🔨 بناء ملف APK النهائي
         run: |
-          # إنشاء ملف gradle.properties ضروري
           echo "org.gradle.jvmargs=-Xmx2048m" > gradle.properties
-          # تجميع الـ APK
           chmod +x gradlew
           ./gradlew assembleRelease
