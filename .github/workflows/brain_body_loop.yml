@@ -1,77 +1,86 @@
-name: 🔗 Atomic_Linker_AI_v80
+name: 🔗 Atomic_Linker_AI_v81
 
 on:
   workflow_dispatch:
     inputs:
       prompt:
-        description: 'ماذا تريد أن يصنع لك المحرك؟ (مثلاً: Flashlight App أو 3D Game)'
+        description: 'ماذا تريد أن يصنع لك المحرك؟'
         required: true
         default: 'Flashlight App'
 
 jobs:
-  sculpt_and_build:
+  build_app:
     runs-on: ubuntu-latest
     steps:
       - name: 📦 1. Checkout
         uses: actions/checkout@v4
 
-      - name: 🧠 2. AI Brain Processing (Prompt Analysis)
-        run: |
-          echo "تحليل البرومبت: ${{ github.event.inputs.prompt }}"
-          # هنا المحرك يقرأ البرومبت ويحدد "جينات" التطبيق
-          if [[ "${{ github.event.inputs.prompt }}" == *"Flash"* ]] || [[ "${{ github.event.inputs.prompt }}" == *"فلاش"* ]]; then
-            echo "MODE=FLASH" >> $GITHUB_ENV
-          else
-            echo "MODE=GENERIC" >> $GITHUB_ENV
-          fi
-
-      - name: ☕ 3. Setup Java 17
+      - name: ☕ 2. Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🏗️ 4. Structure Linked Project
+      - name: 🏗️ 3. Fix Project Structure (Ultra-Link)
         run: |
           mkdir -p app/src/main/java/com/atomic/linker
-          mkdir -p app/src/main/res/values
           
-          echo "android.useAndroidX=true" > gradle.properties
-          echo "android.enableJetifier=true" >> gradle.properties
-          echo "include ':app'" > settings.gradle
+          # إعداد ملف الإعدادات ليعرف أين يجد أدوات جوجل
+          cat << 'EOF' > settings.gradle
+          pluginManagement {
+              repositories { google(); mavenCentral(); gradlePluginPortal() }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories { google(); mavenCentral() }
+          }
+          include ':app'
+          EOF
 
+          # ملف البناء الرئيسي مع تعريف الإصدارات
           cat << 'EOF' > build.gradle
-          plugins {
-              id 'com.android.application' version '8.1.0' apply false
-              id 'org.jetbrains.kotlin.android' version '1.8.10' apply false
+          buildscript {
+              repositories { google(); mavenCentral() }
+              dependencies { classpath 'com.android.tools.build:gradle:8.1.0' }
           }
           EOF
 
+          # ملف بناء التطبيق
           cat << 'EOF' > app/build.gradle
-          plugins { id 'com.android.application'; id 'org.jetbrains.kotlin.android' }
+          apply plugin: 'com.android.application'
           android {
               namespace "com.atomic.linker"
               compileSdk 33
-              defaultConfig { applicationId "com.atomic.linker"; minSdk 24; targetSdk 33; versionCode 80; versionName "80.0" }
+              defaultConfig {
+                  applicationId "com.atomic.linker"
+                  minSdk 24
+                  targetSdk 33
+                  versionCode 81
+                  versionName "81.0"
+              }
           }
-          dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' }
+          dependencies {
+              implementation 'androidx.appcompat:appcompat:1.6.1'
+          }
           EOF
 
-      - name: 📝 5. Dynamic Code Injection (The Sculpting)
+      - name: 📝 4. Inject Dynamic Code (Based on Prompt)
         run: |
-          # حقن المانيفست بناءً على الوضع المختار
-          if [ "$MODE" = "FLASH" ]; then
+          # تحديد إذا كان المستخدم يريد فلاش أم لا
+          if [[ "${{ github.event.inputs.prompt }}" == *"Flash"* ]] || [[ "${{ github.event.inputs.prompt }}" == *"فلاش"* ]]; then
             PERM="<uses-permission android:name='android.permission.CAMERA' />"
-            LABEL="Atomic Flash AI"
+            LOGIC="try { val cm = getSystemService(Context.CAMERA_SERVICE) as CameraManager; cm.setTorchMode(cm.cameraIdList[0], true) } catch(e:Exception) {}"
+            IMPORT="import android.hardware.camera2.CameraManager\nimport android.content.Context"
           else
             PERM=""
-            LABEL="Atomic Generic AI"
+            LOGIC="Toast.makeText(this, 'تم تشغيل التطبيق بنجاح!', Toast.LENGTH_LONG).show()"
+            IMPORT="import android.widget.Toast"
           fi
 
           cat << EOF > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               $PERM
-              <application android:label="$LABEL" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+              <application android:label="Atomic AI v81" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
                   <activity android:name="com.atomic.linker.MainActivity" android:exported="true">
                       <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
                   </activity>
@@ -79,35 +88,26 @@ jobs:
           </manifest>
           EOF
 
-          # حقن كود الـ Activity ديناميكياً
-          cat << 'EOF' > app/src/main/java/com/atomic/linker/MainActivity.kt
+          cat << EOF > app/src/main/java/com/atomic/linker/MainActivity.kt
           package com.atomic.linker
           import android.os.Bundle
-          import android.widget.*
           import androidx.appcompat.app.AppCompatActivity
-          import android.graphics.Color
+          $IMPORT
 
           class MainActivity : AppCompatActivity() {
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
-                  val layout = LinearLayout(this).apply {
-                      orientation = LinearLayout.VERTICAL
-                      setBackgroundColor(Color.DKGRAY)
+                  setContentView(android.widget.TextView(this).apply { 
+                      text = "البرومبت المنفذ:\n${{ github.event.inputs.prompt }}"
                       gravity = android.view.Gravity.CENTER
-                  }
-                  val tv = TextView(this).apply { 
-                      text = "تم نحت هذا التطبيق من البرومبت:\n${{ github.event.inputs.prompt }}"
-                      setTextColor(Color.WHITE)
-                      textSize = 18f
-                      setPadding(20,20,20,20)
-                  }
-                  layout.addView(tv)
-                  setContentView(layout)
+                      textSize = 20f
+                  })
+                  $LOGIC
               }
           }
           EOF
 
-      - name: 🛠️ 6. Final Build Execution
+      - name: 🛠️ 5. Final Execution
         run: |
           wget -q https://services.gradle.org/distributions/gradle-8.1-bin.zip
           unzip -q gradle-8.1-bin.zip
@@ -115,8 +115,8 @@ jobs:
           chmod +x gradlew
           ./gradlew :app:assembleDebug --no-daemon
 
-      - name: 📤 7. Export Linked APK
+      - name: 📤 6. Export Result
         uses: actions/upload-artifact@v4
         with:
-          name: Linked-AI-App
+          name: Atomic-AI-Result
           path: app/build/outputs/apk/debug/*.apk
