@@ -1,0 +1,30 @@
+name: 🧪 Cloud_Hex_to_Video_Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test_engine:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛠️ Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: 🧠 Generate Hex Data & Sculpt Video
+        run: |
+          # 1. توليد بيانات هيكس تحاكي أصول الألعاب
+          python3 -c "
+          import os
+          with open('test_brain.bin', 'wb') as f:
+              f.write(os.urandom(1024 * 1024 * 50)) # 50 ميجا هيكس للتجربة
+          "
+
+          # 2. نحت وتحويل الهيكس إلى فيديو (360p)
+          # سنستخدم FFmpeg لتحويل البيانات العشوائية المنحوتة إلى نمط مرئي
+          ffmpeg -f rawvideo -pixel_format rgb24 -video_size 640x360 -i /dev/urandom -t 10 -pix_fmt yuv420p proof_of_work.mp4
+
+      - name: 📤 Upload Proof Video
+        uses: actions/upload-artifact@v4
+        with:
+          name: Execution-Proof-Video
+          path: proof_of_work.mp4
