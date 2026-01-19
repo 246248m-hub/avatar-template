@@ -1,4 +1,4 @@
-name: 🛡️ Absolute_Truth_Test_v94
+name: 🛡️ Absolute_Truth_Test_v95
 
 on:
   workflow_dispatch:
@@ -23,7 +23,7 @@ jobs:
           "
           echo "✅ 10GB Data Injected."
 
-      - name: 🏗️ 3. Structure Project (Fixing Gradle 9 Syntax)
+      - name: 🏗️ 3. Structure Project (Clean Architecture)
         run: |
           mkdir -p app/src/main/java/com/atomic/seeker
           mkdir -p app/src/main/res/layout
@@ -31,28 +31,30 @@ jobs:
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
 
+          # المصدر الوحيد للمستودعات لمنع التعارض
           cat << 'EOF' > settings.gradle
-          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          pluginManagement { 
+              repositories { google(); mavenCentral(); gradlePluginPortal() } 
+          }
           dependencyResolutionManagement { 
               repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
               repositories { google(); mavenCentral() } 
           }
+          rootProject.name = "AtomicSeeker"
           include ':app'
           EOF
 
-          # ملف البناء الرئيسي المصلح
+          # ملف بناء نظيف بدون مستودعات متكررة
           cat << 'EOF' > build.gradle
           buildscript {
-              repositories { google(); mavenCentral() }
               dependencies { classpath 'com.android.tools.build:gradle:8.1.0' }
           }
-          allprojects { repositories { google(); mavenCentral() } }
           EOF
 
-          # إصلاح كود تطبيق الأندرويد ليتوافق مع Gradle 9
           cat << 'EOF' > app/build.gradle
           plugins {
               id 'com.android.application'
+              id 'org.jetbrains.kotlin.android' version '1.8.10'
           }
           android {
               namespace "com.atomic.seeker"
@@ -61,8 +63,8 @@ jobs:
                   applicationId "com.atomic.seeker"
                   minSdk 24
                   targetSdk 33
-                  versionCode 94
-                  versionName "94.0"
+                  versionCode 95
+                  versionName "95.0"
               }
           }
           dependencies {
@@ -70,7 +72,6 @@ jobs:
           }
           EOF
 
-          # كود البحث العميق
           cat << 'EOF' > app/src/main/java/com/atomic/seeker/MainActivity.kt
           package com.atomic.seeker
           import android.os.*
@@ -82,7 +83,7 @@ jobs:
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   val tv = TextView(this).apply { 
-                      textSize = 22f; setPadding(50,50,50,50); setTextColor(android.graphics.Color.RED) 
+                      textSize = 22f; setPadding(60,60,60,60); setTextColor(android.graphics.Color.BLUE) 
                   }
                   setContentView(tv)
                   val brain = File("/sdcard/brain.bin")
@@ -92,8 +93,8 @@ jobs:
                           raf.seek(5 * 1024 * 1024 * 1024.toLong())
                           val buffer = ByteArray(15)
                           raf.read(buffer)
-                          tv.text = "🔍 Deep Scan Result:\n\nFound: ${String(buffer)}\n\nStatus: 10GB TRUTH CONFIRMED!"
-                      } else { tv.text = "❌ Waiting for brain.bin..." }
+                          tv.text = "🔍 DEEP DATA FOUND:\n\nValue: ${String(buffer)}\n\nStatus: 10GB INTELLIGENCE VERIFIED!"
+                      } else { tv.text = "❌ Error: brain.bin not found on emu-storage" }
                   } catch (e: Exception) { tv.text = "Error: ${e.message}" }
               }
           }
@@ -115,9 +116,10 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🛠️ 5. Build with Local Gradle
+      - name: 🛠️ 5. Final Build Execution
         run: |
-          chmod +x gradlew || gradle wrapper
+          gradle wrapper --gradle-version 8.1
+          chmod +x gradlew
           ./gradlew :app:assembleDebug --no-daemon
 
       - name: 📱 6. Emulator Truth Test
@@ -136,7 +138,7 @@ jobs:
       - name: 📤 7. Final Evidence
         uses: actions/upload-artifact@v4
         with:
-          name: Absolute-Proof-v94
+          name: Absolute-Proof-v95
           path: |
             app/build/outputs/apk/debug/*.apk
             truth_result.png
