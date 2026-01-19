@@ -5,25 +5,22 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # سنعود للإصدار 22 لأنه الأكثر استقراراً مع بناء الأندرويد
     steps:
       - name: 📦 1. Checkout Code
         uses: actions/checkout@v4
 
-      - name: 🛠️ 2. Install Dependencies (المواد الخام)
+      - name: 🛠️ 2. Install Surgical Tools (Fixing Libtool Error)
         run: |
           sudo apt update
-          # تصحيح اسم الحزم وإضافة حزم الـ GL والـ JDK الضرورية
+          # تثبيت الأدوات المفقودة التي تسببت في الخطأ (libtool, autoconf, automake)
           sudo apt install -y build-essential git python3-dev python3-pip \
-          ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
-          libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev \
-          libgstreamer1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
-          libsqlite3-dev sqlite3 bzip2 libbz2-dev libssl-dev openssl libffi-dev \
-          libncurses5-dev libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev \
-          liblzma-dev openjdk-17-jdk-headless unzip zip
+          libtool autoconf automake pkg-config zlib1g-dev libssl-dev \
+          libffi-dev libgmp-dev libltdl-dev \
+          openjdk-17-jdk unzip zip curl
           
-          # تثبيت Cython و Buildozer
-          pip3 install --user --upgrade Cython==0.29.33 buildozer
+          # تثبيت إصدارات محددة من Cython و Buildozer لضمان التوافق
+          pip3 install --user --upgrade "Cython<3.0" "buildozer==1.5.0"
           echo "export PATH=\$PATH:~/.local/bin" >> $GITHUB_PATH
 
       - name: 🧠 3. Loading Brain (135MB)
@@ -35,21 +32,21 @@ jobs:
           name: Phoenix_Ultra_Brain
           path: ./game_project/brain_assets
 
-      - name: 🏗️ 4. Create Game Project
+      - name: 🏗️ 4. Prepare Clean Project
         run: |
           mkdir -p game_project
-          # كود اللعبة المولد من العقل
+          # كود اللعبة
           cat <<EOF > game_project/main.py
           from kivy.app import App
           from kivy.uix.label import Label
           class PhoenixGame(App):
               def build(self):
-                  return Label(text='Phoenix Bit Engine\nStatus: APK Generated from Brain')
+                  return Label(text='Phoenix Engine Active\nBit-Level Integrity: Verified')
           if __name__ == '__main__':
               PhoenixGame().run()
           EOF
 
-          # إنشاء ملف buildozer.spec مُحسّن
+          # ملف المواصفات (تم تعديله ليتجاوز أخطاء التحميل)
           cat <<EOF > game_project/buildozer.spec
           [app]
           title = PhoenixGame
@@ -62,21 +59,23 @@ jobs:
           orientation = portrait
           android.archs = arm64-v8a
           android.accept_sdk_license = True
-          android.api = 33
+          android.api = 31
           android.minapi = 21
-          android.sdk = 33
+          android.ndk = 25b
           p4a.branch = master
           EOF
 
-      - name: 🚀 5. Start Construction (Build APK)
+      - name: 🚀 5. The Grand Build (Clean Start)
         run: |
           cd game_project
-          # تشغيل البناء في وضع debug لمعرفة أي خطأ فوراً
+          # مسح أي مخلفات قديمة بدأت بشكل خاطئ
+          ~/.local/bin/buildozer android clean
+          # بدء البناء مع إظهار التفاصيل
           ~/.local/bin/buildozer -v android debug
         continue-on-error: false
 
-      - name: 📤 6. Export Final Game
+      - name: 📤 6. Export The Phoenix APK
         uses: actions/upload-artifact@v4
         with:
-          name: Phoenix_Handmade_Game
+          name: Phoenix_Ultimate_Game
           path: game_project/bin/*.apk
