@@ -1,4 +1,4 @@
-name: 🛡️ Absolute_Truth_Test_v95
+name: 🛡️ Absolute_Truth_Test_v96
 
 on:
   workflow_dispatch:
@@ -21,9 +21,9 @@ jobs:
               f.seek(5 * 1024 * 1024 * 1024)
               f.write(b'GENE_MIDDLE_555')
           "
-          echo "✅ 10GB Data Injected."
+          echo "✅ 10GB Data Ready."
 
-      - name: 🏗️ 3. Structure Project (Clean Architecture)
+      - name: 🏗️ 3. Structure Project
         run: |
           mkdir -p app/src/main/java/com/atomic/seeker
           mkdir -p app/src/main/res/layout
@@ -31,30 +31,30 @@ jobs:
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
 
-          # المصدر الوحيد للمستودعات لمنع التعارض
+          # ملف الإعدادات: مستودعات نظيفة لكل المشروع
           cat << 'EOF' > settings.gradle
-          pluginManagement { 
-              repositories { google(); mavenCentral(); gradlePluginPortal() } 
+          pluginManagement {
+              repositories { google(); mavenCentral(); gradlePluginPortal() }
           }
-          dependencyResolutionManagement { 
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories { google(); mavenCentral() } 
+          dependencyResolutionManagement {
+              repositories { google(); mavenCentral() }
           }
           rootProject.name = "AtomicSeeker"
           include ':app'
           EOF
 
-          # ملف بناء نظيف بدون مستودعات متكررة
+          # ملف البناء الرئيسي: تعريف الكلاس-باث مع المستودع الخاص به
           cat << 'EOF' > build.gradle
           buildscript {
+              repositories { google(); mavenCentral() }
               dependencies { classpath 'com.android.tools.build:gradle:8.1.0' }
           }
           EOF
 
+          # ملف بناء التطبيق
           cat << 'EOF' > app/build.gradle
           plugins {
               id 'com.android.application'
-              id 'org.jetbrains.kotlin.android' version '1.8.10'
           }
           android {
               namespace "com.atomic.seeker"
@@ -63,8 +63,8 @@ jobs:
                   applicationId "com.atomic.seeker"
                   minSdk 24
                   targetSdk 33
-                  versionCode 95
-                  versionName "95.0"
+                  versionCode 96
+                  versionName "96.0"
               }
           }
           dependencies {
@@ -83,7 +83,7 @@ jobs:
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   val tv = TextView(this).apply { 
-                      textSize = 22f; setPadding(60,60,60,60); setTextColor(android.graphics.Color.BLUE) 
+                      textSize = 24f; setPadding(60,60,60,60); setTextColor(android.graphics.Color.GREEN) 
                   }
                   setContentView(tv)
                   val brain = File("/sdcard/brain.bin")
@@ -93,8 +93,8 @@ jobs:
                           raf.seek(5 * 1024 * 1024 * 1024.toLong())
                           val buffer = ByteArray(15)
                           raf.read(buffer)
-                          tv.text = "🔍 DEEP DATA FOUND:\n\nValue: ${String(buffer)}\n\nStatus: 10GB INTELLIGENCE VERIFIED!"
-                      } else { tv.text = "❌ Error: brain.bin not found on emu-storage" }
+                          tv.text = "🔍 TRUTH SCAN:\n\nDATA: ${String(buffer)}\n\nINTELLIGENCE: 100%"
+                      } else { tv.text = "❌ Brain not found" }
                   } catch (e: Exception) { tv.text = "Error: ${e.message}" }
               }
           }
@@ -138,7 +138,7 @@ jobs:
       - name: 📤 7. Final Evidence
         uses: actions/upload-artifact@v4
         with:
-          name: Absolute-Proof-v95
+          name: Absolute-Proof-v96
           path: |
             app/build/outputs/apk/debug/*.apk
             truth_result.png
