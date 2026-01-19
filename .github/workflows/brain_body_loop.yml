@@ -1,4 +1,4 @@
-name: 🏗️ PHOENIX_DIRECT_BUILD_v131
+name: 🏗️ PHOENIX_STABLE_SUCCESS_v132
 
 on:
   workflow_dispatch:
@@ -16,41 +16,49 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 🐍 3. Setup Python & Dependencies
+      - name: 🛡️ 3. Pre-Accept Android Licenses (الحل الجذري)
+        run: |
+          sudo apt-get update
+          # تثبيت أدوات أندرويد الأساسية للموافقة على الرخص يدوياً قبل البدء
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          # تحميل أداة التراخيص الرسمية
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline.zip
+          unzip cmdline.zip -d $HOME/android-sdk/cmdline-tools
+          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
+          # الموافقة على كل التراخيص (بما فيها التي أرسلتها في الرسالة)
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=$HOME/android-sdk
+
+      - name: 🐍 4. Install Dependencies
         run: |
           pip install --user --upgrade Cython==0.29.33 buildozer
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-          sudo apt-get update
-          sudo apt-get install -y build-essential libffi-dev libssl-dev pkg-config
 
-      - name: 📝 4. Create main.py
+      - name: 📝 5. Create main.py
         run: |
           cat << 'EOF' > main.py
           from kivy.app import App
           from kivy.uix.label import Label
           class PhoenixApp(App):
               def build(self):
-                  return Label(text="🔥 PHOENIX SYSTEM ONLINE\nReady for 10GB Data", font_size='20sp')
+                  return Label(text="🔥 PHOENIX ACTIVE\nLicenses Accepted Automatically", font_size='20sp')
           if __name__ == '__main__':
               PhoenixApp().run()
           EOF
 
-      - name: 🔨 5. Fresh Build (No Clean)
+      - name: 🔨 6. Forced Stable Build
         run: |
-          # إنشاء ملف الإعدادات
           buildozer init
-          
-          # تعديلات أساسية لضمان النجاح
+          # تعديل الإعدادات للهروب من النسخة 36.1 التجريبية التي تسبب المشكلة
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
           sed -i 's/android.api = 31/android.api = 34/' buildozer.spec
-          # منع Buildozer من محاولة استخدام إصدارات NDK غير متوافقة
-          sed -i 's/#android.ndk = 25b/android.ndk = 25b/' buildozer.spec
+          sed -i 's/#android.build_tools_version = 31.0.0/android.build_tools_version = 34.0.0/' buildozer.spec
           
-          # البدء بالبناء مباشرة دون تنظيف المجلدات الوهمية
+          # إجبار المحرك على استخدام المسار الذي وافقنا فيه على التراخيص
+          export ANDROID_HOME=$HOME/android-sdk
           buildozer -v android debug
-          
-      - name: 📤 6. Export APK
+
+      - name: 📤 7. Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gemini-Phoenix-App
+          name: Gemini-Phoenix-A32
           path: bin/*.apk
