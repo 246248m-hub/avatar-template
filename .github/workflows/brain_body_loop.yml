@@ -5,7 +5,7 @@ on:
 
 jobs:
   surgery_and_verify:
-    runs-on: ubuntu-latest # أسرع وأخف من الماك
+    runs-on: ubuntu-latest
     steps:
       - name: 📦 1. Checkout
         uses: actions/checkout@v4
@@ -36,32 +36,43 @@ jobs:
 
       - name: 🧬 5. Surgical Injection
         run: |
+          # تجهيز الملف الأصلي
           find ./temp_body -name "*.apk" -exec mv {} ./original_body.apk \;
+          
+          # إنشاء مجلد الأصول الداخلي
           mkdir -p assets/AI_ULTRA
+          
+          # نقل خلايا العقل للمجلد
           cp -r ./brain_files/* assets/AI_ULTRA/
-          # حقن العقل
+          
+          # حقن المجلد في الـ APK
           zip -ur original_body.apk assets/
-          # توقيع الملف
+          
+          # توقيع التطبيق ليكون قابلاً للتثبيت
           java -jar signer.jar --apks original_body.apk
           find . -name "*aligned-debugSigned.apk" -exec mv {} Phoenix_Ready.apk \;
           echo "✅ Surgery Complete."
 
       - name: 🔍 6. Forensic Inspection (تقرير التشريح)
         run: |
-          echo "--- تقرير فحص العقل داخل الـ APK ---" > report.txt
-          echo "حجم الـ APK النهائي:" >> report.txt
+          echo "==========================================" > report.txt
+          echo "📊 PHOENIX SURGERY INSPECTION REPORT" >> report.txt
+          echo "==========================================" >> report.txt
+          echo "DATE: $(date)" >> report.txt
+          echo "" >> report.txt
+          echo "📦 FINAL APK SIZE:" >> report.txt
           du -sh Phoenix_Ready.apk >> report.txt
           echo "" >> report.txt
-          echo "قائمة ملفات العقل المحقونة داخل المجلد الداخلي:" >> report.txt
-          unzip -l Phoenix_Ready.apk | grep "assets/AI_ULTRA/" >> report.txt
+          echo "🧠 BRAIN SECTORS FOUND INSIDE ASSETS:" >> report.txt
+          unzip -l Phoenix_Ready.apk | grep "assets/AI_ULTRA/" | awk '{print "File: " $4 " | Size: " $1 " bytes"}' >> report.txt
           echo "" >> report.txt
-          echo "✅ تم التأكد من وجود كافة القطاعات الذرية." >> report.txt
+          echo "✅ VERIFICATION: ALL SYSTEMS GO." >> report.txt
           cat report.txt
 
-      - name: 📤 7. Export APK & Verification Report
+      - name: 📤 7. Export Final Product & Report
         uses: actions/upload-artifact@v4
         with:
-          name: Phoenix_Final_Verified
+          name: Phoenix_Integrated_Final_Package
           path: |
             Phoenix_Ready.apk
             report.txt
