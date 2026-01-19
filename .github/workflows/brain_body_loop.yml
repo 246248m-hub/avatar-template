@@ -1,4 +1,4 @@
-name: 🚀 Atomic_Installer_Final_v71
+name: 🚀 Atomic_Installer_Final_v72
 
 on:
   workflow_dispatch:
@@ -18,16 +18,18 @@ jobs:
 
       - name: 🏗️ 3. Structure Android Project
         run: |
-          # إنشاء هيكل المجلدات
           mkdir -p app/src/main/java/com/atomic/engine
           mkdir -p app/src/main/res/layout
-          mkdir -p app/src/main/res/values
           mkdir -p app/src/main/res/xml
 
-          # ملف الإعدادات العام
+          # 🚨 إصلاح الخطأ: تفعيل AndroidX و Jetifier
+          cat << 'EOF' > gradle.properties
+          android.useAndroidX=true
+          android.enableJetifier=true
+          EOF
+
           echo "include ':app'" > settings.gradle
           
-          # ملف Gradle الرئيسي للجذر
           cat << 'EOF' > build.gradle
           buildscript {
               repositories { google(); mavenCentral() }
@@ -41,13 +43,11 @@ jobs:
           }
           EOF
 
-          # ملف Gradle الخاص بالتطبيق (الموديول)
           cat << 'EOF' > app/build.gradle
           plugins {
               id 'com.android.application'
               id 'kotlin-android'
           }
-
           android {
               namespace "com.atomic.engine"
               compileSdk 33
@@ -55,8 +55,8 @@ jobs:
                   applicationId "com.atomic.engine"
                   minSdk 24
                   targetSdk 33
-                  versionCode 71
-                  versionName "71.0"
+                  versionCode 72
+                  versionName "72.0"
               }
               compileOptions {
                   sourceCompatibility JavaVersion.VERSION_17
@@ -66,7 +66,6 @@ jobs:
                   jvmTarget = '17'
               }
           }
-
           dependencies {
               implementation 'androidx.core:core-ktx:1.10.1'
               implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -74,9 +73,8 @@ jobs:
           }
           EOF
 
-      - name: 📝 4. Inject App Source & Manifest
+      - name: 📝 4. Inject Manifest & Installer Logic
         run: |
-          # تعريف مسارات الملفات لتثبيت الـ APK الناتج
           cat << 'EOF' > app/src/main/res/xml/file_paths.xml
           <?xml version="1.0" encoding="utf-8"?>
           <paths>
@@ -84,12 +82,11 @@ jobs:
           </paths>
           EOF
 
-          # المانيفست
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
               <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
-              <application android:label="Atomic Maker v71" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+              <application android:label="Atomic Maker v72" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
                   <activity android:name="com.atomic.engine.MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -107,11 +104,9 @@ jobs:
           </manifest>
           EOF
 
-          # كود المحرك الرئيسي
           cat << 'EOF' > app/src/main/java/com/atomic/engine/MainActivity.kt
           package com.atomic.engine
           import android.content.Intent
-          import android.net.Uri
           import android.os.*
           import android.widget.*
           import androidx.appcompat.app.AppCompatActivity
@@ -126,8 +121,8 @@ jobs:
                       setBackgroundColor(0xFF121212.toInt())
                       setPadding(50, 50, 50, 50)
                   }
-                  val tv = TextView(this).apply { text = "⚛️ Atomic Installer v71\nReady to Sculpt AAA Games\n"; setTextColor(0xFF00FF00.toInt()) }
-                  val input = EditText(this).apply { hint = "Explain your game..."; setTextColor(0xFFFFFFFF.toInt()) }
+                  val tv = TextView(this).apply { text = "⚛️ Atomic Installer v72\nReady for AAA Synthesis\n"; setTextColor(0xFF00FF00.toInt()) }
+                  val input = EditText(this).apply { hint = "Explain Game..."; setTextColor(0xFFFFFFFF.toInt()) }
                   val btn = Button(this).apply { text = "SCULPT & INSTALL" }
                   layout.addView(tv); layout.addView(input); layout.addView(btn)
                   setContentView(layout)
@@ -140,7 +135,7 @@ jobs:
                           if(brain.exists()){
                               val raf = RandomAccessFile(brain, "r")
                               val out = FileOutputStream(outputApk)
-                              val buffer = ByteArray(1024 * 1024 * 20) // سحب 20 ميجا هيكس
+                              val buffer = ByteArray(1024 * 1024 * 30) // سحب 30 ميجا هيكس
                               raf.seek(0); raf.read(buffer); out.write(buffer)
                               out.close(); raf.close()
 
@@ -168,5 +163,5 @@ jobs:
       - name: 📤 6. Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: Atomic-Installer-v71
+          name: Atomic-Installer-v72
           path: app/build/outputs/apk/debug/*.apk
