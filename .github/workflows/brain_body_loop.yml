@@ -1,4 +1,4 @@
-name: 🚀 Final_Atomic_Game_Maker_v68
+name: 🚀 Final_Atomic_Success_v69
 
 on:
   workflow_dispatch:
@@ -7,20 +7,21 @@ jobs:
   build_apk:
     runs-on: ubuntu-latest
     steps:
-      - name: 📦 Checkout
+      - name: 📦 1. Checkout
         uses: actions/checkout@v4
 
-      - name: ☕ Setup Java 17
+      - name: ☕ 2. Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🏗️ Build Master App
+      - name: 🏗️ 3. Fix Compatibility & Build Project
         run: |
-          # إعداد هيكل المشروع
+          # إعداد ملفات المشروع الأساسية
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
+          
           cat << 'EOF' > settings.gradle
           rootProject.name = "AtomicGameMaker"
           include ':app'
@@ -29,21 +30,41 @@ jobs:
           cat << 'EOF' > build.gradle
           buildscript {
               repositories { google(); mavenCentral() }
-              dependencies { classpath 'com.android.tools.build:gradle:8.1.0'; classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10' }
+              dependencies {
+                  classpath 'com.android.tools.build:gradle:8.1.0'
+                  classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10'
+              }
           }
-          allprojects { repositories { google(); mavenCentral() } }
+          allprojects {
+              repositories { google(); mavenCentral() }
+          }
           EOF
 
           mkdir -p app/src/main/java/com/atomic/engine
           mkdir -p app/src/main/res/layout
 
+          # ملف بناء التطبيق مع توحيد إصدار الجافا (Target 17)
           cat << 'EOF' > app/build.gradle
           apply plugin: 'com.android.application'
           apply plugin: 'kotlin-android'
+
           android {
               namespace "com.atomic.engine"
               compileSdk 33
-              defaultConfig { applicationId "com.atomic.engine"; minSdk 24; targetSdk 33; versionCode 68; versionName "68.0" }
+              defaultConfig {
+                  applicationId "com.atomic.engine"
+                  minSdk 24
+                  targetSdk 33
+                  versionCode 69
+                  versionName "69.0"
+              }
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+              kotlinOptions {
+                  jvmTarget = '17'
+              }
           }
           dependencies {
               implementation 'androidx.core:core-ktx:1.10.1'
@@ -52,11 +73,12 @@ jobs:
           }
           EOF
 
-          # المانيفست مع كامل الصلاحيات
+      - name: 📝 4. Inject Logic & Manifest
+        run: |
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
-              <application android:label="Atomic Game Maker" android:theme="@style/Theme.AppCompat.NoActionBar">
+              <application android:label="Atomic Maker v69" android:theme="@style/Theme.AppCompat.NoActionBar">
                   <activity android:name="com.atomic.engine.MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -67,7 +89,6 @@ jobs:
           </manifest>
           EOF
 
-          # الكود الرئيسي للنحت السداسي (Hex Synthesis)
           cat << 'EOF' > app/src/main/java/com/atomic/engine/MainActivity.kt
           package com.atomic.engine
           import android.os.*
@@ -83,35 +104,31 @@ jobs:
                       setBackgroundColor(0xFF000000.toInt())
                       setPadding(40, 40, 40, 40)
                   }
-                  val log = TextView(this).apply { text = "READY FOR AAA HEX SYNTHESIS\n"; setTextColor(0xFF00FF00.toInt()) }
-                  val input = EditText(this).apply { hint = "Explain Game (e.g. Genshin Type)"; setTextColor(0xFFFFFFFF.toInt()) }
-                  val btn = Button(this).apply { text = "GENERATE GAME HEX" }
-                  
-                  layout.addView(log); layout.addView(input); layout.addView(btn)
+                  val tv = TextView(this).apply { text = "⚛️ Atomic Hex Engine v69\nStatus: READY\n"; setTextColor(0xFF00FF00.toInt()) }
+                  val input = EditText(this).apply { hint = "Explain Game..."; setTextColor(0xFFFFFFFF.toInt()) }
+                  val btn = Button(this).apply { text = "GENERATE HEX" }
+                  layout.addView(tv); layout.addView(input); layout.addView(btn)
                   setContentView(layout)
 
                   btn.setOnClickListener {
                       try {
                           val brain = File(Environment.getExternalStorageDirectory(), "AI_Project/brain.bin")
-                          val game = File(Environment.getExternalStorageDirectory(), "AI_Project/output_game.hex")
+                          val game = File(Environment.getExternalStorageDirectory(), "AI_Project/final_game.hex")
                           if(brain.exists()){
                               val raf = RandomAccessFile(brain, "r")
                               val out = FileOutputStream(game)
-                              // سحب 100 ميجا من الهيكس الصافي للعبة
-                              val buffer = ByteArray(1024 * 1024 * 100)
-                              raf.seek(0)
-                              raf.read(buffer)
-                              out.write(buffer)
+                              val buffer = ByteArray(1024 * 1024 * 50) 
+                              raf.seek(0); raf.read(buffer); out.write(buffer)
                               out.close(); raf.close()
-                              log.append("\n✅ Success: AAA Game Created!")
-                          } else { log.append("\n❌ Error: brain.bin not found!") }
-                      } catch(e: Exception) { log.append("\n⚠️ Fail: ${e.message}") }
+                              tv.append("\n✅ Success!")
+                          } else { tv.append("\n❌ Missing brain.bin") }
+                      } catch(e: Exception) { tv.append("\n⚠️ Fail: ${e.message}") }
                   }
               }
           }
           EOF
 
-      - name: 🛠️ 5. Final Compilation
+      - name: 🛠️ 5. Build & Export
         run: |
           wget -q https://services.gradle.org/distributions/gradle-8.1-bin.zip
           unzip -q gradle-8.1-bin.zip
@@ -122,5 +139,5 @@ jobs:
       - name: 📤 6. Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: Atomic-Game-Maker-v68
+          name: Atomic-Maker-v69-Final
           path: app/build/outputs/apk/debug/*.apk
