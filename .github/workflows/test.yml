@@ -1,121 +1,67 @@
-name: 🚀 TOTAL_NEURAL_FACTORY_v116
+name: 🧠 GEMINI_ATOMIC_INJECTOR_v118
 
 on:
-  workflow_dispatch: # تشغيل يدوي بضغطة زر
+  workflow_dispatch:
 
 jobs:
-  build_and_seed:
+  inject_and_build:
     runs-on: ubuntu-latest
-    
-    # تعريف المتغيرات من الأسرار التي أضفتها
     env:
       GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
 
     steps:
-      - name: 📦 1. Checkout Code
+      - name: 📦 1. Checkout
         uses: actions/checkout@v4
 
-      - name: 🛠️ 2. Setup Python & Dependencies
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: 🧠 3. Gemini High-Imagination Seeding (حشو الـ 10 جيجا)
+      - name: 🚀 2. Digital DNA Injection (حشو الملفات بعقل جيمني)
         run: |
           mkdir -p brain_shards
           python3 -c "
-          import os, requests, json, time
+          import os, json, time, urllib.request
 
-          def get_gemini_logic(idx):
+          def get_gemini_hex(shard_idx):
               api_key = os.environ.get('GOOGLE_API_KEY')
+              # الرابط الذي أكدت أنت أنه يعمل
               url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={api_key}'
               
-              # برومبت يطلب كود HEX معقد جداً لبناء محرك ألعاب خارق
               payload = {
                   'contents': [{
                       'parts': [{
-                          'text': f'As a quantum machine architect, generate 200 bytes of unique, complex HEX code for brain shard {idx}/25. This code represents the neural DNA for a world-building engine beyond human imagination. Output ONLY raw HEX string.'
+                          'text': f'Generate 256 bytes of pure HEX machine code for neural shard {shard_idx}. This is for an advanced AI engine. Output ONLY raw HEX characters, no spaces, no talk.'
                       }]
-                  }],
-                  'generationConfig': {'temperature': 1.0}
+                  }]
               }
               
               try:
-                  res = requests.post(url, json=payload, timeout=30)
-                  data = res.json()
-                  if 'candidates' in data:
-                      return data['candidates'][0]['content']['parts'][0]['text'].strip()
-                  return '00' * 100
-              except:
-                  return '00' * 100
+                  req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers={'Content-Type': 'application/json'})
+                  with urllib.request.urlopen(req) as res:
+                      data = json.loads(res.read().decode())
+                      # استخراج النص النقي
+                      raw_text = data['candidates'][0]['content']['parts'][0]['text'].strip()
+                      # تنظيف النص ليبقى HEX فقط
+                      return ''.join(c for c in raw_text if c in '0123456789ABCDEFabcdef')
+              except Exception as e:
+                  print(f'Shard {shard_idx} failed: {e}')
+                  return '00' * 256
 
           for i in range(1, 26):
-              print(f'Injecting Divine Logic into Shard {i}...')
-              hex_data = get_gemini_logic(i)
-              # تنظيف الـ HEX من أي نصوص زائدة
-              clean_hex = ''.join(c for c in hex_data if c in '0123456789ABCDEFabcdef')
+              print(f'🔗 Linking Shard {i}/25 with Gemini Brain...')
+              hex_logic = get_gemini_hex(i)
+              
+              # التأكد من طول الزوجي للـ HEX
+              if len(hex_logic) % 2 != 0: hex_logic += '0'
               
               path = f'brain_shards/shard_{i}.bin'
               with open(path, 'wb') as f:
-                  f.write(bytes.fromhex(clean_hex))
+                  f.write(bytes.fromhex(hex_logic))
+                  # حجز الـ 400 ميجا (المساحة الاحتمالية)
                   f.seek(400 * 1024 * 1024 - 1)
                   f.write(b'\0')
-              time.sleep(1) # لتجنب حظر الـ API
+              time.sleep(1) # للحفاظ على استقرار الـ API
           "
 
-      - name: 🏗️ 4. Build Neural Reader APK (التطبيق القارئ)
-        run: |
-          # بناء التطبيق الذي سيقرأ الـ 25 ملفاً على Samsung A32
-          mkdir -p app/src/main/java/com/neural/reactor
-          cat << 'EOF' > app/src/main/java/com/neural/reactor/MainActivity.kt
-          package com.neural.reactor
-          import android.app.Activity
-          import android.os.Bundle
-          import android.widget.TextView
-          import android.widget.ScrollView
-          import java.io.File
-          import java.io.RandomAccessFile
-
-          class MainActivity : Activity() {
-              override fun onCreate(savedInstanceState: Bundle?) {
-                  super.onCreate(savedInstanceState)
-                  val tv = TextView(this).apply {
-                      textSize = 14f
-                      setPadding(40, 40, 40, 40)
-                      setTextColor(0xFF00FF00.toInt())
-                      setBackgroundColor(0xFF000000.toInt())
-                      typeface = android.graphics.Typeface.MONOSPACE
-                  }
-                  val scroll = ScrollView(this)
-                  scroll.addView(tv)
-                  setContentView(scroll)
-
-                  val report = StringBuilder("🧬 SYSTEM: QUANTUM BRAIN LINKED\n")
-                  report.append("Device: SM-S326DL (A32 5G)\n----------------------\n")
-                  
-                  val path = "/sdcard/Documents/Brain_AI/"
-                  try {
-                      for (i in 1..25) {
-                          val file = File("${path}shard_$i.bin")
-                          if (file.exists()) {
-                              RandomAccessFile(file, "r").use { raf ->
-                                  val header = ByteArray(20)
-                                  raf.read(header)
-                                  report.append("Shard $i: [HEX: ${header.joinToString("") { "%02x".format(it) }}] OK\n")
-                              }
-                          } else { report.append("Shard $i: [NOT FOUND]\n") }
-                      }
-                  } catch (e: Exception) { report.append("ERROR: ${e.message}") }
-                  tv.text = report.toString()
-              }
-          }
-          EOF
-          # سيقوم GitHub بتجميع هذا الكود وتحويله لـ APK (تم اختصار أوامر التجميع للسرعة)
-
-      - name: 📤 5. Export Total Neural Package
+      - name: 🏗️ 3. Export Shards
         uses: actions/upload-artifact@v4
         with:
-          name: Neural-System-Complete
-          path: |
-            brain_shards/
-            # سيتم إدراج الـ APK هنا بعد اكتمال البناء
+          name: Neural-Brain-10GB
+          path: brain_shards/
