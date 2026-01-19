@@ -1,65 +1,69 @@
-name: 🎮 🏗️ PHOENIX_GAME_APK_FACTORY_V2
+name: 🎮 🏗️ PHOENIX_MANUAL_FACTORY
 
 on:
   workflow_dispatch:
 
 jobs:
-  build_game_apk:
-    runs-on: ubuntu-22.04 # تحديد إصدار مستقر
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - name: 📦 1. Checkout Environment
+      - name: 📦 1. Checkout Code
         uses: actions/checkout@v4
 
-      - name: 🧠 2. Loading Injected Brain (135MB)
+      - name: 🛠️ 2. Install Dependencies (المواد الخام)
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip build-essential git python3 dev ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev
+          sudo apt install -y libgstreamer1.0-gstreamer-lite1.0-dev libgstreamer-plugins-base1.0-dev
+          pip3 install --user --upgrade Cython==0.29.33 buildozer
+          echo "export PATH=\$PATH:~/.local/bin" >> $GITHUB_PATH
+
+      - name: 🧠 3. Loading Brain (135MB)
         uses: dawidd6/action-download-artifact@v6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           repo: 246248m-hub/avatar-template
           run_id: 21146976650
           name: Phoenix_Ultra_Brain
-          path: ./brain_assets
+          path: ./game_project/brain_assets
 
-      - name: 🏗️ 3. Phoenix Engine (Generate Game & Spec)
+      - name: 🏗️ 4. Create Game Files
         run: |
           mkdir -p game_project
-          # إنشاء كود اللعبة المولد من العقل
+          # كود اللعبة المولد
           cat <<EOF > game_project/main.py
           from kivy.app import App
           from kivy.uix.label import Label
           class PhoenixGame(App):
               def build(self):
-                  return Label(text='[ Phoenix Bit-Level Game ]\nGenerated Successfully')
+                  return Label(text='Phoenix Bit Engine\nStatus: Game Generated')
           if __name__ == '__main__':
               PhoenixGame().run()
           EOF
 
-          # إنشاء ملف التعليمات (Spec File) الضروري جداً للبناء
+          # ملف التعليمات البرمجية
           cat <<EOF > game_project/buildozer.spec
           [app]
-          title = Phoenix Bit Game
-          package.name = phoenix_bit_game
+          title = PhoenixGame
+          package.name = phoenix.game
           package.domain = org.phoenix
           source.dir = .
           source.include_exts = py,png,jpg,kv,atlas
-          version = 0.1
+          version = 1.0
           requirements = python3,kivy
           orientation = portrait
-          osx.python_version = 3
-          osx.kivy_version = 1.9.1
-          fullscreen = 0
-          android.archs = armeabi-v7a, arm64-v8a
-          android.allow_backup = True
+          android.archs = arm64-v8a
+          android.accept_sdk_license = True
           EOF
-          echo "✅ Game and Spec files are ready."
 
-      - name: 🛠️ 4. Build APK (The Reliable Way)
-        uses: kivy/buildozer-action@master
-        with:
-          workdir: game_project
-          buildozer_version: stable
+      - name: 🚀 5. Start Manual Construction (Build APK)
+        run: |
+          cd game_project
+          ~/.local/bin/buildozer -v android debug
+        continue-on-error: false
 
-      - name: 📤 5. Export The Created Game (APK)
+      - name: 📤 6. Export Final Game
         uses: actions/upload-artifact@v4
         with:
-          name: Phoenix_Generated_Game_APK
+          name: Phoenix_Handmade_Game
           path: game_project/bin/*.apk
