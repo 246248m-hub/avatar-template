@@ -1,67 +1,69 @@
-name: 🧠 GEMINI_ATOMIC_INJECTOR_v118
+name: 🛠️ PHOENIX_FIX_PATH_v141
 
 on:
   workflow_dispatch:
 
 jobs:
-  inject_and_build:
-    runs-on: ubuntu-latest
-    env:
-      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-
+  build:
+    runs-on: ubuntu-22.04
     steps:
       - name: 📦 1. Checkout
         uses: actions/checkout@v4
 
-      - name: 🚀 2. Digital DNA Injection (حشو الملفات بعقل جيمني)
+      - name: ☕ 2. Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 🏗️ 3. Pre-Setup Android SDK Manager
         run: |
-          mkdir -p brain_shards
-          python3 -c "
-          import os, json, time, urllib.request
+          # تحديد المسار الذي يستخدمه Buildozer
+          export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
+          mkdir -p $ANDROID_HOME/cmdline-tools/latest
+          
+          # تحميل أدوات سطر الأوامر (الإصدار المستقر)
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip
+          unzip -q tools.zip
+          mv cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/
+          
+          # خدعة المسار الكبيرة: ربط المسار القديم بالجديد (Symlink)
+          mkdir -p $ANDROID_HOME/tools/bin
+          ln -s $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
+          
+          # الموافقة المسبقة على التراخيص (النص القانوني الذي أرسلته)
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=$ANDROID_HOME
 
-          def get_gemini_hex(shard_idx):
-              api_key = os.environ.get('GOOGLE_API_KEY')
-              # الرابط الذي أكدت أنت أنه يعمل
-              url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={api_key}'
-              
-              payload = {
-                  'contents': [{
-                      'parts': [{
-                          'text': f'Generate 256 bytes of pure HEX machine code for neural shard {shard_idx}. This is for an advanced AI engine. Output ONLY raw HEX characters, no spaces, no talk.'
-                      }]
-                  }]
-              }
-              
-              try:
-                  req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers={'Content-Type': 'application/json'})
-                  with urllib.request.urlopen(req) as res:
-                      data = json.loads(res.read().decode())
-                      # استخراج النص النقي
-                      raw_text = data['candidates'][0]['content']['parts'][0]['text'].strip()
-                      # تنظيف النص ليبقى HEX فقط
-                      return ''.join(c for c in raw_text if c in '0123456789ABCDEFabcdef')
-              except Exception as e:
-                  print(f'Shard {shard_idx} failed: {e}')
-                  return '00' * 256
+      - name: 🐍 4. Install Dependencies
+        run: |
+          pip install --user Cython==0.29.33 buildozer
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-          for i in range(1, 26):
-              print(f'🔗 Linking Shard {i}/25 with Gemini Brain...')
-              hex_logic = get_gemini_hex(i)
-              
-              # التأكد من طول الزوجي للـ HEX
-              if len(hex_logic) % 2 != 0: hex_logic += '0'
-              
-              path = f'brain_shards/shard_{i}.bin'
-              with open(path, 'wb') as f:
-                  f.write(bytes.fromhex(hex_logic))
-                  # حجز الـ 400 ميجا (المساحة الاحتمالية)
-                  f.seek(400 * 1024 * 1024 - 1)
-                  f.write(b'\0')
-              time.sleep(1) # للحفاظ على استقرار الـ API
-          "
+      - name: 📝 5. Create main.py
+        run: |
+          cat << 'EOF' > main.py
+          from kivy.app import App
+          from kivy.uix.label import Label
+          class PhoenixApp(App):
+              def build(self):
+                  return Label(text="🔥 PHOENIX SYSTEM\nStatus: Path Fixed", font_size='20sp')
+          if __name__ == '__main__':
+              PhoenixApp().run()
+          EOF
 
-      - name: 🏗️ 3. Export Shards
+      - name: 🔨 6. Optimized Build (API 33)
+        run: |
+          buildozer init
+          # ضبط الإعدادات لتجنب الأخطاء السابقة
+          sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
+          sed -i 's/android.api = 31/android.api = 33/' buildozer.spec
+          sed -i 's/#android.build_tools_version = 31.0.0/android.build_tools_version = 33.0.1/' buildozer.spec
+          
+          # تشغيل البناء مع عرض التفاصيل
+          buildozer -v android debug
+
+      - name: 📤 7. Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: Neural-Brain-10GB
-          path: brain_shards/
+          name: Gemini-Phoenix-A32
+          path: bin/*.apk
