@@ -1,4 +1,4 @@
-name: 🛠️ PHOENIX_ATOMIC_BUILDER_v142
+name: ⚛️ PHOENIX_ATOMIC_COMPILER_v143
 
 on:
   workflow_dispatch:
@@ -10,13 +10,13 @@ jobs:
       - name: 📦 1. Checkout
         uses: actions/checkout@v4
 
-      - name: ☕ 2. Setup Java 17
+      - name: ☕ 2. Setup Java 17 (تقليد للوصفة الناجحة)
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 🏗️ 3. Pre-Setup Android SDK (The Fixed Path)
+      - name: 🏗️ 3. Pre-Setup Android SDK (تقليد للوصفة الناجحة)
         run: |
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           mkdir -p $ANDROID_HOME/cmdline-tools/latest
@@ -27,68 +27,99 @@ jobs:
           ln -s $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=$ANDROID_HOME
 
-      - name: 🐍 4. Install Dependencies
+      - name: 🐍 4. Install Dependencies (تقليد للوصفة الناجحة)
         run: |
           pip install --user Cython==0.29.33 buildozer
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: 📝 5. Create main.py (Arabic Atomic Engine)
+      - name: 🧠 5. Create Python Logic & The Atomic Compiler
         run: |
+          # --- أولاً: إنشاء "لقم الدماغ" بلغة بايثون ---
+          mkdir -p brain_logic
+          cat << 'EOF' > brain_logic/part1_physics.py
+          # Physics Module
+          GRAVITY = -9.8
+          def update_position(obj, time):
+              obj['y'] += obj['vy'] * time
+              obj['vy'] += GRAVITY * time
+              return obj
+          EOF
+          
+          cat << 'EOF' > brain_logic/part2_rendering.py
+          # Rendering Module
+          def draw_object(obj):
+              # في المستقبل، هذا سيتحول إلى تعليمات رسم حقيقية
+              return f"DRAW CIRCLE AT ({obj['x']}, {obj['y']}) WITH COLOR {obj['color']}"
+          EOF
+
+          # --- ثانياً: إنشاء "المترجم الذري" الذي يقرأ البايثون ---
+          # هذا هو الكود الرئيسي للتطبيق
           cat << 'EOF' > main.py
-          import os
+          # --- The Atomic Compiler & Game Engine ---
           from kivy.app import App
           from kivy.uix.boxlayout import BoxLayout
           from kivy.uix.label import Label
-          from kivy.uix.textinput import TextInput
-          from kivy.uix.button import Button
-          from kivy.utils import platform
+          from kivy.clock import Clock
+          import importlib.util
+
+          # --- استيراد "لقم الدماغ" ديناميكياً ---
+          def load_module_from_file(module_name, file_path):
+              spec = importlib.util.spec_from_file_location(module_name, file_path)
+              module = importlib.util.module_from_spec(spec)
+              spec.loader.exec_module(module)
+              return module
+
+          try:
+              physics_module = load_module_from_file("physics", "brain_logic/part1_physics.py")
+              rendering_module = load_module_from_file("rendering", "brain_logic/part2_rendering.py")
+              BRAIN_LOADED = True
+          except Exception as e:
+              BRAIN_LOADED = False
+              ERROR_MSG = str(e)
 
           class PhoenixApp(App):
               def build(self):
-                  self.layout = BoxLayout(orientation='vertical', padding=20, spacing=10)
-                  self.lbl = Label(text="🔥 نظام فينيكس للتخليق الذري\nبانتظار بناء لعبتك القادمة...", font_size='18sp', halign='center')
-                  self.input = TextInput(hint_text="اسم اللعبة (مثلاً: Genshin_Impact_Clone)", multiline=False, size_hint_y=0.2)
-                  self.btn = Button(text="تخليق وبناء (Hex Synthesis)", size_hint_y=0.2, background_color=(0, 0.7, 0.9, 1))
-                  self.btn.bind(on_press=self.synthesize)
+                  self.game_object = {'x': 100, 'y': 500, 'vy': 0, 'color': 'RED'}
+                  self.label = Label(text="Initializing...", font_size='20sp')
                   
-                  self.layout.add_widget(self.lbl)
-                  self.layout.add_widget(self.input)
-                  self.layout.add_widget(self.btn)
-                  return self.layout
+                  if not BRAIN_LOADED:
+                      self.label.text = f"❌ Brain Load Failed:\n{ERROR_MSG}"
+                      return self.label
 
-              def synthesize(self, instance):
-                  name = self.input.text or "PhoenixGame"
-                  ai_path = "/sdcard/Documents/AI" if platform == 'android' else "./AI"
-                  out_path = "/sdcard/Documents/Phoenix_Outputs"
-                  os.makedirs(out_path, exist_ok=True)
-                  
-                  target_apk = os.path.join(out_path, f"{name}.apk")
-                  
-                  try:
-                      with open(target_apk, "wb") as f:
-                          f.write(b'\x50\x4B\x03\x04') # APK Hex Header
-                          for i in range(1, 26):
-                              p = os.path.join(ai_path, f"part{i}.dat")
-                              if os.path.exists(p):
-                                  with open(p, "rb") as src: f.write(src.read())
-                      self.lbl.text = f"✅ تم التخليق ذرة بذرة!\nالمسار: {target_apk}"
-                  except Exception as e:
-                      self.lbl.text = f"❌ فشل: {str(e)}"
+                  # بدء محرك اللعبة
+                  Clock.schedule_interval(self.update, 1.0 / 60.0)
+                  return self.label
 
-          if __name__ == '__main__': PhoenixApp().run()
+              def update(self, dt):
+                  # --- هنا يقوم "المترجم" بتشغيل المنطق ---
+                  # 1. تطبيق الفيزياء من اللقمة الأولى
+                  self.game_object = physics_module.update_position(self.game_object, dt)
+                  
+                  # 2. عرض النتيجة من اللقمة الثانية
+                  render_command = rendering_module.draw_object(self.game_object)
+                  
+                  # 3. تحديث الواجهة (في المستقبل ستكون شاشة رسم حقيقية)
+                  self.label.text = f"🔥 PHOENIX ENGINE\n{render_command}\nY: {self.game_object['y']:.2f}"
+
+          if __name__ == '__main__':
+              PhoenixApp().run()
           EOF
 
-      - name: 🔨 6. Optimized Build (With Permissions)
+      - name: 🔨 6. Optimized Build (تقليد للوصفة الناجحة)
         run: |
           buildozer init
+          # تعديل الإعدادات
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
           sed -i 's/android.api = 31/android.api = 33/' buildozer.spec
-          # إضافة صلاحيات التثبيت الكاملة
-          sed -i 's/android.permissions = PACKAGE_USAGE_STATS/android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,MANAGE_EXTERNAL_STORAGE,REQUEST_INSTALL_PACKAGES/' buildozer.spec
+          sed -i 's/#android.build_tools_version = 31.0.0/android.build_tools_version = 33.0.1/' buildozer.spec
+          # إضافة مجلد "العقل" إلى الـ APK
+          sed -i 's/#source.include_exts = py,png,jpg,kv,atlas/source.include_exts = py,png,jpg,kv,atlas\nsource.include_patterns = brain_logic/*' buildozer.spec
+          
+          # تشغيل البناء
           buildozer -v android debug
 
-      - name: 📤 7. Export APK
+      - name: 📤 7. Export APK (تقليد للوصفة الناجحة)
         uses: actions/upload-artifact@v4
         with:
-          name: Phoenix-Atomic-Engine-A32
+          name: Phoenix-Atomic-Compiler-A32
           path: bin/*.apk
