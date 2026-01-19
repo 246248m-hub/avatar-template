@@ -1,72 +1,28 @@
-name: 💉 🧪 PHOENIX_FULL_SURGERY_AND_TEST
-
-on:
-  workflow_dispatch:
-
-jobs:
-  surgery_and_screenshot:
-    runs-on: macos-latest # نستخدم ماك لأنه يدعم الحقن والمحاكي معاً
-    steps:
-      - name: 📦 1. Checkout
-        uses: actions/checkout@v4
-
-      - name: 🛠️ 2. Install Tools
-        run: |
-          brew install zip unzip apktool
-          wget https://github.com/patrickfav/uber-apk-signer/releases/download/v1.3.0/uber-apk-signer-1.3.0.jar -O signer.jar
-
-      - name: 🧠 3. Download Brain (135MB)
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          repo: 246248m-hub/avatar-template
-          run_id: 21146976650
-          name: Phoenix_Ultra_Brain
-          path: ./brain_files
-
-      - name: 📥 4. Download Body (The Compiler)
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          repo: 246248m-hub/avatar-template
-          run_id: 21146013013
-          name: Phoenix-Hex-Compiler-v146
-          path: ./temp_body
-
-      - name: 🧬 5. Surgical Injection
-        run: |
-          find ./temp_body -name "*.apk" -exec mv {} ./original_body.apk \;
-          mkdir -p assets/AI_ULTRA
-          cp -r ./brain_files/* assets/AI_ULTRA/
-          zip -ur original_body.apk assets/
-          java -jar signer.jar --apks original_body.apk
-          find . -name "*aligned-debugSigned.apk" -exec mv {} Phoenix_Ready.apk \;
-          echo "✅ Surgery Complete. APK is Ready."
-
       - name: 🚀 6. Run Emulator & Capture Screenshot
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
-          target: google_apis
+          api-level: 27 # إصدار أخف وأسرع
+          target: default # نسخة بدون خدمات جوجل لتقليل الحمل
           arch: x86_64
+          force-avd-creation: false
+          emulator-boot-timeout: 1200 # زيادة الوقت لضمان الإقلاع
+          emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-boot-anim -camera-back none
           script: |
-            # تثبيت النسخة التي تم حقنها للتو
+            # الانتظار حتى يستقر النظام تماماً
+            adb wait-for-device
+            
+            # تثبيت التطبيق
+            echo "Installing Phoenix..."
             adb install Phoenix_Ready.apk
             
-            # تشغيل التطبيق (تأكد من اسم الحزمة org.test.phoenix)
+            # تشغيل التطبيق
+            echo "Launching App..."
             adb shell monkey -p org.test.phoenix -c android.intent.category.LAUNCHER 1
             
-            echo "App is running, waiting for brain to load..."
-            sleep 30
+            # انتظار كافٍ لتحميل الـ 135 ميجابايت
+            sleep 45
             
-            # أخذ لقطة الشاشة
+            # التقاط الصورة وحفظها
+            echo "Capturing Screenshot..."
             adb shell screencap -p /sdcard/result.png
             adb pull /sdcard/result.png .
-
-      - name: 📤 7. Export APK & Screenshot
-        uses: actions/upload-artifact@v4
-        with:
-          name: Phoenix_Final_Integrated_Result
-          path: |
-            Phoenix_Ready.apk
-            result.png
