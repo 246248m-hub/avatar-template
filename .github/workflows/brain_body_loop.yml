@@ -1,4 +1,4 @@
-name: 🛡️ Absolute_Truth_Test_v97
+name: 🛡️ Absolute_Truth_Test_v98
 
 on:
   workflow_dispatch:
@@ -14,51 +14,57 @@ jobs:
         run: |
           python3 -c "
           import os
-          file_name = 'brain.bin'
-          target_size = 10 * 1024 * 1024 * 1024
-          with open(file_name, 'wb') as f:
+          file_path = 'brain.bin'
+          with open(file_path, 'wb') as f:
               f.write(b'GENE_START_001')
               f.seek(5 * 1024 * 1024 * 1024)
               f.write(b'GENE_MIDDLE_555')
           "
-          echo "✅ 10GB Data Ready."
+          echo "✅ 10GB Brain Created."
 
-      - name: 🏗️ 3. Structure Minimalist Project
+      - name: 🏗️ 3. Absolute Minimal Project Structure
         run: |
           mkdir -p app/src/main/java/com/atomic/seeker
-          mkdir -p app/src/main/res/values
+          mkdir -p app/src/main/res/layout
           
-          # ملف الإعدادات بسيط جداً
+          # إعداد الخصائص لتعطيل أي ميزات ذكية قد تعيق البناء
+          echo "android.useAndroidX=true" > gradle.properties
+          echo "android.enableJetifier=true" >> gradle.properties
+          echo "org.gradle.daemon=false" >> gradle.properties
+          echo "org.gradle.parallel=false" >> gradle.properties
+
+          # ملف الإعدادات: حذف كل شيء باستثناء اسم المشروع
           cat << 'EOF' > settings.gradle
           rootProject.name = "AtomicSeeker"
           include ':app'
           EOF
 
-          # ملف البناء الرئيسي
+          # ملف البناء الرئيسي: الطريقة التقليدية (Legacy Mode)
           cat << 'EOF' > build.gradle
           buildscript {
               repositories { google(); mavenCentral() }
-              dependencies { classpath 'com.android.tools.build:gradle:8.1.0' }
+              dependencies { classpath 'com.android.tools.build:gradle:7.4.2' }
           }
           allprojects {
               repositories { google(); mavenCentral() }
           }
           EOF
 
-          # ملف بناء التطبيق (تم تبسيطه للحد الأقصى لتفادي أخطاء Gradle 9)
+          # ملف بناء التطبيق: العودة للسينتكس القديم المستقر 100%
           cat << 'EOF' > app/build.gradle
-          plugins {
-              id 'com.android.application'
-          }
+          apply plugin: 'com.android.application'
           android {
+              compileSdkVersion 33
               namespace "com.atomic.seeker"
-              compileSdk 33
               defaultConfig {
                   applicationId "com.atomic.seeker"
-                  minSdk 24
-                  targetSdk 33
-                  versionCode 97
-                  versionName "97.0"
+                  minSdkVersion 24
+                  targetSdkVersion 33
+                  versionCode 98
+                  versionName "98.0"
+              }
+              buildTypes {
+                  release { minifyEnabled false }
               }
           }
           dependencies {
@@ -66,10 +72,7 @@ jobs:
           }
           EOF
 
-          cat << 'EOF' > app/src/main/res/values/strings.xml
-          <resources><string name="app_name">Atomic Seeker</string></resources>
-          EOF
-
+          # كود البحث في الـ 10 جيجا
           cat << 'EOF' > app/src/main/java/com/atomic/seeker/MainActivity.kt
           package com.atomic.seeker
           import android.os.*
@@ -81,18 +84,18 @@ jobs:
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   val tv = TextView(this).apply { 
-                      textSize = 24f; setPadding(60,60,60,60); setTextColor(android.graphics.Color.BLUE) 
+                      textSize = 25f; setPadding(60,60,60,60); setTextColor(android.graphics.Color.BLUE) 
                   }
                   setContentView(tv)
-                  val brain = File("/sdcard/brain.bin")
                   try {
+                      val brain = File("/sdcard/brain.bin")
                       if (brain.exists()) {
                           val raf = RandomAccessFile(brain, "r")
                           raf.seek(5 * 1024 * 1024 * 1024.toLong())
                           val buffer = ByteArray(15)
                           raf.read(buffer)
-                          tv.text = "🔍 TRUTH SCAN:\n\nDATA: ${String(buffer)}\n\nINTELLIGENCE: 100%"
-                      } else { tv.text = "❌ Brain not found" }
+                          tv.text = "🔍 SCAN RESULT:\n\nDATA: ${String(buffer)}\n\nINTELLIGENCE: 100%"
+                      } else { tv.text = "❌ Brain File Missing" }
                   } catch (e: Exception) { tv.text = "Error: ${e.message}" }
               }
           }
@@ -108,18 +111,16 @@ jobs:
           </manifest>
           EOF
 
-      - name: ☕ 4. Setup Java 17
+      - name: ☕ 4. Setup Java 11 (More Stable for Legacy Build)
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
-          java-version: "17"
+          java-version: "11"
 
-      - name: 🛠️ 5. Clean & Build Execution
+      - name: 🛠️ 5. Force Build (No Wrapper Needed)
         run: |
-          # توليد الـ Wrapper ورفضه لأي نسخة أعلى من 8.1
-          gradle wrapper --gradle-version 8.1 --distribution-type bin
-          chmod +x gradlew
-          ./gradlew clean :app:assembleDebug --no-daemon
+          # استخدام نسخة Gradle مثبتة مسبقاً في السيرفر لتجنب مشاكل الـ Wrapper
+          gradle clean assembleDebug --no-daemon
 
       - name: 📱 6. Emulator Truth Test
         uses: reactivecircus/android-emulator-runner@v2
@@ -130,14 +131,14 @@ jobs:
             adb push brain.bin /sdcard/brain.bin
             adb install app/build/outputs/apk/debug/app-debug.apk
             adb shell am start -n com.atomic.seeker/com.atomic.seeker.MainActivity
-            sleep 30
+            sleep 35
             adb shell screencap -p /sdcard/truth_result.png
             adb pull /sdcard/truth_result.png .
 
-      - name: 📤 7. Final Evidence
+      - name: 📤 7. Final Proof
         uses: actions/upload-artifact@v4
         with:
-          name: Absolute-Proof-v97
+          name: Absolute-Truth-v98
           path: |
             app/build/outputs/apk/debug/*.apk
             truth_result.png
