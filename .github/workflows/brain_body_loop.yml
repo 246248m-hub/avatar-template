@@ -1,4 +1,4 @@
-name: 🚀 Atomic_Installer_Final_v72
+name: 🚀 Atomic_Installer_Final_v73
 
 on:
   workflow_dispatch:
@@ -18,11 +18,13 @@ jobs:
 
       - name: 🏗️ 3. Structure Android Project
         run: |
+          # إنشاء المجلدات بمسار أندرويد القياسي
           mkdir -p app/src/main/java/com/atomic/engine
           mkdir -p app/src/main/res/layout
           mkdir -p app/src/main/res/xml
+          mkdir -p app/src/main/res/values
 
-          # 🚨 إصلاح الخطأ: تفعيل AndroidX و Jetifier
+          # تفعيل AndroidX
           cat << 'EOF' > gradle.properties
           android.useAndroidX=true
           android.enableJetifier=true
@@ -38,9 +40,7 @@ jobs:
                   classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10'
               }
           }
-          allprojects {
-              repositories { google(); mavenCentral() }
-          }
+          allprojects { repositories { google(); mavenCentral() } }
           EOF
 
           cat << 'EOF' > app/build.gradle
@@ -55,16 +55,11 @@ jobs:
                   applicationId "com.atomic.engine"
                   minSdk 24
                   targetSdk 33
-                  versionCode 72
-                  versionName "72.0"
+                  versionCode 73
+                  versionName "73.0"
               }
-              compileOptions {
-                  sourceCompatibility JavaVersion.VERSION_17
-                  targetCompatibility JavaVersion.VERSION_17
-              }
-              kotlinOptions {
-                  jvmTarget = '17'
-              }
+              compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+              kotlinOptions { jvmTarget = '17' }
           }
           dependencies {
               implementation 'androidx.core:core-ktx:1.10.1'
@@ -73,8 +68,9 @@ jobs:
           }
           EOF
 
-      - name: 📝 4. Inject Manifest & Installer Logic
+      - name: 📝 4. Inject Manifest & XML Resources
         run: |
+          # 🚨 إصلاح الخطأ: حقن ملف المسارات في المجلد الصحيح وباسم صحيح
           cat << 'EOF' > app/src/main/res/xml/file_paths.xml
           <?xml version="1.0" encoding="utf-8"?>
           <paths>
@@ -82,11 +78,12 @@ jobs:
           </paths>
           EOF
 
+          # المانيفست
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
               <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
-              <application android:label="Atomic Maker v72" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+              <application android:label="Atomic Maker v73" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
                   <activity android:name="com.atomic.engine.MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -98,12 +95,13 @@ jobs:
                       android:authorities="com.atomic.engine.fileprovider"
                       android:exported="false"
                       android:grantUriPermissions="true">
-                      <meta-data android:name="android.support.FILE_PATHS" android:resource="@xml/file_paths.xml" />
+                      <meta-data android:name="android.support.FILE_PATHS" android:resource="@xml/file_paths" />
                   </provider>
               </application>
           </manifest>
           EOF
 
+          # كود المحرك
           cat << 'EOF' > app/src/main/java/com/atomic/engine/MainActivity.kt
           package com.atomic.engine
           import android.content.Intent
@@ -121,8 +119,8 @@ jobs:
                       setBackgroundColor(0xFF121212.toInt())
                       setPadding(50, 50, 50, 50)
                   }
-                  val tv = TextView(this).apply { text = "⚛️ Atomic Installer v72\nReady for AAA Synthesis\n"; setTextColor(0xFF00FF00.toInt()) }
-                  val input = EditText(this).apply { hint = "Explain Game..."; setTextColor(0xFFFFFFFF.toInt()) }
+                  val tv = TextView(this).apply { text = "⚛️ Atomic Maker v73\nHex Engine Active\n"; setTextColor(0xFF00FF00.toInt()) }
+                  val input = EditText(this).apply { hint = "Game description..."; setTextColor(0xFFFFFFFF.toInt()) }
                   val btn = Button(this).apply { text = "SCULPT & INSTALL" }
                   layout.addView(tv); layout.addView(input); layout.addView(btn)
                   setContentView(layout)
@@ -130,12 +128,11 @@ jobs:
                   btn.setOnClickListener {
                       try {
                           val brain = File(Environment.getExternalStorageDirectory(), "AI_Project/brain.bin")
-                          val outputApk = File(Environment.getExternalStorageDirectory(), "AI_Project/generated_game.apk")
-                          
+                          val outputApk = File(Environment.getExternalStorageDirectory(), "AI_Project/output.apk")
                           if(brain.exists()){
                               val raf = RandomAccessFile(brain, "r")
                               val out = FileOutputStream(outputApk)
-                              val buffer = ByteArray(1024 * 1024 * 30) // سحب 30 ميجا هيكس
+                              val buffer = ByteArray(1024 * 1024 * 30)
                               raf.seek(0); raf.read(buffer); out.write(buffer)
                               out.close(); raf.close()
 
@@ -163,5 +160,5 @@ jobs:
       - name: 📤 6. Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: Atomic-Installer-v72
+          name: Atomic-Installer-v73
           path: app/build/outputs/apk/debug/*.apk
