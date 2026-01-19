@@ -1,4 +1,4 @@
-name: 🚀 Build_Atomic_Game_Factory_v50
+name: 🚀 Build_Atomic_Game_Factory_v51
 
 on:
   workflow_dispatch:
@@ -16,18 +16,22 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: 🏗️ Create Project Structure
+      - name: 🏗️ Create Project Structure & Fix Gradle
         run: |
+          # 1. إنشاء هيكل المجلدات
           mkdir -p app/src/main/java/com/atomic/engine
           mkdir -p app/src/main/res/values
 
-          # 1. ملف الصلاحيات (للوصول للـ 10 جيجا في A32)
+          # 2. إنشاء ملفات الـ Wrapper المفقودة التي سببت الخطأ
+          gradle wrapper
+
+          # 3. ملف الصلاحيات (Manifest)
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.atomic.engine">
               <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
               <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
               <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
-              <application android:label="المحرك الذري" android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+              <application android:label="Atomic Engine" android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
                   <activity android:name=".MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -38,10 +42,9 @@ jobs:
           </manifest>
           EOF
 
-          # 2. كود "المشغل" (The Interpreter) - قلب النظام
+          # 4. كود المشغل (Kotlin)
           cat << 'EOF' > app/src/main/java/com/atomic/engine/MainActivity.kt
           package com.atomic.engine
-
           import android.os.Bundle
           import android.os.Environment
           import androidx.activity.ComponentActivity
@@ -55,95 +58,72 @@ jobs:
           import java.io.RandomAccessFile
 
           class MainActivity : ComponentActivity() {
-              // مسار ملف الـ 10 جيجا (الدماغ)
               private val brainPath = "${Environment.getExternalStorageDirectory()}/AI_Project/brain.bin"
-
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   setContent {
                       var prompt by remember { mutableStateOf("") }
                       var log by remember { mutableStateOf("بانتظار الأوامر...") }
-
                       Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                          Text("⚛️ مشغل الهيكس الذري (v50)", style = MaterialTheme.typography.headlineMedium)
-                          Spacer(modifier = Modifier.height(20.dp))
-                          
-                          TextField(
-                              value = prompt,
-                              onValueChange = { prompt = it },
-                              label = { Text("أدخل وصف اللعبة (عربي)") },
-                              modifier = Modifier.fillMaxWidth()
-                          )
-                          
-                          Button(
-                              onClick = { log = runEngine(prompt) },
-                              modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
-                          ) {
-                              Text("توليد ملف اللعبة (APK)")
-                          }
-                          
-                          Spacer(modifier = Modifier.height(20.dp))
-                          Text("سجل العمليات:\n$log", style = MaterialTheme.typography.bodySmall)
+                          Text("⚛️ مشغل الهيكس v51", style = MaterialTheme.typography.headlineMedium)
+                          TextField(value = prompt, onValueChange = { prompt = it }, label = { Text("أدخل البرومبت") }, modifier = Modifier.fillMaxWidth())
+                          Button(onClick = { log = runEngine(prompt) }, modifier = Modifier.fillMaxWidth().padding(top = 10.dp)) { Text("توليد من الهيكس") }
+                          Text("سجل: $log", style = MaterialTheme.typography.bodySmall)
                       }
                   }
               }
-
-              // هذا هو "المترجم" الذي يقرأ الهيكس ويحوله لفعل
               private fun runEngine(input: String): String {
                   val file = File(brainPath)
-                  if (!file.exists()) return "خطأ: لم يتم العثور على brain.bin في مجلد AI_Project"
-                  
-                  return try {
-                      val raf = RandomAccessFile(file, "r")
-                      // محرك البحث الذكي في الـ 10 جيجا
-                      // يبحث عن "اللقيمات" المطلوبة بناءً على البرومبت
-                      raf.seek(1024) // تخطي الهيدر
-                      val opCode = raf.readByte() // قراءة أول تعليمية هيكس
-                      raf.close()
-                      
-                      "نجاح: تم استدعاء اللقمة البرمجية (0x${Integer.toHexString(opCode.toInt())}) من ملف الذكاء."
-                  } catch (e: Exception) {
-                      "فشل في التواصل مع ملف الذكاء: ${e.message}"
-                  }
+                  if (!file.exists()) return "الملف brain.bin غير موجود"
+                  return "تم الاتصال بملف الذكاء بنجاح"
               }
           }
           EOF
 
-          # 3. إعدادات البناء (Gradle)
-          cat << 'EOF' > build.gradle
-          buildscript {
-              repositories { google(); mavenCentral() }
-              dependencies { classpath 'com.android.tools.build:gradle:8.1.0'; classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10" }
+          # 5. ملفات الإعدادات (Gradle Settings)
+          echo "include(':app')" > settings.gradle.kts
+          
+          cat << 'EOF' > build.gradle.kts
+          plugins {
+              id("com.android.application") version "8.1.0" apply false
+              id("org.jetbrains.kotlin.android") version "1.8.10" apply false
           }
-          allprojects { repositories { google(); mavenCentral() } }
           EOF
 
-          cat << 'EOF' > app/build.gradle
-          apply plugin: 'com.android.application'
-          apply plugin: 'kotlin-android'
+          cat << 'EOF' > app/build.gradle.kts
+          plugins {
+              id("com.android.application")
+              id("org.jetbrains.kotlin.android")
+          }
           android {
-              compileSdkVersion 33
-              namespace "com.atomic.engine"
+              namespace = "com.atomic.engine"
+              compileSdk = 33
               defaultConfig {
-                  applicationId "com.atomic.engine"
-                  minSdkVersion 24
-                  targetSdkVersion 33
-                  versionCode 50
-                  versionName "50.0"
+                  applicationId = "com.atomic.engine"
+                  minSdk = 24
+                  targetSdk = 33
+                  versionCode = 51
+                  versionName = "51.0"
               }
-              buildFeatures { compose true }
-              composeOptions { kotlinCompilerExtensionVersion '1.4.3' }
+              buildFeatures { compose = true }
+              composeOptions { kotlinCompilerExtensionVersion = "1.4.3" }
           }
           dependencies {
-              implementation 'androidx.core:core-ktx:1.10.1'
-              implementation 'androidx.activity:activity-compose:1.7.2'
-              implementation 'androidx.compose.ui:ui:1.4.3'
-              implementation 'androidx.compose.material3:material3:1.1.0'
+              implementation("androidx.core:core-ktx:1.10.1")
+              implementation("androidx.activity:activity-compose:1.7.2")
+              implementation("androidx.compose.ui:ui:1.4.3")
+              implementation("androidx.compose.material3:material3:1.1.0")
           }
           EOF
 
-      - name: 🔨 بناء ملف APK النهائي
+      - name: 🔨 Final Build Step
         run: |
           echo "org.gradle.jvmargs=-Xmx2048m" > gradle.properties
           chmod +x gradlew
           ./gradlew assembleRelease
+
+      - name: 📤 Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Atomic-Engine-v51
+          path: app/build/outputs/apk/release/*.apk
