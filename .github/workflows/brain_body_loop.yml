@@ -1,4 +1,4 @@
-name: 🏗️ PHOENIX_PATH_LINK_v135
+name: 🚀 PHOENIX_ULTRA_FIX_v136
 
 on:
   workflow_dispatch:
@@ -16,25 +16,25 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 🛠️ 3. Install SDK Tools & Create Links
+      - name: 🛡️ 3. Forced SDK Setup (تثبيت المسارات والرخص قسرياً)
         run: |
-          # 1. إنشاء المجلدات الأساسية
+          # إنشاء المجلدات التي يطلبها Buildozer بالضبط
           mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest
+          mkdir -p ~/.buildozer/android/platform/android-sdk/tools/bin
           
-          # 2. تحميل أدوات سطر الأوامر
+          # تحميل أدوات سطر الأوامر الرسمية
           wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline.zip
           unzip -q cmdline.zip
           mv cmdline-tools/* ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/
           
-          # 3. الخدعة الكبرى: ربط المسار القديم بالجديد ليرضى Buildozer
-          mkdir -p ~/.buildozer/android/platform/android-sdk/tools/bin
+          # ربط المسارات لخدعة النظام (Symlink)
           ln -s ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager ~/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
           
-          # 4. الموافقة على التراخيص
+          # الموافقة على رخصة أندرويد (النص الذي أرسلته) آلياً
           export PATH=$PATH:~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin
           yes | sdkmanager --licenses --sdk_root=~/.buildozer/android/platform/android-sdk
 
-      - name: 🐍 4. Install Buildozer & Dependencies
+      - name: 🐍 4. Install Dependencies
         run: |
           pip install --user --upgrade Cython==0.29.33 buildozer
           echo "$HOME/.local/bin" >> $GITHUB_PATH
@@ -47,19 +47,20 @@ jobs:
           from kivy.uix.label import Label
           class PhoenixApp(App):
               def build(self):
-                  return Label(text="🔥 PHOENIX SYSTEM\nFinal Link Established", font_size='20sp')
+                  return Label(text="🔥 PHOENIX SYSTEM\nStatus: 100% Licensed", font_size='20sp')
           if __name__ == '__main__':
               PhoenixApp().run()
           EOF
 
-      - name: 🔨 6. Start Building (Direct Action)
+      - name: 🔨 6. Final APK Build
         run: |
           buildozer init
+          # إجبار النظام على استخدام إصدار مستقر (34) بدلاً من 36.1 المزعج
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
           sed -i 's/android.api = 31/android.api = 34/' buildozer.spec
           sed -i 's/#android.build_tools_version = 31.0.0/android.build_tools_version = 34.0.0/' buildozer.spec
           
-          # منع Buildozer من محاولة تحديث الـ SDK بنفسه لأنه سيفسد الروابط
+          # البدء بالبناء
           buildozer -v android debug
 
       - name: 📤 7. Export APK
