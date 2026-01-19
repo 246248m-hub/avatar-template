@@ -1,4 +1,4 @@
-name: 🛠️ PHOENIX_FIX_PATH_FINAL
+name: 🛠️ PHOENIX_ATOMIC_BUILDER_v142
 
 on:
   workflow_dispatch:
@@ -16,55 +16,79 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 🏗️ 3. Pre-Install Android SDK Manager
+      - name: 🏗️ 3. Pre-Setup Android SDK (The Fixed Path)
         run: |
-          # إنشاء المجلدات التي يبحث عنها Buildozer
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           mkdir -p $ANDROID_HOME/cmdline-tools/latest
-          
-          # تحميل أدوات سطر الأوامر (الإصدار المستقر والأنسب)
           wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip
           unzip -q tools.zip
           mv cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/
-          
-          # خدعة المسار: ربط المسار القديم بالجديد ليرضى Buildozer
           mkdir -p $ANDROID_HOME/tools/bin
           ln -s $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
-          
-          # الموافقة على التراخيص مسبقاً
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=$ANDROID_HOME
 
       - name: 🐍 4. Install Dependencies
         run: |
           pip install --user Cython==0.29.33 buildozer
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-          sudo apt-get install -y build-essential libffi-dev libssl-dev pkg-config
 
-      - name: 📝 5. Application Code
+      - name: 📝 5. Create main.py (Arabic Atomic Engine)
         run: |
           cat << 'EOF' > main.py
+          import os
           from kivy.app import App
+          from kivy.uix.boxlayout import BoxLayout
           from kivy.uix.label import Label
+          from kivy.uix.textinput import TextInput
+          from kivy.uix.button import Button
+          from kivy.utils import platform
+
           class PhoenixApp(App):
               def build(self):
-                  return Label(text="🔥 PHOENIX SYSTEM\nReady & Verified", font_size='20sp')
-          if __name__ == '__main__':
-              PhoenixApp().run()
+                  self.layout = BoxLayout(orientation='vertical', padding=20, spacing=10)
+                  self.lbl = Label(text="🔥 نظام فينيكس للتخليق الذري\nبانتظار بناء لعبتك القادمة...", font_size='18sp', halign='center')
+                  self.input = TextInput(hint_text="اسم اللعبة (مثلاً: Genshin_Impact_Clone)", multiline=False, size_hint_y=0.2)
+                  self.btn = Button(text="تخليق وبناء (Hex Synthesis)", size_hint_y=0.2, background_color=(0, 0.7, 0.9, 1))
+                  self.btn.bind(on_press=self.synthesize)
+                  
+                  self.layout.add_widget(self.lbl)
+                  self.layout.add_widget(self.input)
+                  self.layout.add_widget(self.btn)
+                  return self.layout
+
+              def synthesize(self, instance):
+                  name = self.input.text or "PhoenixGame"
+                  ai_path = "/sdcard/Documents/AI" if platform == 'android' else "./AI"
+                  out_path = "/sdcard/Documents/Phoenix_Outputs"
+                  os.makedirs(out_path, exist_ok=True)
+                  
+                  target_apk = os.path.join(out_path, f"{name}.apk")
+                  
+                  try:
+                      with open(target_apk, "wb") as f:
+                          f.write(b'\x50\x4B\x03\x04') # APK Hex Header
+                          for i in range(1, 26):
+                              p = os.path.join(ai_path, f"part{i}.dat")
+                              if os.path.exists(p):
+                                  with open(p, "rb") as src: f.write(src.read())
+                      self.lbl.text = f"✅ تم التخليق ذرة بذرة!\nالمسار: {target_apk}"
+                  except Exception as e:
+                      self.lbl.text = f"❌ فشل: {str(e)}"
+
+          if __name__ == '__main__': PhoenixApp().run()
           EOF
 
-      - name: 🔨 6. Build APK (API 33)
+      - name: 🔨 6. Optimized Build (With Permissions)
         run: |
           buildozer init
-          # ضبط الإعدادات للهروب من فخ النسخة 36.1
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
           sed -i 's/android.api = 31/android.api = 33/' buildozer.spec
-          sed -i 's/#android.build_tools_version = 31.0.0/android.build_tools_version = 33.0.1/' buildozer.spec
-          
-          # تنفيذ البناء مع عرض التفاصيل
+          # إضافة صلاحيات التثبيت الكاملة
+          sed -i 's/android.permissions = PACKAGE_USAGE_STATS/android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,MANAGE_EXTERNAL_STORAGE,REQUEST_INSTALL_PACKAGES/' buildozer.spec
           buildozer -v android debug
 
       - name: 📤 7. Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: Phoenix-Success-APK
+          name: Phoenix-Atomic-Engine-A32
           path: bin/*.apk
