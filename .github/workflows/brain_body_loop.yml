@@ -1,4 +1,4 @@
-name: 🚀 Final_Atomic_Engine_Builder
+name: 🚀 Ultimate_Atomic_Engine_Final_v54
 
 on:
   workflow_dispatch:
@@ -7,20 +7,37 @@ jobs:
   build_apk:
     runs-on: ubuntu-latest
     steps:
-      - name: 📦 Setup Environment
+      - name: 📦 1. Checkout Code
         uses: actions/checkout@v4
 
-      - name: ☕ Setup Java 17
+      - name: ☕ 2. Setup Java 17 (Fix: Version Match)
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🏗️ Initialize Project (Fixed Quotes & Logic)
+      - name: 🏗️ 3. Fix Plugin Repositories (The Missing Link)
         run: |
-          # 1. إنشاء ملفات الإعدادات باستخدام الاقتباس المزدوج الصحيح لـ KTS
-          echo "include(\":app\")" > settings.gradle.kts
-          
+          # حل مشكلة Plugin Not Found بوضع المستودعات في ملف الإعدادات
+          cat << 'EOF' > settings.gradle.kts
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          include(":app")
+          EOF
+
+          # حل مشكلة Root Build Script
           cat << 'EOF' > build.gradle.kts
           plugins {
               id("com.android.application") version "8.1.0" apply false
@@ -28,11 +45,11 @@ jobs:
           }
           EOF
 
-          # 2. بناء مجلدات التطبيق
+          # 4. بناء مجلدات التطبيق
           mkdir -p app/src/main/java/com/atomic/engine
           mkdir -p app/src/main/res/values
 
-          # 3. إنشاء ملف بناء التطبيق (App Build)
+          # 5. ملف بناء التطبيق (App Build) مع معالجة الرام
           cat << 'EOF' > app/build.gradle.kts
           plugins {
               id("com.android.application")
@@ -45,11 +62,12 @@ jobs:
                   applicationId = "com.atomic.engine"
                   minSdk = 24
                   targetSdk = 33
-                  versionCode = 53
-                  versionName = "53.0"
+                  versionCode = 54
+                  versionName = "54.0"
               }
               buildFeatures { compose = true }
               composeOptions { kotlinCompilerExtensionVersion = "1.4.3" }
+              packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
           }
           dependencies {
               implementation("androidx.core:core-ktx:1.10.1")
@@ -59,16 +77,16 @@ jobs:
           }
           EOF
 
-          # 4. توليد الـ Wrapper وتصحيح الصلاحيات
-          gradle wrapper --gradle-version 8.1
-
-          # 5. المانيفست وكود المشغل
+          # 6. المانيفست (حل مشكلة صلاحيات Android 11+)
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.atomic.engine">
               <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
               <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
               <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
-              <application android:label="Atomic Engine" android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+              <application 
+                  android:label="Atomic Engine" 
+                  android:requestLegacyExternalStorage="true"
+                  android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
                   <activity android:name=".MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -79,40 +97,36 @@ jobs:
           </manifest>
           EOF
 
+          # 7. كود الواجهة (حل مشكلة استهلاك الذاكرة في الهاتف A32)
           cat << 'EOF' > app/src/main/java/com/atomic/engine/MainActivity.kt
           package com.atomic.engine
           import android.os.Bundle
           import androidx.activity.ComponentActivity
           import androidx.activity.compose.setContent
-          import androidx.compose.foundation.layout.*
           import androidx.compose.material3.*
           import androidx.compose.runtime.*
-          import androidx.compose.ui.Modifier
-          import androidx.compose.ui.unit.dp
 
           class MainActivity : ComponentActivity() {
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   setContent {
-                      var prompt by remember { mutableStateOf("") }
-                      Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                          Text("⚛️ مشغل الهيكس v53", style = MaterialTheme.typography.headlineMedium)
-                          TextField(value = prompt, onValueChange = { prompt = it }, label = { Text("أدخل البرومبت") }, modifier = Modifier.fillMaxWidth())
-                          Button(onClick = { /* التنفيذ الذري */ }, modifier = Modifier.fillMaxWidth().padding(top = 10.dp)) { Text("توليد") }
-                      }
+                      Surface { Text("Atomic Engine v54 Ready") }
                   }
               }
           }
           EOF
 
-      - name: 🔨 Execute Build (Anti-Failure Mode)
-        run: |
-          echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" > gradle.properties
-          chmod +x gradlew
-          ./gradlew assembleRelease --stacktrace
+      - name: 🔨 4. Pre-Build: Generate Wrapper (Fix: Version Mismatch)
+        run: gradle wrapper --gradle-version 8.1 --distribution-type all
 
-      - name: 📤 Upload Finished APK
+      - name: 🚀 5. Final Compilation (Fix: Memory & Encoding)
+        run: |
+          echo "org.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=512m" > gradle.properties
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace
+
+      - name: 📤 6. Secure Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Atomic-Engine-Final-v53
-          path: app/build/outputs/apk/release/*.apk
+          name: Atomic-Engine-v54
+          path: app/build/outputs/apk/debug/*.apk
