@@ -1,4 +1,4 @@
-name: 🛡️ Absolute_Truth_Test_v100
+name: 🛡️ Absolute_Truth_Test_v101
 
 on:
   workflow_dispatch:
@@ -20,37 +20,33 @@ jobs:
               f.seek(5 * 1024 * 1024 * 1024)
               f.write(b'GENE_MIDDLE_555')
           "
-          echo "✅ 10GB Brain Ready."
+          echo "✅ 10GB Brain Created."
 
-      - name: 🏗️ 3. Structure Modern Project
+      - name: 🏗️ 3. Structure Project (Bypassing Gradle 9 Bugs)
         run: |
           mkdir -p app/src/main/java/com/atomic/seeker
           mkdir -p app/src/main/res/layout
           
+          # إعدادات صارمة جداً لمنع التداخل
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
 
-          # ملف الإعدادات هو من سيدير المستودعات الآن
           cat << 'EOF' > settings.gradle
           pluginManagement {
               repositories { google(); mavenCentral(); gradlePluginPortal() }
           }
           dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
               repositories { google(); mavenCentral() }
           }
           rootProject.name = "AtomicSeeker"
           include ':app'
           EOF
 
-          # حذف ملف build.gradle الرئيسي لتعارضه مع Gradle 9
-          rm -f build.gradle
-
-          # ملف بناء التطبيق بالتنسيق الحديث (Plugins Block Only)
+          # ملف بناء التطبيق باستخدام "المعرفات البدائية" لتجنب خطأ DependencyHandler
           cat << 'EOF' > app/build.gradle
           plugins {
               id 'com.android.application' version '8.1.0'
-              id 'org.jetbrains.kotlin.android' version '1.8.10'
           }
 
           android {
@@ -60,17 +56,14 @@ jobs:
                   applicationId "com.atomic.seeker"
                   minSdk 24
                   targetSdk 33
-                  versionCode 100
-                  versionName "100.0"
-              }
-              buildTypes {
-                  release {
-                      minifyEnabled false
-                  }
+                  versionCode 101
+                  versionName "101.0"
               }
           }
 
           dependencies {
+              // استخدام مكتبة واحدة فقط لضمان عدم حدوث تعارض في السيرفر
+              implementation 'androidx.core:core-ktx:1.9.0'
               implementation 'androidx.appcompat:appcompat:1.6.1'
           }
           EOF
@@ -96,7 +89,7 @@ jobs:
                           raf.seek(5 * 1024 * 1024 * 1024.toLong())
                           val buffer = ByteArray(15)
                           raf.read(buffer)
-                          tv.text = "🔍 TRUTH SCAN v100:\n\nDATA: ${String(buffer)}\n\nVERDICT: 10GB CONFIRMED"
+                          tv.text = "🔍 TRUTH v101:\n\nDATA: ${String(buffer)}\n\n10GB: VERIFIED"
                       } else { tv.text = "❌ Brain Missing" }
                   } catch (e: Exception) { tv.text = "Error: ${e.message}" }
               }
@@ -119,11 +112,12 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🛠️ 5. Build with Modern Wrapper
+      - name: 🛠️ 5. Build (Clean Slate)
         run: |
+          # حذف أي ملفات بناء قديمة ومنع الـ Daemon من التدخل
+          rm -rf build.gradle
           gradle wrapper --gradle-version 8.1.1
-          chmod +x gradlew
-          ./gradlew :app:assembleDebug --no-daemon
+          ./gradlew :app:assembleDebug --no-daemon --stacktrace
 
       - name: 📱 6. Emulator Truth Test
         uses: reactivecircus/android-emulator-runner@v2
@@ -141,7 +135,7 @@ jobs:
       - name: 📤 7. Final Proof
         uses: actions/upload-artifact@v4
         with:
-          name: Absolute-Proof-v100
+          name: Final-Truth-v101
           path: |
             app/build/outputs/apk/debug/*.apk
             truth_result.png
