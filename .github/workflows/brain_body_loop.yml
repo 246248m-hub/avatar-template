@@ -1,4 +1,4 @@
-name: 🚀 GEMINI_AUTO_APPROVE_BUILD
+name: 🏗️ PHOENIX_REAL_BUILD_v129
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: 📦 1. Checkout
+      - name: 📦 1. Checkout Code
         uses: actions/checkout@v4
 
       - name: ☕ 2. Setup Java 17
@@ -16,41 +16,38 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 🤖 3. Gemini Auto-Approve (الموافقة الذكية)
+      - name: 🛠️ 3. Setup Android SDK (الخطوة الحاسمة)
+        uses: android-actions/setup-android@v3
+        with:
+          log-accepted-android-sdk-licenses: false # يوافق تلقائياً بصمت
+
+      - name: 🐍 4. Install Buildozer & Dependencies
         run: |
-          # تثبيت أدوات أندرويد الأساسية
+          pip install --user buildozer Cython==0.29.33
           sudo apt-get update
-          sudo apt-get install -y sdkmanager
-          
-          # إجبار النظام على قبول كافة التراخيص عبر ضخ حرف y بشكل مستمر
-          mkdir -p ~/.android
-          touch ~/.android/repositories.cfg
-          yes | sdkmanager --licenses || true
+          sudo apt-get install -y build-essential libffi-dev libssl-dev
 
-      - name: 🐍 4. Install Buildozer
-        run: pip install --user buildozer Cython==0.29.33
-
-      - name: 📝 5. Create main.py (تطبيق العنقاء)
+      - name: 📝 5. Create main.py
         run: |
           cat << 'EOF' > main.py
           from kivy.app import App
           from kivy.uix.label import Label
           class PhoenixApp(App):
               def build(self):
-                  return Label(text="🔥 PHOENIX SYSTEM ONLINE\nGemini Approved & Linked", font_size='20sp')
+                  return Label(text="🔥 PHOENIX SYSTEM ONLINE\n10GB Brain Connected", font_size='20sp')
           if __name__ == '__main__':
               PhoenixApp().run()
           EOF
 
-      - name: 🔨 6. Start Building (No More License Blocks)
+      - name: 🔨 6. Build APK (تجاوز الرخص داخلياً)
         run: |
           buildozer init
-          # تعديل الإعدادات لتثبيت النسخة المستقرة فقط
+          # تهيئة الإعدادات لاستخدام الـ SDK الذي جهزه GitHub
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
           sed -i 's/android.api = 31/android.api = 34/' buildozer.spec
-          sed -i 's/#android.build_tools_version = 31.0.0/android.build_tools_version = 34.0.0/' buildozer.spec
           
-          # أمر البناء مع تجاهل الأخطاء القانونية
+          # إجبار Buildozer على رؤية المسارات الصحيحة
+          export ANDROID_HOME=$ANDROID_SDK_ROOT
           yes | buildozer -v android debug
 
       - name: 📤 7. Export APK
