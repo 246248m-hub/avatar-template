@@ -1,4 +1,4 @@
-name: 🚀 Atomic_AI_Final_Success_v65
+name: 🚀 Atomic_Hex_Engine_v66_Final
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ jobs:
   build_apk:
     runs-on: ubuntu-latest
     steps:
-      - name: 📦 1. Checkout
+      - name: 📦 1. Checkout Code
         uses: actions/checkout@v4
 
       - name: ☕ 2. Setup Java 17
@@ -16,43 +16,35 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🏗️ 3. Structure & Repository Fix
+      - name: 🏗️ 3. Initialize Android Project
         run: |
-          # 1. إعدادات الخصائص
+          # إعداد إعدادات البناء
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
           
-          # 2. ملف الإعدادات المركزي
           cat << 'EOF' > settings.gradle
-          rootProject.name = "AtomicAI"
+          rootProject.name = "AtomicHexEngine"
           include ':app'
           EOF
 
-          # 3. ملف بناء الجذر مع تعريف المستودعات (الحل)
+          # ملف بناء الجذر
           cat << 'EOF' > build.gradle
           buildscript {
-              repositories {
-                  google()
-                  mavenCentral()
-              }
+              repositories { google(); mavenCentral() }
               dependencies {
                   classpath 'com.android.tools.build:gradle:8.1.0'
                   classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10'
               }
           }
           allprojects {
-              repositories {
-                  google()
-                  mavenCentral()
-              }
+              repositories { google(); mavenCentral() }
           }
           EOF
 
           mkdir -p app/src/main/java/com/atomic/engine
           mkdir -p app/src/main/res/layout
-          mkdir -p app/src/main/res/values
 
-          # 4. ملف بناء التطبيق
+          # ملف بناء التطبيق (Module)
           cat << 'EOF' > app/build.gradle
           apply plugin: 'com.android.application'
           apply plugin: 'kotlin-android'
@@ -64,8 +56,8 @@ jobs:
                   applicationId "com.atomic.engine"
                   minSdk 24
                   targetSdk 33
-                  versionCode 65
-                  versionName "65.0"
+                  versionCode 66
+                  versionName "66.0"
               }
               compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
               kotlinOptions { jvmTarget = '17' }
@@ -77,12 +69,15 @@ jobs:
           }
           EOF
 
-      - name: 📝 4. Inject Manifest & Code
+      - name: 📝 4. Inject Atomic Hex Logic
         run: |
+          # المانيفست مع صلاحيات التخزين
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+              <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
               <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
-              <application android:label="Atomic AI" android:theme="@style/Theme.AppCompat.NoActionBar">
+              <application android:label="Atomic Hex v66" android:theme="@style/Theme.AppCompat.NoActionBar">
                   <activity android:name="com.atomic.engine.MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -93,44 +88,76 @@ jobs:
           </manifest>
           EOF
 
+          # الكود البرمجي المدمج للنحت السداسي
           cat << 'EOF' > app/src/main/java/com/atomic/engine/MainActivity.kt
           package com.atomic.engine
-          import android.os.Bundle
-          import androidx.appcompat.app.AppCompatActivity
+          import android.os.*
           import android.widget.*
+          import androidx.appcompat.app.AppCompatActivity
+          import java.io.*
 
           class MainActivity : AppCompatActivity() {
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
+                  
                   val layout = LinearLayout(this).apply {
                       orientation = LinearLayout.VERTICAL
-                      setBackgroundColor(0xFF121212.toInt())
-                      setPadding(32, 32, 32, 32)
+                      setBackgroundColor(0xFF0A0A0A.toInt())
+                      setPadding(40, 40, 40, 40)
                   }
+
                   val tv = TextView(this).apply {
-                      text = "⚛️ Atomic AI v65\nجاهز لاستلام وصف التطبيق..."
+                      text = "⚛️ Atomic Hex Engine v66\nنظام بناء الألعاب بمستوى البت"
                       setTextColor(0xFF00FF00.toInt())
                       textSize = 18f
                   }
+
                   val input = EditText(this).apply {
-                      hint = "اشرح اللعبة أو التطبيق..."
-                      setHintTextColor(0x88FFFFFF.toInt())
+                      hint = "صف اللعبة (مثلاً: بيئة Where Winds Meet)..."
+                      setHintTextColor(0x5500FF00.toInt())
                       setTextColor(0xFFFFFFFF.toInt())
                   }
-                  val btn = Button(this).apply { text = "توليد" }
+
+                  val btn = Button(this).apply { text = "بدء النحت السداسي (Hex Synthesis)" }
                   
                   layout.addView(tv); layout.addView(input); layout.addView(btn)
                   setContentView(layout)
 
                   btn.setOnClickListener {
-                      tv.append("\n👤: ${input.text}\n⚛️: جاري استدعاء البيانات من الدماغ...")
-                      input.text.clear()
+                      val userQuery = input.text.toString()
+                      tv.append("\n\n🛠️ تحليل الطلب: $userQuery")
+                      
+                      try {
+                          // الوصول لملف الـ 10 جيجا في الذاكرة الداخلية
+                          val brainPath = Environment.getExternalStorageDirectory().absolutePath + "/AI_Project/brain.bin"
+                          val brainFile = File(brainPath)
+                          val outputPath = Environment.getExternalStorageDirectory().absolutePath + "/AI_Project/output_game.hex"
+                          
+                          if (brainFile.exists()) {
+                              val raf = RandomAccessFile(brainFile, "r")
+                              val out = FileOutputStream(outputPath)
+                              
+                              // نحت أول 5 ميجابايت من الهيكس الخام كمرحلة أولى
+                              val hexBuffer = ByteArray(1024 * 1024 * 5) 
+                              raf.seek(1024) // تخطي الهيدر للوصول للذرات
+                              raf.read(hexBuffer)
+                              out.write(hexBuffer)
+                              
+                              out.close()
+                              raf.close()
+                              tv.append("\n✅ تم إنتاج ملف الهيكس الذري بنجاح!")
+                          } else {
+                              tv.append("\n❌ لم يتم العثور على brain.bin في مجلد AI_Project")
+                          }
+                      } catch (e: Exception) {
+                          tv.append("\n⚠️ خطأ في النحت: ${e.message}")
+                      }
                   }
               }
           }
           EOF
 
-      - name: 🛠️ 5. Clean Build & Export
+      - name: 🛠️ 5. Final Compilation
         run: |
           wget -q https://services.gradle.org/distributions/gradle-8.1-bin.zip
           unzip -q gradle-8.1-bin.zip
@@ -141,5 +168,5 @@ jobs:
       - name: 📤 6. Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: Atomic-AI-Final-v65
+          name: Atomic-Hex-Engine-v66
           path: app/build/outputs/apk/debug/*.apk
