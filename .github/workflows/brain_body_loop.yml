@@ -1,4 +1,4 @@
-name: 🏗️ PHOENIX_STABLE_SUCCESS_v132
+name: 🏗️ PHOENIX_LICENSE_BYPASS_v133
 
 on:
   workflow_dispatch:
@@ -16,22 +16,26 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 🛡️ 3. Pre-Accept Android Licenses (الحل الجذري)
+      - name: 🛡️ 3. Fix Android Licenses & Paths
         run: |
-          sudo apt-get update
-          # تثبيت أدوات أندرويد الأساسية للموافقة على الرخص يدوياً قبل البدء
-          mkdir -p $HOME/android-sdk/cmdline-tools
-          # تحميل أداة التراخيص الرسمية
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline.zip
-          unzip cmdline.zip -d $HOME/android-sdk/cmdline-tools
-          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
-          # الموافقة على كل التراخيص (بما فيها التي أرسلتها في الرسالة)
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=$HOME/android-sdk
+          # إنشاء مجلدات الرخص يدوياً لتجنب سؤال (y/N)
+          mkdir -p $HOME/.android
+          touch $HOME/.android/repositories.cfg
+          
+          # إعداد مسار الـ SDK الذي يستخدمه Buildozer
+          ANDROID_SDK_HOME="$HOME/.buildozer/android/platform/android-sdk"
+          mkdir -p "$ANDROID_SDK_HOME/licenses"
+          
+          # حقن "كود الموافقة" الرسمي (Hash) داخل ملفات الرخصة
+          echo -e "8933bad161af4178b1185d1a37fbf41ea5269c55\nd56f5187479451e0f0f766e07503a702039db007\n24333f8a63b6825ea9d5573f843d56d8730611d6" > "$ANDROID_SDK_HOME/licenses/android-sdk-license"
+          echo -e "84831b9409646a918e30573bab4c9c91346d8abd\n50466d32387d81b5a4584d843733607d04399271" > "$ANDROID_SDK_HOME/licenses/android-sdk-preview-license"
 
       - name: 🐍 4. Install Dependencies
         run: |
           pip install --user --upgrade Cython==0.29.33 buildozer
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+          sudo apt-get update
+          sudo apt-get install -y build-essential libffi-dev libssl-dev pkg-config autoconf automake libtool
 
       - name: 📝 5. Create main.py
         run: |
@@ -40,7 +44,7 @@ jobs:
           from kivy.uix.label import Label
           class PhoenixApp(App):
               def build(self):
-                  return Label(text="🔥 PHOENIX ACTIVE\nLicenses Accepted Automatically", font_size='20sp')
+                  return Label(text="🔥 PHOENIX SYSTEM\nLicense Accepted Manually", font_size='20sp')
           if __name__ == '__main__':
               PhoenixApp().run()
           EOF
@@ -48,14 +52,13 @@ jobs:
       - name: 🔨 6. Forced Stable Build
         run: |
           buildozer init
-          # تعديل الإعدادات للهروب من النسخة 36.1 التجريبية التي تسبب المشكلة
+          # تعديل الإعدادات للهروب من النسخة 36.1 التجريبية
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
           sed -i 's/android.api = 31/android.api = 34/' buildozer.spec
           sed -i 's/#android.build_tools_version = 31.0.0/android.build_tools_version = 34.0.0/' buildozer.spec
           
-          # إجبار المحرك على استخدام المسار الذي وافقنا فيه على التراخيص
-          export ANDROID_HOME=$HOME/android-sdk
-          buildozer -v android debug
+          # تشغيل البناء مع ضخ حرف 'y' احتياطياً
+          yes | buildozer -v android debug
 
       - name: 📤 7. Export APK
         uses: actions/upload-artifact@v4
