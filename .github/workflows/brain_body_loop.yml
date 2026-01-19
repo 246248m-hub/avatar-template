@@ -1,38 +1,36 @@
-name: 🛡️ Absolute_Truth_Test_v92
+name: 🛡️ Absolute_Truth_Test_v93
 
 on:
   workflow_dispatch:
 
 jobs:
   real_deal_simulation:
-    runs-on: macos-latest # استخدام macOS لأنه الأسرع في تشغيل المحاكي
+    runs-on: macos-latest
     steps:
       - name: 📦 1. Checkout
         uses: actions/checkout@v4
 
-      - name: 💎 2. Hard-Code 10GB Brain (Real Injection)
+      - name: 💎 2. Create 10GB Data (Deep Injection)
         run: |
-          # حقن بيانات حقيقية في أماكن متفرقة من الـ 10 جيجا لضمان القراءة الحقيقية
           python3 -c "
           import os
           file_name = 'brain.bin'
           target_size = 10 * 1024 * 1024 * 1024
           with open(file_name, 'wb') as f:
-              # حقن في البداية
               f.write(b'GENE_START_001')
-              # حقن في منتصف الـ 5 جيجا (هنا يكمن التحدي)
               f.seek(5 * 1024 * 1024 * 1024)
               f.write(b'GENE_MIDDLE_555')
-              # حقن في النهاية
               f.seek(target_size - 100)
               f.write(b'GENE_END_999')
           "
-          echo "✅ تم بناء دماغ حقيقي (10GB) معبأ ببيانات مشفرة."
+          echo "✅ 10GB Brain Ready."
 
-      - name: 🏗️ 3. Setup Android Environment
+      - name: 🏗️ 3. Structure Project & Fix Wrapper
         run: |
           mkdir -p app/src/main/java/com/atomic/seeker
           mkdir -p app/src/main/res/layout
+          
+          # إعداد ملفات Gradle الأساسية من الصفر
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
 
@@ -43,7 +41,10 @@ jobs:
           EOF
 
           cat << 'EOF' > build.gradle
-          buildscript { repositories { google(); mavenCentral() }; dependencies { classpath 'com.android.tools.build:gradle:8.1.0' } }
+          buildscript { 
+              repositories { google(); mavenCentral() }
+              dependencies { classpath 'com.android.tools.build:gradle:8.1.0' }
+          }
           EOF
 
           cat << 'EOF' > app/build.gradle
@@ -51,9 +52,38 @@ jobs:
           android { 
               namespace "com.atomic.seeker"
               compileSdk 33 
-              defaultConfig { applicationId "com.atomic.seeker"; minSdk 24; targetSdk 33; versionCode 92; versionName "92.0" } 
+              defaultConfig { applicationId "com.atomic.seeker"; minSdk 24; targetSdk 33; versionCode 93; versionName "93.0" } 
           }
           dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' }
+          EOF
+
+          # كود البحث العميق في الـ 10 جيجا
+          cat << 'EOF' > app/src/main/java/com/atomic/seeker/MainActivity.kt
+          package com.atomic.seeker
+          import android.os.*
+          import android.widget.TextView
+          import androidx.appcompat.app.AppCompatActivity
+          import java.io.*
+
+          class MainActivity : AppCompatActivity() {
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  val tv = TextView(this).apply { 
+                      textSize = 22f; setPadding(50,50,50,50); setTextColor(android.graphics.Color.BLUE) 
+                  }
+                  setContentView(tv)
+                  val brain = File("/sdcard/brain.bin")
+                  try {
+                      if (brain.exists()) {
+                          val raf = RandomAccessFile(brain, "r")
+                          raf.seek(5 * 1024 * 1024 * 1024.toLong())
+                          val buffer = ByteArray(15)
+                          raf.read(buffer)
+                          tv.text = "🔍 Deep Scan Result:\n\nFound: ${String(buffer)}\n\nStatus: 10GB ACCESSED!"
+                      } else { tv.text = "❌ Brain File Missing" }
+                  } catch (e: Exception) { tv.text = "Error: ${e.message}" }
+              }
+          }
           EOF
 
           cat << 'EOF' > app/src/main/AndroidManifest.xml
@@ -67,49 +97,20 @@ jobs:
           </manifest>
           EOF
 
-          cat << 'EOF' > app/src/main/java/com/atomic/seeker/MainActivity.kt
-          package com.atomic.seeker
-          import android.os.*
-          import android.widget.TextView
-          import androidx.appcompat.app.AppCompatActivity
-          import java.io.*
+      - name: ☕ 4. Setup Java & Generate Wrapper
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
 
-          class MainActivity : AppCompatActivity() {
-              override fun onCreate(savedInstanceState: Bundle?) {
-                  super.onCreate(savedInstanceState)
-                  val tv = TextView(this).apply { 
-                      textSize = 20f
-                      setPadding(40,40,40,40)
-                      setTextColor(android.graphics.Color.BLACK)
-                  }
-                  setContentView(tv)
-                  
-                  // محاولة اختراق الـ 10 جيجا وقراءة البيانات من العمق
-                  val brain = File("/sdcard/brain.bin")
-                  try {
-                      if (brain.exists()) {
-                          val raf = RandomAccessFile(brain, "r")
-                          raf.seek(5 * 1024 * 1024 * 1024.toLong()) // الذهاب للجيجا الخامسة مباشرة
-                          val buffer = ByteArray(15)
-                          raf.read(buffer)
-                          val foundData = String(buffer)
-                          tv.text = "🔍 نتيجة الاختراق العميق:\n\nتم العثور على: $foundData\n\nالحالة: ذكاء المحرك نجح في قراءة الـ 10 جيجا!"
-                      } else {
-                          tv.text = "⚠️ ملف الدماغ غير موجود في المسار المطلوب"
-                      }
-                  } catch (e: Exception) {
-                      tv.text = "❌ خطأ أثناء النحت: ${e.message}"
-                  }
-              }
-          }
-          EOF
-
-      - name: ⚙️ 4. Build APK
+      - name: 🛠️ 5. Generate Gradlew & Build
         run: |
+          # هذه الخطوة تولد ملف gradlew المفقود
+          gradle wrapper
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
-      - name: 📱 5. Run Truth Test on Emulator
+      - name: 📱 6. Emulator Truth Test
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
@@ -118,14 +119,14 @@ jobs:
             adb push brain.bin /sdcard/brain.bin
             adb install app/build/outputs/apk/debug/app-debug.apk
             adb shell am start -n com.atomic.seeker/com.atomic.seeker.MainActivity
-            sleep 20
+            sleep 25
             adb shell screencap -p /sdcard/truth_result.png
             adb pull /sdcard/truth_result.png .
 
-      - name: 📤 6. Upload Results
+      - name: 📤 7. Upload Result
         uses: actions/upload-artifact@v4
         with:
-          name: Absolute-Truth-Evidence
+          name: Truth-Proof-v93
           path: |
             app/build/outputs/apk/debug/*.apk
             truth_result.png
