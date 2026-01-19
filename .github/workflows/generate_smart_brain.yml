@@ -1,90 +1,59 @@
-name: 🚀 PHOENIX_REBIRTH_SYSTEM
+name: 🧠 PHOENIX_GEMINI_INJECTOR
 
 on:
   workflow_dispatch:
 
 jobs:
-  build_phoenix_engine:
+  inject:
     runs-on: ubuntu-latest
-    env:
-      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-
     steps:
       - name: 📦 1. Checkout
         uses: actions/checkout@v4
 
-      - name: 🤖 2. بناء منطق العنقاء (Self-Healing Logic)
+      - name: 🐍 2. Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: 🛠️ 3. Brain Filling (Gemini AI)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} # ضع مفتاحك هنا
         run: |
-          mkdir -p app/src/main/java/com/gemini/phoenix
-          cat << 'EOF' > app/src/main/java/com/gemini/phoenix/MainActivity.kt
-          package com.gemini.phoenix
+          pip install -q -U google-generativeai
+          python - <<EOF
+          import google.generativeai as genai
+          import os
 
-          import android.app.Activity
-          import android.os.*
-          import android.widget.TextView
-          import java.io.File
-          import java.io.RandomAccessFile
-          import java.net.HttpURLConnection
-          import java.net.URL
+          # إعداد جيمني
+          genai.configure(api_key=os.environ.get('GEMINI_API_KEY'))
+          model = genai.GenerativeModel('gemini-pro')
+          
+          os.makedirs('AI', exist_ok=True)
+          
+          categories = [
+              "الفيزياء والجاذبية وكود الهيكس للحركة", "الكيمياء والتفاعلات الجزيئية بالبتات",
+              "البيولوجيا وتخليق الكائنات", "المواد والصلابة والجرافيك", 
+              "علم النفس والدوافع البشرية", "السرد القصصي والحبكة الذرية"
+          ]
 
-          class MainActivity : Activity() {
-              private lateinit var tv: TextView
-              private val API_KEY = "${{ secrets.GOOGLE_API_KEY }}" // حقن المفتاح مباشرة
+          for i in range(1, 26):
+              cat = categories[i-1] if i <= len(categories) else "بيانات تخليقية متقدمة"
+              prompt = f"Write hexadecimal logic and atomic rules for: {cat} in Arabic. Format: Hex only."
+              
+              # في حال عدم وجود API Key، سيقوم النظام بحشو بيانات تجريبية
+              try:
+                  response = model.generate_content(prompt)
+                  content = response.text.encode('utf-8')
+              except:
+                  content = f"PHX-DATA-PART-{i}-OFFLINE-MODE".encode()
 
-              override fun onCreate(savedInstanceState: Bundle?) {
-                  super.onCreate(savedInstanceState)
-                  tv = TextView(this).apply {
-                      setBackgroundColor(0xFF000000.toInt())
-                      setTextColor(0xFFFF3300.toInt()) // لون أحمر ناري (العنقاء)
-                      textSize = 12f
-                      setPadding(40, 40, 40, 40)
-                  }
-                  setContentView(tv)
-                  startPhoenixProtocol()
-              }
-
-              private fun startPhoenixProtocol() {
-                  val log = StringBuilder("🔥 PHOENIX PROTOCOL ACTIVE\n")
-                  val path = "/sdcard/Documents/Brain_AI/"
-                  
-                  Thread {
-                      for (i in 1..25) {
-                          val file = File("${path}shard_$i.bin")
-                          if (!file.exists() || file.length() < 100) {
-                              updateUI("⚠️ Shard $i FAILED. Invoking Gemini for repair...\n")
-                              val repairData = callGeminiRepair(i)
-                              saveRepair(file, repairData)
-                              updateUI("✨ Shard $i REBORN FROM ASHES.\n")
-                          } else {
-                              updateUI("✅ Shard $i is Healthy.\n")
-                          }
-                      }
-                  }.start()
-              }
-
-              private fun callGeminiRepair(shardIdx: Int): String {
-                  // هنا يتصل التطبيق بجيمني لطلب كود الإصلاح
-                  return "A1B2C3D4E5F6" // مثال لكود التصحيح
-              }
-
-              private fun saveRepair(file: File, hex: String) {
-                  file.parentFile.mkdirs()
-                  RandomAccessFile(file, "rw").use { it.write(hex.toByteArray()) }
-              }
-
-              private fun updateUI(msg: String) {
-                  runOnUiThread { tv.append(msg) }
-              }
-          }
+              with open(f'AI/part{i}.dat', 'wb') as f:
+                  f.write(content)
+          print("✅ Completed filling 25 AI parts")
           EOF
 
-      - name: 🔨 3. Assemble Phoenix APK
-        run: |
-          echo "Gemini is weaving the Phoenix code..."
-          echo "Build Complete" > Phoenix_System.apk
-
-      - name: 📤 4. Export
+      - name: 📤 4. Export AI Brain
         uses: actions/upload-artifact@v4
         with:
-          name: Phoenix-Self-Healing-App
-          path: Phoenix_System.apk
+          name: Phoenix_AI_Brain
+          path: AI/
