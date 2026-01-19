@@ -1,11 +1,11 @@
-name: 🚀 PHOENIX_2026_ULTIMATE
+name: 🚀 PHOENIX_OPTIMIZED_v140
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest # أحدث نسخة من نظام التشغيل
+    runs-on: ubuntu-22.04 # بيئة مستقرة جداً ومجربة
     steps:
       - name: 📦 1. Checkout
         uses: actions/checkout@v4
@@ -16,53 +16,46 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 🛠️ 3. Install Latest SDK & Accept All (الحل القاطع)
+      - name: 🛡️ 3. Pre-Accept Optimized Licenses
         run: |
-          # تثبيت الأدوات الرسمية لأندرويد
-          sudo apt-get update
-          sudo apt-get install -y wget unzip
-          mkdir -p $HOME/cmdline-tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
-          unzip -q tools.zip -d $HOME/cmdline-tools
-          
-          # إعداد المسارات لتكون مرئية للنظام
-          export ANDROID_HOME=$HOME/android-sdk
-          export PATH=$PATH:$HOME/cmdline-tools/cmdline-tools/bin
-          
-          # الموافقة على كل التراخيص (بما فيها النسخة 36.1 التي تظهر لك)
-          yes | $HOME/cmdline-tools/cmdline-tools/bin/sdkmanager --licenses --sdk_root=$ANDROID_HOME
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          # حقن التراخيص للنسخ المستقرة (API 33/34)
+          mkdir -p $HOME/.buildozer/android/platform/android-sdk/licenses
+          echo -e "8933bad161af4178b1185d1a37fbf41ea5269c55\nd56f5187479451e0f0f766e07503a702039db007" > $HOME/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
 
-      - name: 🐍 4. Install Modern Buildozer
+      - name: 🐍 4. Install Stable Buildozer
         run: |
-          pip install --user --upgrade buildozer Cython
+          # نستخدم إصدارات مثبتة الكفاءة
+          pip install --user Cython==0.29.33 buildozer==1.5.0
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: 📝 5. Create Phoenix App
+      - name: 📝 5. Application Code
         run: |
           cat << 'EOF' > main.py
           from kivy.app import App
           from kivy.uix.label import Label
           class PhoenixApp(App):
               def build(self):
-                  return Label(text="🔥 PHOENIX 2026\nRunning on Latest Engine", font_size='20sp')
+                  return Label(text="🔥 PHOENIX SYSTEM\nOptimized for Samsung A32", font_size='20sp')
           if __name__ == '__main__':
               PhoenixApp().run()
           EOF
 
-      - name: 🔨 6. Build with 2026 Standards
+      - name: 🔨 6. Building with API 33 (The Sweet Spot)
         run: |
           buildozer init
-          # ضبط الإعدادات لأحدث إصدار مستقر (API 35) لتجنب فخ 36.1
+          # ضبط الإعدادات للنسخة الأكثر توافقاً مع هواتف الفئة المتوسطة
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
-          sed -i 's/android.api = 31/android.api = 35/' buildozer.spec
-          sed -i 's/#android.build_tools_version = 31.0.0/android.build_tools_version = 35.0.0/' buildozer.spec
+          sed -i 's/android.api = 31/android.api = 33/' buildozer.spec
+          sed -i 's/#android.build_tools_version = 31.0.0/android.build_tools_version = 33.0.1/' buildozer.spec
+          sed -i 's/#android.ndk = 25b/android.ndk = 25b/' buildozer.spec
           
-          # إخبار Buildozer أين يجد الـ SDK الذي وافقنا على رخصته
-          export ANDROID_HOME=$HOME/android-sdk
-          buildozer -v android debug
+          # البدء بالبناء مع الموافقة التلقائية
+          yes | buildozer -v android debug
 
       - name: 📤 7. Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: Phoenix-2026-APK
+          name: Phoenix-Optimized-A32
           path: bin/*.apk
