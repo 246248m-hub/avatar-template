@@ -1,4 +1,4 @@
-name: 🛡️ Absolute_Truth_Test_v101
+name: 🛡️ Absolute_Truth_Test_v102
 
 on:
   workflow_dispatch:
@@ -20,18 +20,18 @@ jobs:
               f.seek(5 * 1024 * 1024 * 1024)
               f.write(b'GENE_MIDDLE_555')
           "
-          echo "✅ 10GB Brain Created."
+          echo "✅ 10GB Data Ready."
 
-      - name: 🏗️ 3. Structure Project (Bypassing Gradle 9 Bugs)
+      - name: 🏗️ 3. Structure KTS Project (Modern Standard)
         run: |
           mkdir -p app/src/main/java/com/atomic/seeker
           mkdir -p app/src/main/res/layout
           
-          # إعدادات صارمة جداً لمنع التداخل
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
 
-          cat << 'EOF' > settings.gradle
+          # ملف الإعدادات بلغة KTS
+          cat << 'EOF' > settings.gradle.kts
           pluginManagement {
               repositories { google(); mavenCentral(); gradlePluginPortal() }
           }
@@ -40,31 +40,31 @@ jobs:
               repositories { google(); mavenCentral() }
           }
           rootProject.name = "AtomicSeeker"
-          include ':app'
+          include(":app")
           EOF
 
-          # ملف بناء التطبيق باستخدام "المعرفات البدائية" لتجنب خطأ DependencyHandler
-          cat << 'EOF' > app/build.gradle
+          # ملف بناء التطبيق بلغة KTS (هذا سيحل مشكلة DependencyHandler)
+          cat << 'EOF' > app/build.gradle.kts
           plugins {
-              id 'com.android.application' version '8.1.0'
+              id("com.android.application") version "8.1.0"
+              id("org.jetbrains.kotlin.android") version "1.8.10"
           }
 
           android {
-              namespace "com.atomic.seeker"
-              compileSdk 33
+              namespace = "com.atomic.seeker"
+              compileSdk = 33
               defaultConfig {
-                  applicationId "com.atomic.seeker"
-                  minSdk 24
-                  targetSdk 33
-                  versionCode 101
-                  versionName "101.0"
+                  applicationId = "com.atomic.seeker"
+                  minSdk = 24
+                  targetSdk = 33
+                  versionCode = 102
+                  versionName = "102.0"
               }
           }
 
           dependencies {
-              // استخدام مكتبة واحدة فقط لضمان عدم حدوث تعارض في السيرفر
-              implementation 'androidx.core:core-ktx:1.9.0'
-              implementation 'androidx.appcompat:appcompat:1.6.1'
+              implementation("androidx.appcompat:appcompat:1.6.1")
+              implementation("com.google.android.material:material:1.9.0")
           }
           EOF
 
@@ -89,7 +89,7 @@ jobs:
                           raf.seek(5 * 1024 * 1024 * 1024.toLong())
                           val buffer = ByteArray(15)
                           raf.read(buffer)
-                          tv.text = "🔍 TRUTH v101:\n\nDATA: ${String(buffer)}\n\n10GB: VERIFIED"
+                          tv.text = "🔍 KTS SUCCESS:\n\nDATA: ${String(buffer)}\n\n10GB: CONFIRMED"
                       } else { tv.text = "❌ Brain Missing" }
                   } catch (e: Exception) { tv.text = "Error: ${e.message}" }
               }
@@ -112,12 +112,11 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🛠️ 5. Build (Clean Slate)
+      - name: 🛠️ 5. Build (KTS Mode)
         run: |
-          # حذف أي ملفات بناء قديمة ومنع الـ Daemon من التدخل
-          rm -rf build.gradle
+          rm -f build.gradle settings.gradle # حذف الملفات القديمة نهائياً
           gradle wrapper --gradle-version 8.1.1
-          ./gradlew :app:assembleDebug --no-daemon --stacktrace
+          ./gradlew :app:assembleDebug --no-daemon
 
       - name: 📱 6. Emulator Truth Test
         uses: reactivecircus/android-emulator-runner@v2
@@ -132,10 +131,10 @@ jobs:
             adb shell screencap -p /sdcard/truth_result.png
             adb pull /sdcard/truth_result.png .
 
-      - name: 📤 7. Final Proof
+      - name: 📤 7. Final Evidence
         uses: actions/upload-artifact@v4
         with:
-          name: Final-Truth-v101
+          name: Absolute-Truth-v102
           path: |
             app/build/outputs/apk/debug/*.apk
             truth_result.png
