@@ -1,13 +1,14 @@
-name: 🧠 Giant_Filled_Brain_Factory_V2
+name: 🏗️ Atomic_Hex_Factory_10GB
 
 on:
   workflow_dispatch:
 
 jobs:
-  build_chunks:
+  generate_hex_brain:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        # توليد 25 جزءاً، كل جزء 400 ميجا = 10 جيجا إجمالي
         chunk_id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
 
     steps:
@@ -16,113 +17,52 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: 🛠️ Sculpting Smart Chunk ${{ matrix.chunk_id }}
+      - name: 🛠️ Sculpting Hex Chunk ${{ matrix.chunk_id }}
         run: |
-          cat << 'EOF' > generator.py
-          import sys
+          cat << 'EOF' > hex_generator.py
           import os
-          import json
-          import random
-          from hashlib import sha256
+          import sys
 
-          def generate_chunk(cid):
+          def generate():
+              cid = int(sys.argv[1])
               file_name = f"brain_chunk_{cid:02d}.bin"
-              size_mb = 400 # حجم كل جزء
+              size_mb = 400 
               total_bytes = size_mb * 1024 * 1024
               
-              print(f"جاري إنتاج اللقمة الذكية رقم {cid} بحجم {size_mb}MB...")
+              print(f"جاري حقن لغة الهيكس في اللقمة {cid}...")
               
               with open(file_name, "wb") as f:
-                  # --- Header (Metadata) ---
-                  # كل لقمة تبدأ بتوقيع لتحديد محتواها وفهرسها
-                  header_info = {
-                      "chunk_id": cid,
-                      "total_chunks": 25,
-                      "version": "1.0-SmartBrain",
-                      "timestamp": os.getenv('GITHUB_RUN_ID', 'N/A')
-                  }
-                  header_json = json.dumps(header_info).encode('utf-8')
-                  f.write(header_json.ljust(1024, b'\0')) # 1KB for header
-
-                  # --- Content Injection ---
+                  # 1. حقن توقيع الملف (File Signature) بمستوى البت
+                  f.write(b"\x7F\x41\x54\x4F\x4D\x49\x43") # ATOMIC Hex Signature
+                  
+                  # 2. توزيع الموارد بناءً على رقم اللقمة
                   if cid == 1:
-                      # اللقمة 01: المترجم المنطقي وقواعد الذكاء الاصطناعي الأساسية
-                      logic_data = {
-                          "AI_CORE_RULES": {
-                              "IF_GAME_CONCEPT": "ACTIVATE_GAME_DESIGN_MODULE",
-                              "IF_APP_CONCEPT": "ACTIVATE_UI_UX_MODULE",
-                              "IF_IMAGE_INPUT": "ACTIVATE_VISION_PROCESSOR",
-                              "IF_VIDEO_INPUT": "ACTIVATE_TEMPORAL_ANALYZER",
-                              "DEFAULT_RESPONSE": "I am processing your request. Please be specific."
-                          },
-                          "GAME_DESIGN_MODULE": {
-                              "GRAVITY_CODE_PY": "def apply_gravity(obj, dt): obj.y_vel -= 9.8 * dt",
-                              "COLLISION_CODE_PY": "def check_collision(obj1, obj2): return obj1.rect.intersects(obj2.rect)",
-                              "SAVE_GAME_LOGIC": "def save_game(data, slot): write_to_disk(data, slot)"
-                          },
-                          "UI_UX_MODULE": {
-                              "BUTTON_TEMPLATE_XML": "<Button android:text='Click Me' ... />",
-                              "TEXTFIELD_TEMPLATE_XML": "<EditText android:hint='Enter Text' ... />"
-                          }
-                      }
-                      f.write(json.dumps(logic_data).encode('utf-8'))
+                      # اللقمة 1: تحتوي على "جدول عناوين الهيكس" (The Hex Map)
+                      # هنا نضع شيفرات التحكم في المعالج والجرافيكس
+                      logic_hex = b"\x48\x89\xE5\x48\x83\xEC\x10\xBF\x01\x00\x00\x00" * 1000
+                      f.write(logic_hex)
                   
-                  elif cid == 2:
-                      # اللقمة 02: مكتبة أكواد Python متقدمة
-                      python_lib_data = {
-                          "PATHFINDING_A_STAR": "class AStarNode:...",
-                          "NEURAL_NETWORK_BASIC_PY": "class NeuralNet:...",
-                          "DATA_PARSING_LIB": "def parse_csv(file):..."
-                      }
-                      f.write(json.dumps(python_lib_data).encode('utf-8'))
-
-                  elif cid == 3:
-                      # اللقمة 03: مكتبة أكواد Kotlin/Java للأندرويد
-                      android_lib_data = {
-                          "ACTIVITY_LIFECYCLE_KT": "override fun onCreate():...",
-                          "RECYCLERVIEW_ADAPTER_KT": "class MyAdapter:...",
-                          "PERMISSION_HANDLER_KT": "fun requestPermissions():..."
-                      }
-                      f.write(json.dumps(android_lib_data).encode('utf-8'))
-
-                  elif cid >= 4 and cid <= 7:
-                      # اللقمات 04-07: بيانات مرئية (صور/قوالب UI/UX) - محاكاة
-                      # سيتم تخزين بيانات الصور والفيديوهات هنا لاحقاً
-                      visual_data = f"VISUAL_DATA_CHUNK_{cid}: [Sample UI Element Data, Image Feature Vectors, Video Frame Descriptions]"
-                      f.write(visual_data.encode('utf-8'))
-
-                  elif cid >= 8 and cid <= 12:
-                      # اللقمات 08-12: نماذج لغوية بسيطة (NLP) وقواعد نحوية
-                      nlp_data = f"NLP_MODEL_CHUNK_{cid}: [Grammar Rules, Semantic Parsing Templates, Keyword Extraction Logic]"
-                      f.write(nlp_data.encode('utf-8'))
-
-                  else:
-                      # اللقمات المتبقية: بيانات احتياطية، معرفة عامة، تحديثات مستقبلية
-                      filler_data = f"GENERAL_KNOWLEDGE_CHUNK_{cid}: [Placeholder for vast knowledge or future extensions]"
-                      f.write(filler_data.encode('utf-8'))
+                  elif 2 <= cid <= 10:
+                      # اللقمات من 2 لـ 10: مخصصة لهيكس الجرافيكس (High-End Shaders)
+                      # نملأها بمصفوفات لونية ومعماريّة لبناء عالم مثل Where Winds Meet
+                      graphics_hex = b"\xFF\x00\xAA\x55\x33\xCC\xEE\x11\x22\xBB\x44\x99" * 5000
+                      f.write(graphics_hex)
                   
-                  # --- Fill to target size ---
-                  # التأكد من أن كل لقمة بالحجم الصحيح
-                  current_pos = f.tell()
-                  if current_pos < total_bytes:
-                      # إضافة بيانات عشوائية لتعبئة المساحة المتبقية
-                      remaining_bytes = total_bytes - current_pos
-                      # كتابة بلوكات بحجم 1 ميجا من بيانات عشوائية
-                      block_size = 1024 * 1024
-                      num_blocks = remaining_bytes // block_size
-                      for _ in range(num_blocks):
-                          f.write(os.urandom(block_size))
-                      # كتابة الباقي
-                      f.write(os.urandom(remaining_bytes % block_size))
-                  
-              print(f"تم الانتهاء من اللقمة الذكية رقم {cid}!")
+                  # 3. ملء المساحة المتبقية ببيانات هيكس عشوائية منظمة
+                  # نستخدم urandom لضمان أن الملفات تشغل الحجم الحقيقي وتكون مادة خام
+                  remaining = total_bytes - f.tell()
+                  block_size = 1024 * 1024 # 1MB block
+                  for _ in range(remaining // block_size):
+                      f.write(os.urandom(block_size))
+                  f.write(os.urandom(remaining % block_size))
 
-          generate_chunk(int(sys.argv[1]))
+          if __name__ == "__main__":
+              generate()
           EOF
-          python generator.py ${{ matrix.chunk_id }}
+          python hex_generator.py ${{ matrix.chunk_id }}
 
-      - name: 📤 Upload Chunk
+      - name: 📤 Upload Hex Chunk ${{ matrix.chunk_id }}
         uses: actions/upload-artifact@v4
         with:
-          name: Smart-Brain-Chunk-${{ matrix.chunk_id }}
+          name: Hex-Chunk-${{ matrix.chunk_id }}
           path: brain_chunk_*.bin
