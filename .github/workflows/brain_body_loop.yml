@@ -1,4 +1,4 @@
-name: 🏗️ PHOENIX_AUTO_LICENSE_SUCCESS
+name: 🚀 PHOENIX_FINAL_FIX_v125
 
 on:
   workflow_dispatch:
@@ -10,43 +10,44 @@ jobs:
       - name: 📦 1. Checkout Code
         uses: actions/checkout@v4
 
-      - name: 🐍 2. Install Dependencies
-        run: |
-          pip install buildozer Cython==0.29.33
-          sudo apt-get update
-          sudo apt-get install -y python3-pip build-essential git python3 python3-dev ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good
+      - name: ☕ 2. Setup Java 17 (ضروري لأندرويد)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: 📝 3. Create main.py
+      - name: 🛠️ 3. Setup Android SDK (الموافقة التلقائية)
+        uses: android-actions/setup-android@v3
+        # هذه الخطوة ستقوم بتجهيز الـ sdkmanager والموافقة على كل شيء تلقائياً
+
+      - name: 🐍 4. Install Buildozer
+        run: |
+          pip install --user --upgrade buildozer Cython==0.29.33
+
+      - name: 📝 5. Create main.py
         run: |
           cat << 'EOF' > main.py
           from kivy.app import App
           from kivy.uix.label import Label
           class PhoenixApp(App):
               def build(self):
-                  return Label(text="🔥 PHOENIX SYSTEM ONLINE\n10GB Brain Connected", font_size='20sp')
+                  return Label(text="🔥 PHOENIX SYSTEM ONLINE\n10GB Brain Linked", font_size='20sp')
           if __name__ == '__main__':
               PhoenixApp().run()
           EOF
 
-      - name: 🛠️ 4. Accept Licenses & Fix Build-Tools
+      - name: 🔨 6. Build Real APK
         run: |
-          mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools
-          # أمر سحري للموافقة على كل رخص جوجل تلقائياً
-          yes | sdkmanager --licenses || true
-          # تثبيت الأدوات الضرورية يدوياً
-          echo "y" | sdkmanager "build-tools;34.0.0" "platforms;android-34" "platform-tools"
-
-      - name: 🔨 5. Build Real APK
-        run: |
+          # سنستخدم ميزة 'تخطي الرخص' المدمجة في Buildozer
           buildozer init
-          # تعديل الإعدادات لتجنب النسخ التجريبية
-          sed -i 's/#android.api = 31/android.api = 34/' buildozer.spec
-          sed -i 's/#android.build_tools_version = 31.0.0/android.build_tools_version = 34.0.0/' buildozer.spec
+          sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
+          sed -i 's/android.api = 31/android.api = 34/' buildozer.spec
           
-          buildozer android debug
-
-      - name: 📤 6. Export APK
+          # البدء في البناء الحقيقي
+          buildozer -v android debug
+          
+      - name: 📤 7. Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gemini-Phoenix-Final
+          name: Gemini-Phoenix-A32
           path: bin/*.apk
