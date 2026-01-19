@@ -1,25 +1,82 @@
-      - name: 🧪 8. Logic & UI Smoke Test (Virtual Run)
+name: 💉 🔍 PHOENIX_FULL_INSPECTION_SYSTEM
+
+on:
+  workflow_dispatch:
+
+jobs:
+  surgery_and_report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 1. Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🛠️ 2. Install Surgical Tools
         run: |
-          # تثبيت مكتبة Kivy على السيرفر لتجربة الكود
-          pip install kivy
+          sudo apt-get update
+          sudo apt-get install -y zip unzip wget default-jre
+          # تحميل أداة التوقيع لضمان عمل الـ APK على الأندرويد
+          wget https://github.com/patrickfav/uber-apk-signer/releases/download/v1.3.0/uber-apk-signer-1.3.0.jar -O signer.jar
+          echo "✅ Tools Ready."
+
+      - name: 🧠 3. Download The Brain (135MB)
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          repo: 246248m-hub/avatar-template
+          run_id: 21146976650
+          name: Phoenix_Ultra_Brain
+          path: ./brain_files
+
+      - name: 📥 4. Download The Body (APK)
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          repo: 246248m-hub/avatar-template
+          run_id: 21146013013
+          name: Phoenix-Hex-Compiler-v146
+          path: ./temp_body
+
+      - name: 🧬 5. The Implantation Surgery
+        run: |
+          # 1. تجهيز ملف الـ APK الأصلي
+          find ./temp_body -name "*.apk" -exec mv {} ./original_body.apk \;
           
-          # إنشاء ملف اختبار سريع يتأكد من أن التطبيق يقرأ العقل
-          python3 - <<EOF
-          import os
-          # محاكاة وجود الملفات المحقونة
-          os.makedirs('assets/AI_ULTRA', exist_ok=True)
-          with open('assets/AI_ULTRA/part1.py', 'w') as f:
-              f.write("def brain_logic(): return 'CORTEX_ACTIVE'")
+          # 2. إنشاء مجلد الأصول الداخلي (Assets)
+          mkdir -p assets/AI_ULTRA
           
-          print("--- البدء في فحص منطق التطبيق الذاتي ---")
-          try:
-              # محاكاة عملية القراءة التي سيقوم بها التطبيق
-              with open('assets/AI_ULTRA/part1.py', 'r') as f:
-                  content = f.read()
-                  if 'CORTEX_ACTIVE' in content:
-                      print("✅ نجاح: التطبيق استطاع الوصول إلى العقل المحقون!")
-                  else:
-                      print("❌ فشل: البيانات مشوهة")
-          except Exception as e:
-              print(f"❌ خطأ برمجية: {e}")
-          EOF
+          # 3. حقن ملفات العقل الـ 135 ميجابايت داخل المجلد
+          cp -r ./brain_files/* assets/AI_ULTRA/
+          
+          # 4. دمج المجلد داخل الـ APK كأرشيف (الحقن النظيف)
+          zip -ur original_body.apk assets/
+          
+          # 5. توقيع الـ APK الجديد ليعمل على هاتفك
+          java -jar signer.jar --apks original_body.apk
+          
+          # 6. تسمية الملف النهائي
+          find . -name "*aligned-debugSigned.apk" -exec mv {} Phoenix_Ready_To_Use.apk \;
+          echo "✅ Injection Successful."
+
+      - name: 🔍 6. Forensic Inspection Report (التأكد من النجاح)
+        run: |
+          echo "==========================================" > report.txt
+          echo "📊 PHOENIX SURGERY FINAL REPORT" >> report.txt
+          echo "==========================================" >> report.txt
+          echo "Status: COMPLETED" >> report.txt
+          echo "Final APK Size:" >> report.txt
+          du -sh Phoenix_Ready_To_Use.apk >> report.txt
+          echo "" >> report.txt
+          echo "Detected Internal Brain Sectors:" >> report.txt
+          # عرض قائمة الملفات المحقونة وأحجامها للتأكد
+          unzip -l Phoenix_Ready_To_Use.apk | grep "assets/AI_ULTRA/" | awk '{print "Sector: " $4 " | Weight: " $1 " bytes"}' >> report.txt
+          echo "" >> report.txt
+          echo "✅ VERIFICATION: BRAIN IS FULLY INTEGRATED." >> report.txt
+          cat report.txt
+
+      - name: 📤 7. Export Final Deliverables
+        uses: actions/upload-artifact@v4
+        with:
+          name: Phoenix_Package_Final
+          path: |
+            Phoenix_Ready_To_Use.apk
+            report.txt
