@@ -1,13 +1,13 @@
-name: 🏗️ PHOENIX_REAL_BUILD_v129
+name: 🏗️ PHOENIX_STABLE_BUILD_v130
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04 # استخدام نسخة أقدم قليلاً لضمان توافق المكتبات
     steps:
-      - name: 📦 1. Checkout Code
+      - name: 📦 1. Checkout
         uses: actions/checkout@v4
 
       - name: ☕ 2. Setup Java 17
@@ -16,16 +16,19 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 🛠️ 3. Setup Android SDK (الخطوة الحاسمة)
-        uses: android-actions/setup-android@v3
-        with:
-          log-accepted-android-sdk-licenses: false # يوافق تلقائياً بصمت
-
-      - name: 🐍 4. Install Buildozer & Dependencies
+      - name: 🛠️ 3. Install System Dependencies
         run: |
-          pip install --user buildozer Cython==0.29.33
           sudo apt-get update
-          sudo apt-get install -y build-essential libffi-dev libssl-dev
+          sudo apt-get install -y \
+            build-essential git ffmpeg libsdl2-dev libsdl2-image-dev \
+            libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev \
+            libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev \
+            autoconf automake libtool pkg-config libffi-dev # حل مشكلة libffi
+
+      - name: 🐍 4. Setup Python & Buildozer
+        run: |
+          pip install --user --upgrade Cython==0.29.33 buildozer
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: 📝 5. Create main.py
         run: |
@@ -34,24 +37,25 @@ jobs:
           from kivy.uix.label import Label
           class PhoenixApp(App):
               def build(self):
-                  return Label(text="🔥 PHOENIX SYSTEM ONLINE\n10GB Brain Connected", font_size='20sp')
+                  return Label(text="🔥 PHOENIX ONLINE\nReady for 10GB Brain", font_size='20sp')
           if __name__ == '__main__':
               PhoenixApp().run()
           EOF
 
-      - name: 🔨 6. Build APK (تجاوز الرخص داخلياً)
+      - name: 🔨 6. Smart Build (Fixing Libffi Error)
         run: |
           buildozer init
-          # تهيئة الإعدادات لاستخدام الـ SDK الذي جهزه GitHub
+          # تعديلات ذكية في ملف الإعدادات لتجنب الأخطاء السابقة
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
           sed -i 's/android.api = 31/android.api = 34/' buildozer.spec
+          sed -i 's/#android.ndk = 25b/android.ndk = 25b/' buildozer.spec
           
-          # إجبار Buildozer على رؤية المسارات الصحيحة
-          export ANDROID_HOME=$ANDROID_SDK_ROOT
-          yes | buildozer -v android debug
-
+          # تشغيل البناء مع تنظيف المجلدات السابقة لضمان عدم تكرار الخطأ
+          buildozer android clean
+          buildozer -v android debug
+          
       - name: 📤 7. Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gemini-Phoenix-A32
+          name: Gemini-Phoenix-Final
           path: bin/*.apk
