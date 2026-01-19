@@ -1,36 +1,110 @@
-name: 🛡️ Final_Confirmation_v76
+name: 🔦 Flashlight_Sculpt_Test_v77
 
 on:
   workflow_dispatch:
 
 jobs:
-  validate_engine:
+  sculpt_flash:
     runs-on: ubuntu-latest
     steps:
-      - name: 🛠️ 1. Prepare Validation Script
+      - name: 📦 1. Checkout
+        uses: actions/checkout@v4
+
+      - name: ☕ 2. Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: 🏗️ 3. Structure Flashlight App
         run: |
-          # سكريبت بايثون يحاكي نحت تطبيق حقيقي من ملف "دماغ" وهمي
-          cat << 'EOF' > validator.py
-          import os
+          mkdir -p app/src/main/java/com/atomic/flash
+          mkdir -p app/src/main/res/layout
+          mkdir -p app/src/main/res/values
+          
+          echo "android.useAndroidX=true" > gradle.properties
+          echo "android.enableJetifier=true" >> gradle.properties
+          echo "include ':app'" > settings.gradle
 
-          # إنشاء ملف "دماغ" وهمي بحجم 100 ميجا يحتوي على APK مخفي
-          with open('brain_test.bin', 'wb') as f:
-              f.write(os.urandom(1024 * 1024 * 100)) # بيانات عشوائية
-          
-          print("✅ تم إنشاء ملف اختبار (100 ميجا)")
-          
-          # عملية "النحت": استخراج بيانات معينة وتحويلها لملف APK
-          # (هنا نختبر قدرة المحرك على العزل والتحويل)
-          with open('sculpted_test.apk', 'wb') as f:
-              f.write(b'\x50\x4B\x03\x04') # توقيع ملفات APK الحقيقي
-              f.write(os.urandom(1024 * 500)) # نصف ميجا من البيانات المنحوتة
-          
-          print("✅ تم نحت ملف APK تجريبي بنجاح")
+          cat << 'EOF' > app/build.gradle
+          plugins { id 'com.android.application'; id 'kotlin-android' }
+          android {
+              namespace "com.atomic.flash"
+              compileSdk 33
+              defaultConfig {
+                  applicationId "com.atomic.flash"
+                  minSdk 24
+                  targetSdk 33
+                  versionCode 1
+                  versionName "1.0"
+              }
+          }
+          dependencies {
+              implementation 'androidx.appcompat:appcompat:1.6.1'
+              implementation 'com.google.android.material:material:1.9.0'
+          }
           EOF
-          python3 validator.py
 
-      - name: 📤 2. Upload Sculpted Result
+      - name: 📝 4. Inject Flashlight Logic
+        run: |
+          cat << 'EOF' > app/src/main/AndroidManifest.xml
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.CAMERA" />
+              <uses-feature android:name="android.hardware.camera.flash" />
+              <application android:label="Atomic Flash" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+                  <activity android:name="com.atomic.flash.MainActivity" android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          cat << 'EOF' > app/src/main/java/com/atomic/flash/MainActivity.kt
+          package com.atomic.flash
+          import android.content.Context
+          import android.hardware.camera2.CameraManager
+          import android.os.Bundle
+          import android.widget.ToggleButton
+          import android.widget.LinearLayout
+          import android.graphics.Color
+          import androidx.appcompat.app.AppCompatActivity
+
+          class MainActivity : AppCompatActivity() {
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  val layout = LinearLayout(this).apply {
+                      setBackgroundColor(Color.BLACK)
+                      gravity = android.view.Gravity.CENTER
+                  }
+                  val toggle = ToggleButton(this).apply {
+                      textOn = "FLASH ON"; textOff = "FLASH OFF"; isChecked = false
+                  }
+                  layout.addView(toggle)
+                  setContentView(layout)
+
+                  val camManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                  val camId = camManager.cameraIdList[0]
+
+                  toggle.setOnCheckedChangeListener { _, isChecked ->
+                      camManager.setTorchMode(camId, isChecked)
+                  }
+              }
+          }
+          EOF
+
+      - name: 🛠️ 5. Build Flashlight APK
+        run: |
+          wget -q https://services.gradle.org/distributions/gradle-8.1-bin.zip
+          unzip -q gradle-8.1-bin.zip
+          ./gradle-8.1/bin/gradle wrapper
+          chmod +x gradlew
+          ./gradlew :app:assembleDebug --no-daemon
+
+      - name: 📤 6. Export Flashlight APK
         uses: actions/upload-artifact@v4
         with:
-          name: Validation-Result
-          path: sculpted_test.apk
+          name: Atomic-Flash-Test
+          path: app/build/outputs/apk/debug/*.apk
