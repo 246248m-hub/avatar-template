@@ -1,163 +1,33 @@
-name: 🤖 AI Creates, Builds, Signs, and Uploads App (Final v34)
+name: 🚀 Build_AI_Atomic_Reader
 
 on:
   workflow_dispatch:
 
 jobs:
-  create_build_sign_and_upload:
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-
     steps:
-      - name: 📦 1. Checkout Repository
+      - name: 📦 Checkout
         uses: actions/checkout@v4
 
-      - name: ☕ 2. Setup Java 17
+      - name: ☕ Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: 🏗️ 3. Initialize Project & Build
+      - name: 🏗️ Create Android Project Structure
         run: |
-          # أ- إنشاء هيكل المجلدات
-          mkdir -p gradle
-          mkdir -p app/src/main/java/com/example/creator
+          mkdir -p app/src/main/java/com/atomic/reader
           mkdir -p app/src/main/res/values
 
-          # ب- إعدادات أندرويد الأساسية
-          cat << 'EOF' > gradle.properties
-          android.useAndroidX=true
-          android.enableJetifier=true
-          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
-          EOF
-
-          # ج- ملف إصدارات المكتبات (الأسماء هنا تحتوي شرطات)
-          cat << 'EOF' > gradle/libs.versions.toml
-          [versions]
-          agp = "8.2.0"
-          kotlin = "1.9.22"
-          coreKtx = "1.12.0"
-          activityCompose = "1.8.2"
-          composeBom = "2024.02.01"
-          [libraries]
-          androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-          androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-          androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-          androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
-          androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-          androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-          [plugins]
-          androidApplication = { id = "com.android.application", version.ref = "agp" }
-          kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-          EOF
-
-          cat << 'EOF' > settings.gradle.kts
-          pluginManagement { repositories { gradlePluginPortal(); google(); mavenCentral() } }
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories { google(); mavenCentral() }
-          }
-          rootProject.name = "flashlight-app"
-          include(":app")
-          EOF
-
-          # د- ملف البناء (تم تحويل الشرطات إلى نقاط هنا!)
-          cat << 'EOF' > app/build.gradle.kts
-          plugins {
-              alias(libs.plugins.androidApplication)
-              alias(libs.plugins.kotlinAndroid)
-          }
-          android {
-              namespace = "com.example.creator"
-              compileSdk = 34
-              defaultConfig {
-                  applicationId = "com.example.creator"
-                  minSdk = 24
-                  targetSdk = 34
-                  versionCode = 1
-                  versionName = "1.0"
-              }
-              signingConfigs {
-                  create("release") {
-                      storeFile = rootProject.file("keystore.jks")
-                      storePassword = "password"
-                      keyAlias = "myalias"
-                      keyPassword = "password"
-                  }
-              }
-              buildTypes {
-                  release {
-                      isMinifyEnabled = false
-                      signingConfig = signingConfigs.getByName("release")
-                  }
-              }
-              buildFeatures { compose = true }
-              composeOptions { kotlinCompilerExtensionVersion = "1.5.10" }
-              compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
-              kotlinOptions { jvmTarget = "17" }
-          }
-          dependencies {
-              implementation(libs.androidx.core.ktx)
-              implementation(libs.androidx.activity.compose)
-              implementation(platform(libs.androidx.compose.bom))
-              implementation(libs.androidx.compose.ui)
-              implementation(libs.androidx.compose.ui.graphics)
-              implementation(libs.androidx.compose.material3)
-          }
-          EOF
-
-          # هـ- كود تطبيق الكشاف
-          cat << 'EOF' > app/src/main/java/com/example/creator/MainActivity.kt
-          package com.example.creator
-          import android.content.Context
-          import android.hardware.camera2.CameraManager
-          import android.os.Bundle
-          import androidx.activity.ComponentActivity
-          import androidx.activity.compose.setContent
-          import androidx.compose.foundation.background
-          import androidx.compose.foundation.layout.*
-          import androidx.compose.material3.*
-          import androidx.compose.runtime.*
-          import androidx.compose.ui.*
-          import androidx.compose.ui.graphics.Color
-          import androidx.compose.ui.platform.LocalContext
-          import androidx.compose.ui.unit.dp
-          import androidx.compose.ui.unit.sp
-
-          class MainActivity : ComponentActivity() {
-              override fun onCreate(savedInstanceState: Bundle?) {
-                  super.onCreate(savedInstanceState)
-                  setContent {
-                      var isOn by remember { mutableStateOf(false) }
-                      val context = LocalContext.current
-                      Column(
-                          modifier = Modifier.fillMaxSize().background(if (isOn) Color.Yellow else Color.Black),
-                          verticalArrangement = Arrangement.Center,
-                          horizontalAlignment = Alignment.CenterHorizontally
-                      ) {
-                          Button(onClick = {
-                              try {
-                                  val cm = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-                                  val id = cm.cameraIdList[0]
-                                  isOn = !isOn
-                                  cm.setTorchMode(id, isOn)
-                              } catch (e: Exception) {
-                                  isOn = false
-                              }
-                          }) {
-                              Text(if (isOn) "TURN OFF" else "TURN ON", fontSize = 24.sp)
-                          }
-                      }
-                  }
-              }
-          }
-          EOF
-
+          # ملف المانيفست (لإعطاء صلاحيات الذاكرة للهاتف A32)
           cat << 'EOF' > app/src/main/AndroidManifest.xml
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <uses-permission android:name="android.permission.CAMERA" />
-              <application android:label="Flashlight" android:theme="@android:style/Theme.Material.Light.NoActionBar">
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.atomic.reader">
+              <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+              <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+              <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+              <application android:label="Atomic Reader" android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
                   <activity android:name=".MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -168,17 +38,115 @@ jobs:
           </manifest>
           EOF
 
-          # و- توليد المفتاح والبناء
-          keytool -genkey -v -keystore keystore.jks -keyalg RSA -keysize 2048 -validity 10000 \
-            -alias myalias -storepass password -keypass password \
-            -dname "CN=Example, OU=ID, O=Org, L=City, S=State, C=US"
+          # ملف الكود البرمجي (المشغل والقارئ للهيكس)
+          cat << 'EOF' > app/src/main/java/com/atomic/reader/MainActivity.kt
+          package com.atomic.reader
 
-          gradle wrapper --gradle-version 8.6
+          import android.os.Bundle
+          import android.os.Environment
+          import androidx.activity.ComponentActivity
+          import androidx.activity.compose.setContent
+          import androidx.compose.foundation.layout.*
+          import androidx.compose.material3.*
+          import androidx.compose.runtime.*
+          import androidx.compose.ui.Modifier
+          import androidx.compose.ui.unit.dp
+          import java.io.File
+          import java.io.RandomAccessFile
+
+          class MainActivity : ComponentActivity() {
+              // مسار ملف الدماغ الـ 10 جيجا على هاتفك
+              private val brainPath = "${Environment.getExternalStorageDirectory()}/AI_Project/brain.bin"
+
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  setContent {
+                      var prompt by remember { mutableStateOf("") }
+                      var status by remember { mutableStateOf("جاهز للقراءة...") }
+
+                      Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                          Text("🧠 المشغل الذري v1.0", style = MaterialTheme.typography.headlineMedium)
+                          Spacer(modifier = Modifier.height(16.dp))
+                          
+                          TextField(
+                              value = prompt,
+                              onValueChange = { prompt = it },
+                              label = { Text("أدخل البرومبت (بالعربية)") },
+                              modifier = Modifier.fillMaxWidth()
+                          )
+                          
+                          Button(
+                              onClick = { 
+                                  status = runFromBrain(prompt)
+                              },
+                              modifier = Modifier.padding(top = 8.dp)
+                          ) {
+                              Text("استخراج وتنفيذ من ملف الذكاء")
+                          }
+                          
+                          Text("الحالة: $status", modifier = Modifier.padding(top = 16.dp))
+                      }
+                  }
+              }
+
+              // المحرك الذي يقرأ من الـ 10 جيجا
+              private fun runFromBrain(input: String): String {
+                  val file = File(brainPath)
+                  if (!file.exists()) return "خطأ: ملف brain.bin غير موجود في AI_Project"
+                  
+                  return try {
+                      val raf = RandomAccessFile(file, "r")
+                      // هنا المنطق: الذكاء الاصطناعي يحول "النص" إلى "عنوان هيكس"
+                      // ثم يذهب القارئ لهذا العنوان ويقرأ التعليمات
+                      raf.seek(0) // مثال: نبدأ من أول بايت
+                      val firstByte = raf.readByte()
+                      raf.close()
+                      "تمت قراءة البايت ($firstByte) بنجاح من الدماغ"
+                  } catch (e: Exception) {
+                      "خطأ في القراءة: ${e.message}"
+                  }
+              }
+          }
+          EOF
+
+      - name: 🛠️ Setup Build Configuration
+        run: |
+          cat << 'EOF' > build.gradle
+          buildscript {
+              repositories { google(); mavenCentral() }
+              dependencies { classpath 'com.android.tools.build:gradle:8.1.0'; classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10" }
+          }
+          allprojects { repositories { google(); mavenCentral() } }
+          EOF
+
+          cat << 'EOF' > app/build.gradle
+          apply plugin: 'com.android.application'
+          apply plugin: 'kotlin-android'
+          android {
+              compileSdkVersion 33
+              namespace "com.atomic.reader"
+              defaultConfig {
+                  applicationId "com.atomic.reader"
+                  minSdkVersion 24
+                  targetSdkVersion 33
+                  versionCode 1
+                  versionName "1.0"
+              }
+              buildFeatures { compose true }
+              composeOptions { kotlinCompilerExtensionVersion '1.4.3' }
+          }
+          dependencies {
+              implementation 'androidx.core:core-ktx:1.10.1'
+              implementation 'androidx.activity:activity-compose:1.7.2'
+              implementation 'androidx.compose.ui:ui:1.4.3'
+              implementation 'androidx.compose.material3:material3:1.1.0'
+          }
+          EOF
+
+      - name: 🔨 Build APK
+        run: |
+          # إنشاء ملف gradle.properties ضروري
+          echo "org.gradle.jvmargs=-Xmx2048m" > gradle.properties
+          # تجميع الـ APK
           chmod +x gradlew
           ./gradlew assembleRelease
-
-      - name: 📤 4. Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: flashlight-signed-app
-          path: app/build/outputs/apk/release/app-release.apk
