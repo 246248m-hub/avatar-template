@@ -6,80 +6,72 @@ on:
 jobs:
   implant_brain:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: 📦 1. Checkout Current Repo
         uses: actions/checkout@v4
 
-      - name: 🛠️ 2. Install Tools (APKTool, Java, Unzip)
+      - name: 🛠️ 2. Install Tools (APKTool, Java, Uber-Signer)
         run: |
           sudo apt-get update
-          sudo apt-get install -y apktool default-jre unzip
+          sudo apt-get install -y apktool default-jre
+          # تحميل أداة توقيع مبسطة لضمان عمل الـ APK على الأندرويد
+          wget https://github.com/patrickfav/uber-apk-signer/releases/download/v1.3.0/uber-apk-signer-1.3.0.jar -O signer.jar
           echo "✅ Tools Installed."
 
       - name: 🧠 3. Download The "Brain" Artifact (135MB)
         uses: dawidd6/action-download-artifact@v6
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           repo: 246248m-hub/avatar-template
-          run_id: 21146976650 # <-- رقم تشغيل العقل
-          # اسم القطعة الأثرية للعقل (تأكد من أنه صحيح)
-          name: Phoenix_Ultra_Brain_Tested
-          path: ./temp_brain
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run_id: 21146976650
+          name: Phoenix_Ultra_Brain # التأكد من تطابق الاسم مع الرابط
+          path: ./final_brain
 
       - name: 📥 4. Download The "Body" Artifact (APK)
         uses: dawidd6/action-download-artifact@v6
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           repo: 246248m-hub/avatar-template
-          run_id: 21146013013 # <-- رقم تشغيل التطبيق
-          # اسم القطعة الأثرية للتطبيق (تأكد من أنه صحيح)
-          name: Phoenix-Test-Cell-1 
+          run_id: 21146013013
+          name: Phoenix-Test-Cell-1
           path: ./temp_body
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 📂 5. Prepare The "Brain" and "Body"
+      - name: 📂 5. Prepare The Surgery Table
         run: |
-          echo "Unzipping the brain..."
-          unzip ./temp_brain/Phoenix_Ultra_Brain_Tested.zip -d ./final_brain
-          # الآن لدينا مجلد final_brain/AI_ULTRA
-          
-          echo "Locating the body..."
-          # نقل الـ APK إلى المسار الرئيسي لسهولة الوصول
-          mv ./temp_body/*.apk ./body.apk
-          
-          echo "✅ Brain and Body are ready for surgery."
+          # العثور على ملف الـ APK ووضعه في المكان الصحيح
+          find ./temp_body -name "*.apk" -exec mv {} ./body.apk \;
+          echo "✅ Brain folder and Body APK are ready."
 
-      - name: 🔪 6. Decompile The "Body"
+      - name: 🔪 6. Decompile & Inject (The Surgery)
         run: |
-          echo "Decompiling the APK..."
-          apktool d -f body.apk -o decompiled_apk
-          echo "✅ APK decompiled."
-
-      - name: 🧬 7. Perform The Implantation
-        run: |
-          echo "Injecting the brain into the body..."
-          # التأكد من وجود مجلد الأصول، وإنشائه إذا لم يكن موجوداً
-          mkdir -p ./decompiled_apk/assets/
-          # نسخ مجلد العقل بالكامل إلى مجلد الأصول في الـ APK
-          cp -r ./final_brain/AI_ULTRA ./decompiled_apk/assets/
-          echo "✅ Implantation successful. The brain is now in the assets folder."
-
-      - name: 🩹 8. Recompile & Sign The Final APK
-        run: |
-          echo "Recompiling the final form..."
-          apktool b decompiled_apk -o Phoenix_Final_Form_unsigned.apk
+          echo "Decompiling APK..."
+          apktool d body.apk -o decompiled_apk
           
-          echo "Generating a new signature..."
-          keytool -genkey -v -keystore phoenix.keystore -alias phoenix_key -keyalg RSA -keysize 2048 -validity 10000 -storepass 123456 -keypass 123456 -dname "CN=Phoenix, OU=AI, O=Self, L=Digital, S=World, C=XX"
+          echo "Injecting 135MB Brain into Assets..."
+          mkdir -p ./decompiled_apk/assets/AI_ULTRA
+          # نسخ محتويات العقل إلى داخل أصول التطبيق
+          cp -r ./final_brain/* ./decompiled_apk/assets/AI_ULTRA/
           
-          echo "Signing the final APK..."
-          apksigner sign --ks phoenix.keystore --ks-pass pass:123456 Phoenix_Final_Form_unsigned.apk
-          mv Phoenix_Final_Form_unsigned.apk Phoenix_Final_Form.apk
-          echo "✅ Final APK is recompiled and signed."
+          echo "✅ Implantation successful. Total Brain Size injected."
+
+      - name: 🩹 7. Recompile The Final Form
+        run: |
+          echo "Building the new APK..."
+          apktool b decompiled_apk -o Phoenix_Injected_Unsigned.apk
+          echo "✅ APK rebuilt with the new brain."
+
+      - name: 🖋️ 8. Sign the APK (Vital Step)
+        run: |
+          # استخدام Uber-Signer لضمان التوقيع المتوافق مع أندرويد 11+ (A32)
+          java -jar signer.jar --apks Phoenix_Injected_Unsigned.apk
+          # الأداة ستخرج ملفاً باسم Phoenix_Injected_Unsigned-aligned-debugSigned.apk
+          mv Phoenix_Injected_Unsigned-aligned-debugSigned.apk Phoenix_Final_Form.apk
+          echo "✅ Final APK signed and verified."
 
       - name: 📤 9. Export The Final Product
         uses: actions/upload-artifact@v4
         with:
-          name: Phoenix_Final_Form
+          name: Phoenix_Final_Integrated_Form
           path: Phoenix_Final_Form.apk
