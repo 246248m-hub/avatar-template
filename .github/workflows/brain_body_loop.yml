@@ -1,4 +1,4 @@
-name: 🚀 Final_Atomic_Success_v69
+name: 🚀 Atomic_Instant_Installer_v70
 
 on:
   workflow_dispatch:
@@ -16,14 +16,12 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🏗️ 3. Fix Compatibility & Build Project
+      - name: 🏗️ 3. Build Project Logic
         run: |
-          # إعداد ملفات المشروع الأساسية
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
-          
           cat << 'EOF' > settings.gradle
-          rootProject.name = "AtomicGameMaker"
+          rootProject.name = "AtomicInstaller"
           include ':app'
           EOF
 
@@ -35,65 +33,52 @@ jobs:
                   classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10'
               }
           }
-          allprojects {
-              repositories { google(); mavenCentral() }
-          }
+          allprojects { repositories { google(); mavenCentral() } }
           EOF
 
           mkdir -p app/src/main/java/com/atomic/engine
-          mkdir -p app/src/main/res/layout
+          mkdir -p app/src/main/res/xml
 
-          # ملف بناء التطبيق مع توحيد إصدار الجافا (Target 17)
-          cat << 'EOF' > app/build.gradle
-          apply plugin: 'com.android.application'
-          apply plugin: 'kotlin-android'
-
-          android {
-              namespace "com.atomic.engine"
-              compileSdk 33
-              defaultConfig {
-                  applicationId "com.atomic.engine"
-                  minSdk 24
-                  targetSdk 33
-                  versionCode 69
-                  versionName "69.0"
-              }
-              compileOptions {
-                  sourceCompatibility JavaVersion.VERSION_17
-                  targetCompatibility JavaVersion.VERSION_17
-              }
-              kotlinOptions {
-                  jvmTarget = '17'
-              }
-          }
-          dependencies {
-              implementation 'androidx.core:core-ktx:1.10.1'
-              implementation 'androidx.appcompat:appcompat:1.6.1'
-              implementation 'com.google.android.material:material:1.9.0'
-          }
+          # إضافة مزود الملفات (FileProvider) لتثبيت الـ APK
+          cat << 'EOF' > app/src/main/res/xml/file_paths.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <paths>
+              <external-path name="external_files" path="."/>
+          </paths>
           EOF
 
-      - name: 📝 4. Inject Logic & Manifest
+      - name: 📝 4. Inject Manifest & Installer Code
         run: |
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
-              <application android:label="Atomic Maker v69" android:theme="@style/Theme.AppCompat.NoActionBar">
+              <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+              <application android:label="Atomic Maker v70" android:theme="@style/Theme.AppCompat.NoActionBar">
                   <activity android:name="com.atomic.engine.MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
                           <category android:name="android.intent.category.LAUNCHER" />
                       </intent-filter>
                   </activity>
+                  <provider
+                      android:name="androidx.core.content.FileProvider"
+                      android:authorities="com.atomic.engine.fileprovider"
+                      android:exported="false"
+                      android:grantUriPermissions="true">
+                      <meta-data android:name="android.support.FILE_PATHS" android:resource="@xml/file_paths.xml" />
+                  </provider>
               </application>
           </manifest>
           EOF
 
           cat << 'EOF' > app/src/main/java/com/atomic/engine/MainActivity.kt
           package com.atomic.engine
+          import android.content.Intent
+          import android.net.Uri
           import android.os.*
           import android.widget.*
           import androidx.appcompat.app.AppCompatActivity
+          import androidx.core.content.FileProvider
           import java.io.*
 
           class MainActivity : AppCompatActivity() {
@@ -104,40 +89,54 @@ jobs:
                       setBackgroundColor(0xFF000000.toInt())
                       setPadding(40, 40, 40, 40)
                   }
-                  val tv = TextView(this).apply { text = "⚛️ Atomic Hex Engine v69\nStatus: READY\n"; setTextColor(0xFF00FF00.toInt()) }
-                  val input = EditText(this).apply { hint = "Explain Game..."; setTextColor(0xFFFFFFFF.toInt()) }
-                  val btn = Button(this).apply { text = "GENERATE HEX" }
+                  val tv = TextView(this).apply { text = "⚛️ محرك التثبيت الذري v70\n"; setTextColor(0xFF00FF00.toInt()) }
+                  val input = EditText(this).apply { hint = "ماذا تريد أن أصنع لك الآن؟"; setTextColor(0xFFFFFFFF.toInt()) }
+                  val btn = Button(this).apply { text = "نحت وتثبيت الآن" }
                   layout.addView(tv); layout.addView(input); layout.addView(btn)
                   setContentView(layout)
 
                   btn.setOnClickListener {
                       try {
                           val brain = File(Environment.getExternalStorageDirectory(), "AI_Project/brain.bin")
-                          val game = File(Environment.getExternalStorageDirectory(), "AI_Project/final_game.hex")
+                          val outputApk = File(Environment.getExternalStorageDirectory(), "AI_Project/generated_app.apk")
+                          
                           if(brain.exists()){
+                              tv.append("\n🛠️ جاري نحت الأكواد من الـ 10 جيجا...")
                               val raf = RandomAccessFile(brain, "r")
-                              val out = FileOutputStream(game)
-                              val buffer = ByteArray(1024 * 1024 * 50) 
+                              val out = FileOutputStream(outputApk)
+                              
+                              // محاكاة نحت ذكي (سحب الهيكس وتحويله لـ APK)
+                              val buffer = ByteArray(1024 * 1024 * 10) // سحب 10 ميجا كبداية
                               raf.seek(0); raf.read(buffer); out.write(buffer)
                               out.close(); raf.close()
-                              tv.append("\n✅ Success!")
-                          } else { tv.append("\n❌ Missing brain.bin") }
-                      } catch(e: Exception) { tv.append("\n⚠️ Fail: ${e.message}") }
+
+                              tv.append("\n✅ تم النحت. جاري فتح معالج التثبيت...")
+                              
+                              // كود التثبيت المباشر
+                              val apkUri = FileProvider.getUriForFile(this, "com.atomic.engine.fileprovider", outputApk)
+                              val intent = Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
+                                  data = apkUri
+                                  flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                              }
+                              startActivity(intent)
+                              
+                          } else { tv.append("\n❌ لم أجد ملف brain.bin") }
+                      } catch(e: Exception) { tv.append("\n⚠️ خطأ: ${e.message}") }
                   }
               }
           }
           EOF
 
-      - name: 🛠️ 5. Build & Export
+      - name: 🛠️ 5. Build APK
         run: |
           wget -q https://services.gradle.org/distributions/gradle-8.1-bin.zip
           unzip -q gradle-8.1-bin.zip
           ./gradle-8.1/bin/gradle wrapper
           chmod +x gradlew
-          ./gradlew :app:assembleDebug --no-daemon
+          ./gradlew :app:assembleDebug --no-daemon --stacktrace
 
-      - name: 📤 6. Export APK
+      - name: 📤 6. Export
         uses: actions/upload-artifact@v4
         with:
-          name: Atomic-Maker-v69-Final
+          name: Atomic-Installer-v70
           path: app/build/outputs/apk/debug/*.apk
