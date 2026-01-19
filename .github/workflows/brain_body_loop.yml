@@ -1,4 +1,4 @@
-name: 🚀 Final_Atomic_Engine_Stable_v57
+name: 🚀 Final_Atomic_Engine_Strict_v58
 
 on:
   workflow_dispatch:
@@ -16,77 +16,65 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🏗️ 3. Create Project & Fix Gradle Compatibility
+      - name: 🏗️ 3. Initial Project Structure
         run: |
-          # 1. إنشاء ملف الإعدادات (تعريف المستودعات)
-          cat << 'EOF' > settings.gradle.kts
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
-          include(":app")
+          # إنشاء ملف الإعدادات بتنسيق قديم ومستقر (Groovy) لتجنب أخطاء Kotlin DSL في Gradle 9
+          cat << 'EOF' > settings.gradle
+          rootProject.name = "AtomicEngine"
+          include ':app'
           EOF
 
-          # 2. ملف بناء الجذر (تعريف الإضافات)
-          cat << 'EOF' > build.gradle.kts
-          plugins {
-              id("com.android.application") version "8.1.0" apply false
-              id("org.jetbrains.kotlin.android") version "1.8.10" apply false
+          cat << 'EOF' > build.gradle
+          buildscript {
+              repositories { google(); mavenCentral() }
+              dependencies {
+                  classpath 'com.android.tools.build:gradle:8.1.0'
+                  classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10'
+              }
+          }
+          allprojects {
+              repositories { google(); mavenCentral() }
           }
           EOF
 
-          # 3. إنشاء مجلدات التطبيق
           mkdir -p app/src/main/java/com/atomic/engine
+          mkdir -p app/src/main/res/layout
           mkdir -p app/src/main/res/values
 
-          # 4. ملف بناء التطبيق (App Build) - نسخة مبسطة لتفادي أخطاء Gradle 9
-          cat << 'EOF' > app/build.gradle.kts
-          plugins {
-              id("com.android.application")
-              id("org.jetbrains.kotlin.android")
-          }
+          cat << 'EOF' > app/build.gradle
+          apply plugin: 'com.android.application'
+          apply plugin: 'kotlin-android'
+
           android {
-              namespace = "com.atomic.engine"
-              compileSdk = 33
+              namespace "com.atomic.engine"
+              compileSdk 33
               defaultConfig {
-                  applicationId = "com.atomic.engine"
-                  minSdk = 24
-                  targetSdk = 33
-                  versionCode = 57
-                  versionName = "57.0"
+                  applicationId "com.atomic.engine"
+                  minSdk 24
+                  targetSdk 33
+                  versionCode 58
+                  versionName "58.0"
               }
           }
           dependencies {
-              implementation("androidx.core:core-ktx:1.10.1")
-              implementation("androidx.appcompat:appcompat:1.6.1")
-              implementation("com.google.android.material:material:1.9.0")
+              implementation 'androidx.core:core-ktx:1.10.1'
+              implementation 'androidx.appcompat:appcompat:1.6.1'
           }
           EOF
 
-      - name: 🛠️ 4. Force Gradle 8.1 (The Fix)
+      - name: 🛠️ 4. Force Gradle 8.1 Execution (Strict Path)
         run: |
-          # بدلاً من gradle wrapper العادي، سنستخدم نسخة مثبتة يدوياً
-          wget https://services.gradle.org/distributions/gradle-8.1-bin.zip
-          unzip -d gradle_stable gradle-8.1-bin.zip
-          export PATH=$PATH:$(pwd)/gradle_stable/gradle-8.1/bin
-          gradle wrapper --gradle-version 8.1
+          wget -q https://services.gradle.org/distributions/gradle-8.1-bin.zip
+          unzip -q gradle-8.1-bin.zip
+          # استدعاء الرابط المباشر للمحرك وتوليد الـ Wrapper
+          ./gradle-8.1/bin/gradle wrapper
 
-      - name: 📝 5. Inject Manifest & Core Logic
+      - name: 📝 5. Code Injection
         run: |
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.atomic.engine">
               <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
-              <application android:label="Atomic Engine Stable" android:requestLegacyExternalStorage="true">
+              <application android:label="Atomic v58">
                   <activity android:name=".MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -107,13 +95,13 @@ jobs:
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   val tv = TextView(this)
-                  tv.text = "Atomic Engine Stable v57 Online"
+                  tv.text = "Engine v58: Final Stable"
                   setContentView(tv)
               }
           }
           EOF
 
-      - name: 🔨 6. Final Build (Using Stable Wrapper)
+      - name: 🔨 6. Final Build (Using Local Wrapper)
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
@@ -121,5 +109,5 @@ jobs:
       - name: 📤 7. Artifact Release
         uses: actions/upload-artifact@v4
         with:
-          name: Atomic-Engine-v57
+          name: Atomic-Engine-v58
           path: app/build/outputs/apk/debug/*.apk
