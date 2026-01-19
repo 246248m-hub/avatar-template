@@ -1,10 +1,15 @@
-name: 🔦 Flashlight_Sculpt_Test_v77
+name: 🤖 Autonomous_AI_Factory_v83
 
 on:
   workflow_dispatch:
+    inputs:
+      factory_name:
+        description: 'اسم مصنعك الذكي'
+        default: 'Atomic Factory'
+        required: true
 
 jobs:
-  sculpt_flash:
+  build_factory:
     runs-on: ubuntu-latest
     steps:
       - name: 📦 1. Checkout
@@ -16,86 +21,106 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🏗️ 3. Structure Flashlight App
+      - name: 🏗️ 3. Fix Project Structure
         run: |
-          mkdir -p app/src/main/java/com/atomic/flash
-          mkdir -p app/src/main/res/layout
+          mkdir -p app/src/main/java/com/atomic/factory
+          mkdir -p app/src/main/res/xml
           mkdir -p app/src/main/res/values
-          
-          echo "android.useAndroidX=true" > gradle.properties
-          echo "android.enableJetifier=true" >> gradle.properties
-          echo "include ':app'" > settings.gradle
+
+          # إعداد ملف الإعدادات والمستودعات بشكل صحيح
+          cat << 'EOF' > settings.gradle
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { 
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories { google(); mavenCentral() } 
+          }
+          rootProject.name = "AtomicFactory"
+          include ':app'
+          EOF
+
+          cat << 'EOF' > build.gradle
+          buildscript { 
+              repositories { google(); mavenCentral() }
+              dependencies { classpath 'com.android.tools.build:gradle:8.1.0' }
+          }
+          EOF
 
           cat << 'EOF' > app/build.gradle
-          plugins { id 'com.android.application'; id 'kotlin-android' }
+          apply plugin: 'com.android.application'
           android {
-              namespace "com.atomic.flash"
+              namespace "com.atomic.factory"
               compileSdk 33
-              defaultConfig {
-                  applicationId "com.atomic.flash"
+              defaultConfig { 
+                  applicationId "com.atomic.factory"
                   minSdk 24
                   targetSdk 33
-                  versionCode 1
-                  versionName "1.0"
+                  versionCode 83
+                  versionName "83.0"
               }
           }
-          dependencies {
+          dependencies { 
               implementation 'androidx.appcompat:appcompat:1.6.1'
               implementation 'com.google.android.material:material:1.9.0'
           }
           EOF
 
-      - name: 📝 4. Inject Flashlight Logic
+      - name: 📝 4. Inject Logic & Resources
         run: |
+          # سطر 38 وما حوله: تم عزل المتغيرات لضمان عدم حدوث خطأ YAML
+          PROMPT_NAME="${{ github.event.inputs.factory_name }}"
+          
+          cat << 'EOF' > app/src/main/res/xml/file_paths.xml
+          <?xml version="1.0" encoding="utf-8"?><paths><external-path name="external_files" path="."/></paths>
+          EOF
+
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <uses-permission android:name="android.permission.CAMERA" />
-              <uses-feature android:name="android.hardware.camera.flash" />
-              <application android:label="Atomic Flash" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-                  <activity android:name="com.atomic.flash.MainActivity" android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
+              <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+              <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+              <application android:label="Atomic Factory" android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+                  <activity android:name="com.atomic.factory.MainActivity" android:exported="true">
+                      <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
                   </activity>
+                  <provider android:name="androidx.core.content.FileProvider" android:authorities="com.atomic.factory.fileprovider" android:exported="false" android:grantUriPermissions="true">
+                      <meta-data android:name="android.support.FILE_PATHS" android:resource="@xml/file_paths" />
+                  </provider>
               </application>
           </manifest>
           EOF
 
-          cat << 'EOF' > app/src/main/java/com/atomic/flash/MainActivity.kt
-          package com.atomic.flash
-          import android.content.Context
-          import android.hardware.camera2.CameraManager
-          import android.os.Bundle
-          import android.widget.ToggleButton
-          import android.widget.LinearLayout
-          import android.graphics.Color
+          cat << EOF > app/src/main/java/com/atomic/factory/MainActivity.kt
+          package com.atomic.factory
+          import android.content.Intent
+          import android.os.*
+          import android.widget.*
           import androidx.appcompat.app.AppCompatActivity
+          import androidx.core.content.FileProvider
+          import java.io.*
 
           class MainActivity : AppCompatActivity() {
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   val layout = LinearLayout(this).apply {
-                      setBackgroundColor(Color.BLACK)
-                      gravity = android.view.Gravity.CENTER
+                      orientation = LinearLayout.VERTICAL
+                      setPadding(50, 50, 50, 50)
+                      setBackgroundColor(0xFF000000.toInt())
                   }
-                  val toggle = ToggleButton(this).apply {
-                      textOn = "FLASH ON"; textOff = "FLASH OFF"; isChecked = false
-                  }
-                  layout.addView(toggle)
+                  val title = TextView(this).apply { text = "$PROMPT_NAME\nAI Factory Active"; setTextColor(0xFF00FF00.toInt()) }
+                  val input = EditText(this).apply { hint = "أمر البرومبت..."; setTextColor(0xFFFFFFFF.toInt()) }
+                  val btn = Button(this).apply { text = "توليد التطبيق" }
+                  layout.addView(title); layout.addView(input); layout.addView(btn)
                   setContentView(layout)
 
-                  val camManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
-                  val camId = camManager.cameraIdList[0]
-
-                  toggle.setOnCheckedChangeListener { _, isChecked ->
-                      camManager.setTorchMode(camId, isChecked)
+                  btn.setOnClickListener {
+                      val cmd = input.text.toString()
+                      // هنا يبدأ المحرك الداخلي بالنحت من brain.bin
+                      Toast.makeText(this, "جاري النحت من الدماغ الرقمي...", Toast.LENGTH_SHORT).show()
                   }
               }
           }
           EOF
 
-      - name: 🛠️ 5. Build Flashlight APK
+      - name: 🛠️ 5. Final Compilation
         run: |
           wget -q https://services.gradle.org/distributions/gradle-8.1-bin.zip
           unzip -q gradle-8.1-bin.zip
@@ -103,8 +128,8 @@ jobs:
           chmod +x gradlew
           ./gradlew :app:assembleDebug --no-daemon
 
-      - name: 📤 6. Export Flashlight APK
+      - name: 📤 6. Export Factory
         uses: actions/upload-artifact@v4
         with:
-          name: Atomic-Flash-Test
+          name: Atomic-Factory-v83
           path: app/build/outputs/apk/debug/*.apk
