@@ -1,172 +1,44 @@
-name: 🛡️ Complex_Atomic_System_v108
+name: 🧠 Gemini_Neural_Seeder_v115
 
 on:
   workflow_dispatch:
 
 jobs:
-  build_complex_app:
-    runs-on: macos-latest
+  gemini_seeding:
+    runs-on: ubuntu-latest
     steps:
       - name: 📦 1. Checkout
         uses: actions/checkout@v4
 
-      - name: 🏗️ 2. Project Engineering
+      - name: 🛠️ 2. Gemini Atomic Seeding (الحشو بواسطة الذكاء)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} # السر الذي أضفته
         run: |
-          mkdir -p app/src/main/java/com/atomic/system
-          mkdir -p app/src/main/res/layout
-          mkdir -p app/src/main/res/values
+          mkdir -p brain_shards
+          python3 -c "
+          import os, requests, json
 
-          # إعدادات Gradle 
-          cat << 'EOF' > settings.gradle.kts
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
-              repositories { google(); mavenCentral() }
-          }
-          rootProject.name = "AtomicSystem"
-          include(":app")
-          EOF
-
-          cat << 'EOF' > app/build.gradle.kts
-          plugins {
-              id("com.android.application") version "8.1.0"
-              id("org.jetbrains.kotlin.android") version "1.8.10"
-          }
-          android {
-              namespace = "com.atomic.system"
-              compileSdk = 33
-              defaultConfig {
-                  applicationId = "com.atomic.system"
-                  minSdk = 24
-                  targetSdk = 33
-                  versionCode = 108
-                  versionName = "1.0.8"
+          def get_gemini_logic(shard_idx):
+              url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${{ env.GEMINI_API_KEY }}'
+              prompt = {
+                  'contents': [{
+                      'parts': [{
+                          'text': f'Generate 100 bytes of unique HEX machine code for a video editing and game engine shard number {shard_idx}. Output only HEX.'
+                      }]
+                  }]
               }
-          }
-          dependencies {
-              implementation("androidx.appcompat:appcompat:1.6.1")
-              implementation("com.google.android.material:material:1.9.0")
-              implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
-          }
-          EOF
+              response = requests.post(url, json=prompt)
+              # استخراج الكود المنتج من Gemini
+              data = response.json()
+              return data['candidates'][0]['content']['parts'][0]['text'].strip()
 
-          # واجهة المستخدم (XML Layout)
-          cat << 'EOF' > app/src/main/res/layout/activity_main.xml
-          <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:padding="20dp"
-              android:background="#F4F7F9">
-
-              <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                  android:text="ATOMIC QUANTUM ENGINE" android:textSize="22sp"
-                  android:textStyle="bold" android:textColor="#1A237E" />
-
-              <View android:layout_width="match_parent" android:layout_height="2dp"
-                  android:background="#303F9F" android:layout_marginVertical="10dp" />
-
-              <androidx.cardview.widget.CardView
-                  android:layout_width="match_parent" android:layout_height="wrap_content"
-                  app:cardCornerRadius="12dp" app:cardElevation="4dp" xmlns:app="http://schemas.android.com/apk/res-auto">
-                  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                      android:orientation="vertical" android:padding="16dp">
-                      <TextView android:id="@+id/statusText" android:layout_width="wrap_content"
-                          android:layout_height="wrap_content" android:text="System Ready"
-                          android:textColor="#2E7D32" android:textStyle="bold" />
-                      <TextView android:id="@+id/resultData" android:layout_width="wrap_content"
-                          android:layout_height="wrap_content" android:text="Data: ---"
-                          android:textSize="18sp" android:layout_marginTop="8dp" />
-                  </LinearLayout>
-              </androidx.cardview.widget.CardView>
-
-              <Button android:id="@+id/scanButton" android:layout_width="match_parent"
-                  android:layout_height="60dp" android:text="SCAN DEEP STORAGE (10GB)"
-                  android:layout_marginTop="20dp" android:backgroundTint="#1A237E" />
-
-              <TextView android:id="@+id/perfText" android:layout_width="wrap_content"
-                  android:layout_height="wrap_content" android:layout_marginTop="10dp"
-                  android:text="Latency: 0ms" android:textColor="#546E7A" />
-          </LinearLayout>
-          EOF
-
-          # الكود البرمجي المعقد (MainActivity)
-          cat << 'EOF' > app/src/main/java/com/atomic/system/MainActivity.kt
-          package com.atomic.system
-          import android.os.*
-          import android.widget.*
-          import androidx.appcompat.app.AppCompatActivity
-          import kotlinx.coroutines.*
-          import java.io.*
-
-          class MainActivity : AppCompatActivity() {
-              private val filePath = "/sdcard/brain.bin"
+          for i in range(1, 26):
+              path = f'brain_shards/shard_{i}.bin'
+              print(f'Sending Shard {i} to Gemini...')
+              hex_logic = get_gemini_logic(i)
               
-              override fun onCreate(savedInstanceState: Bundle?) {
-                  super.onCreate(savedInstanceState)
-                  setContentView(R.layout.activity_main)
-
-                  val scanBtn = findViewById<Button>(R.id.scanButton)
-                  val resultTv = findViewById<TextView>(R.id.resultData)
-                  val perfTv = findViewById<TextView>(R.id.perfText)
-                  val statusTv = findViewById<TextView>(R.id.statusText)
-
-                  scanBtn.setOnClickListener {
-                      statusTv.text = "Scanning..."
-                      val startTime = System.currentTimeMillis()
-
-                      // تشغيل المهمة في الخلفية باستخدام Coroutines
-                      CoroutineScope(Dispatchers.IO).launch {
-                          val result = queryLargeFile(5 * 1024 * 1024 * 1024L)
-                          val endTime = System.currentTimeMillis()
-                          
-                          withContext(Dispatchers.Main) {
-                              resultTv.text = "Data Found: $result"
-                              perfTv.text = "Latency: ${endTime - startTime}ms"
-                              statusTv.text = "Quantum Access Success"
-                          }
-                      }
-                  }
-              }
-
-              private fun queryLargeFile(pos: Long): String {
-                  return try {
-                      val file = File(filePath)
-                      if (!file.exists()) return "Error: File Missing"
-                      RandomAccessFile(file, "r").use { raf ->
-                          raf.seek(pos)
-                          val buffer = ByteArray(15)
-                          raf.read(buffer)
-                          String(buffer)
-                      }
-                  } catch (e: Exception) { "Failure: ${e.message}" }
-              }
-          }
-          EOF
-
-          cat << 'EOF' > app/src/main/AndroidManifest.xml
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <application android:label="Atomic System" android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
-                  <activity android:name=".MainActivity" android:exported="true">
-                      <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
-                  </activity>
-              </application>
-          </manifest>
-          EOF
-
-      - name: ☕ 3. Setup Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "17"
-
-      - name: 🛠️ 4. Final Complex Build
-        run: |
-          gradle wrapper --gradle-version 8.1.1
-          chmod +x gradlew
-          ./gradlew :app:assembleDebug --no-daemon
-
-      - name: 📤 5. Save Finished Product
-        uses: actions/upload-artifact@v4
-        with:
-          name: Atomic-System-Final-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+              with open(path, 'wb') as f:
+                  f.write(bytes.fromhex(hex_logic.replace(' ', '')))
+                  f.seek(400 * 1024 * 1024 - 1)
+                  f.write(b'\0')
+          "
