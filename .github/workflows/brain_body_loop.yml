@@ -1,4 +1,4 @@
-name: 🚀 Final_Atomic_Engine_Ultra_v56
+name: 🚀 Final_Atomic_Engine_Stable_v57
 
 on:
   workflow_dispatch:
@@ -16,9 +16,9 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 🏗️ 3. Initialize Project & Force Repositories
+      - name: 🏗️ 3. Create Project & Fix Gradle Compatibility
         run: |
-          # حل مشكلة السطر 1: تعريف المستودعات بشكل كامل وصارم
+          # 1. إنشاء ملف الإعدادات (تعريف المستودعات)
           cat << 'EOF' > settings.gradle.kts
           pluginManagement {
               repositories {
@@ -37,7 +37,7 @@ jobs:
           include(":app")
           EOF
 
-          # حل مشكلة تعريف البلجن في الجذر
+          # 2. ملف بناء الجذر (تعريف الإضافات)
           cat << 'EOF' > build.gradle.kts
           plugins {
               id("com.android.application") version "8.1.0" apply false
@@ -45,22 +45,11 @@ jobs:
           }
           EOF
 
-          # بناء مجلدات التطبيق (الجسد)
+          # 3. إنشاء مجلدات التطبيق
           mkdir -p app/src/main/java/com/atomic/engine
           mkdir -p app/src/main/res/values
 
-          # حل مشكلة بناء التطبيق الداخلي
-          cat << 'EOF' > app/build.gradle.kts
-          plugins {
-              id("com.atomic.application") {
-                  id("com.android.application")
-                  id("org.jetbrains.kotlin.android")
-              }
-          }
-          // تصحيح: استخدام بلوك الملحقات المباشر لتفادي أخطاء التداخل
-          EOF
-          
-          # إعادة كتابة app/build.gradle.kts بشكل أنظف
+          # 4. ملف بناء التطبيق (App Build) - نسخة مبسطة لتفادي أخطاء Gradle 9
           cat << 'EOF' > app/build.gradle.kts
           plugins {
               id("com.android.application")
@@ -73,29 +62,31 @@ jobs:
                   applicationId = "com.atomic.engine"
                   minSdk = 24
                   targetSdk = 33
-                  versionCode = 56
-                  versionName = "56.0"
+                  versionCode = 57
+                  versionName = "57.0"
               }
-              buildFeatures { compose = true }
-              composeOptions { kotlinCompilerExtensionVersion = "1.4.3" }
           }
           dependencies {
               implementation("androidx.core:core-ktx:1.10.1")
-              implementation("androidx.activity:activity-compose:1.7.2")
-              implementation("androidx.compose.ui:ui:1.4.3")
-              implementation("androidx.compose.material3:material3:1.1.0")
+              implementation("androidx.appcompat:appcompat:1.6.1")
+              implementation("com.google.android.material:material:1.9.0")
           }
           EOF
 
-      - name: 🛠️ 4. Generate Wrapper (Force Version 8.1)
-        run: gradle wrapper --gradle-version 8.1 --distribution-type all
+      - name: 🛠️ 4. Force Gradle 8.1 (The Fix)
+        run: |
+          # بدلاً من gradle wrapper العادي، سنستخدم نسخة مثبتة يدوياً
+          wget https://services.gradle.org/distributions/gradle-8.1-bin.zip
+          unzip -d gradle_stable gradle-8.1-bin.zip
+          export PATH=$PATH:$(pwd)/gradle_stable/gradle-8.1/bin
+          gradle wrapper --gradle-version 8.1
 
       - name: 📝 5. Inject Manifest & Core Logic
         run: |
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.atomic.engine">
               <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
-              <application android:label="Atomic Engine" android:requestLegacyExternalStorage="true">
+              <application android:label="Atomic Engine Stable" android:requestLegacyExternalStorage="true">
                   <activity android:name=".MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -109,26 +100,26 @@ jobs:
           cat << 'EOF' > app/src/main/java/com/atomic/engine/MainActivity.kt
           package com.atomic.engine
           import android.os.Bundle
-          import androidx.activity.ComponentActivity
-          import androidx.activity.compose.setContent
-          import androidx.compose.material3.Text
+          import androidx.appcompat.app.AppCompatActivity
+          import android.widget.TextView
 
-          class MainActivity : ComponentActivity() {
+          class MainActivity : AppCompatActivity() {
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
-                  setContent { Text("Atomic Engine v56 Online") }
+                  val tv = TextView(this)
+                  tv.text = "Atomic Engine Stable v57 Online"
+                  setContentView(tv)
               }
           }
           EOF
 
-      - name: 🔨 6. Assemble Debug APK (Safety Mode)
+      - name: 🔨 6. Final Build (Using Stable Wrapper)
         run: |
-          echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" > gradle.properties
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
       - name: 📤 7. Artifact Release
         uses: actions/upload-artifact@v4
         with:
-          name: Atomic-Engine-v56
+          name: Atomic-Engine-v57
           path: app/build/outputs/apk/debug/*.apk
