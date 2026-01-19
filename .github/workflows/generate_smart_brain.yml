@@ -1,4 +1,4 @@
-name: 🧠 Generate_Atomic_Smart_Brain
+name: 🧠 Giant_Filled_Brain_Factory_V2
 
 on:
   workflow_dispatch:
@@ -21,22 +21,101 @@ jobs:
           cat << 'EOF' > generator.py
           import sys
           import os
+          import json
+          import random
+          from hashlib import sha256
 
           def generate_chunk(cid):
               file_name = f"brain_chunk_{cid:02d}.bin"
-              size_mb = 400
+              size_mb = 400 # حجم كل جزء
+              total_bytes = size_mb * 1024 * 1024
+              
+              print(f"جاري إنتاج اللقمة الذكية رقم {cid} بحجم {size_mb}MB...")
               
               with open(file_name, "wb") as f:
+                  # --- Header (Metadata) ---
+                  # كل لقمة تبدأ بتوقيع لتحديد محتواها وفهرسها
+                  header_info = {
+                      "chunk_id": cid,
+                      "total_chunks": 25,
+                      "version": "1.0-SmartBrain",
+                      "timestamp": os.getenv('GITHUB_RUN_ID', 'N/A')
+                  }
+                  header_json = json.dumps(header_info).encode('utf-8')
+                  f.write(header_json.ljust(1024, b'\0')) # 1KB for header
+
+                  # --- Content Injection ---
                   if cid == 1:
-                      # اللقمة الأولى: فهرس الذكاء وقواعد المنطق
-                      header = "ATOMIC_LOGIC_CENTER_V1\n"
-                      data = "RULES: IF 'GAME' -> ACTIVATE_PHYSICS_ENGINE; IF 'APP' -> ACTIVATE_UI_BUILDER;\n"
-                      f.write(header.encode() + data.encode())
+                      # اللقمة 01: المترجم المنطقي وقواعد الذكاء الاصطناعي الأساسية
+                      logic_data = {
+                          "AI_CORE_RULES": {
+                              "IF_GAME_CONCEPT": "ACTIVATE_GAME_DESIGN_MODULE",
+                              "IF_APP_CONCEPT": "ACTIVATE_UI_UX_MODULE",
+                              "IF_IMAGE_INPUT": "ACTIVATE_VISION_PROCESSOR",
+                              "IF_VIDEO_INPUT": "ACTIVATE_TEMPORAL_ANALYZER",
+                              "DEFAULT_RESPONSE": "I am processing your request. Please be specific."
+                          },
+                          "GAME_DESIGN_MODULE": {
+                              "GRAVITY_CODE_PY": "def apply_gravity(obj, dt): obj.y_vel -= 9.8 * dt",
+                              "COLLISION_CODE_PY": "def check_collision(obj1, obj2): return obj1.rect.intersects(obj2.rect)",
+                              "SAVE_GAME_LOGIC": "def save_game(data, slot): write_to_disk(data, slot)"
+                          },
+                          "UI_UX_MODULE": {
+                              "BUTTON_TEMPLATE_XML": "<Button android:text='Click Me' ... />",
+                              "TEXTFIELD_TEMPLATE_XML": "<EditText android:hint='Enter Text' ... />"
+                          }
+                      }
+                      f.write(json.dumps(logic_data).encode('utf-8'))
                   
-                  # ملء المساحة المتبقية ببيانات هيكلية (Structure Data)
-                  f.seek(size_mb * 1024 * 1024 - 1)
-                  f.write(b'\0')
-              print(f"Done: {file_name}")
+                  elif cid == 2:
+                      # اللقمة 02: مكتبة أكواد Python متقدمة
+                      python_lib_data = {
+                          "PATHFINDING_A_STAR": "class AStarNode:...",
+                          "NEURAL_NETWORK_BASIC_PY": "class NeuralNet:...",
+                          "DATA_PARSING_LIB": "def parse_csv(file):..."
+                      }
+                      f.write(json.dumps(python_lib_data).encode('utf-8'))
+
+                  elif cid == 3:
+                      # اللقمة 03: مكتبة أكواد Kotlin/Java للأندرويد
+                      android_lib_data = {
+                          "ACTIVITY_LIFECYCLE_KT": "override fun onCreate():...",
+                          "RECYCLERVIEW_ADAPTER_KT": "class MyAdapter:...",
+                          "PERMISSION_HANDLER_KT": "fun requestPermissions():..."
+                      }
+                      f.write(json.dumps(android_lib_data).encode('utf-8'))
+
+                  elif cid >= 4 and cid <= 7:
+                      # اللقمات 04-07: بيانات مرئية (صور/قوالب UI/UX) - محاكاة
+                      # سيتم تخزين بيانات الصور والفيديوهات هنا لاحقاً
+                      visual_data = f"VISUAL_DATA_CHUNK_{cid}: [Sample UI Element Data, Image Feature Vectors, Video Frame Descriptions]"
+                      f.write(visual_data.encode('utf-8'))
+
+                  elif cid >= 8 and cid <= 12:
+                      # اللقمات 08-12: نماذج لغوية بسيطة (NLP) وقواعد نحوية
+                      nlp_data = f"NLP_MODEL_CHUNK_{cid}: [Grammar Rules, Semantic Parsing Templates, Keyword Extraction Logic]"
+                      f.write(nlp_data.encode('utf-8'))
+
+                  else:
+                      # اللقمات المتبقية: بيانات احتياطية، معرفة عامة، تحديثات مستقبلية
+                      filler_data = f"GENERAL_KNOWLEDGE_CHUNK_{cid}: [Placeholder for vast knowledge or future extensions]"
+                      f.write(filler_data.encode('utf-8'))
+                  
+                  # --- Fill to target size ---
+                  # التأكد من أن كل لقمة بالحجم الصحيح
+                  current_pos = f.tell()
+                  if current_pos < total_bytes:
+                      # إضافة بيانات عشوائية لتعبئة المساحة المتبقية
+                      remaining_bytes = total_bytes - current_pos
+                      # كتابة بلوكات بحجم 1 ميجا من بيانات عشوائية
+                      block_size = 1024 * 1024
+                      num_blocks = remaining_bytes // block_size
+                      for _ in range(num_blocks):
+                          f.write(os.urandom(block_size))
+                      # كتابة الباقي
+                      f.write(os.urandom(remaining_bytes % block_size))
+                  
+              print(f"تم الانتهاء من اللقمة الذكية رقم {cid}!")
 
           generate_chunk(int(sys.argv[1]))
           EOF
@@ -45,5 +124,5 @@ jobs:
       - name: 📤 Upload Chunk
         uses: actions/upload-artifact@v4
         with:
-          name: Brain-Part-${{ matrix.chunk_id }}
+          name: Smart-Brain-Chunk-${{ matrix.chunk_id }}
           path: brain_chunk_*.bin
