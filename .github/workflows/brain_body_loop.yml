@@ -1,65 +1,21 @@
-name: 🎮 🏗️ PHOENIX_MANUAL_FACTORY
-
-on:
-  workflow_dispatch:
-
-jobs:
-  build:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: 📦 1. Checkout Code
-        uses: actions/checkout@v4
-
-      - name: 🛠️ 2. Install Tools
+      - name: 🛠️ 3. تثبيت أدوات الحشو وقبول التراخيص
         run: |
           sudo apt update
           sudo apt install -y build-essential git python3-dev python3-pip \
           libtool autoconf automake pkg-config zlib1g-dev libssl-dev \
-          libffi-dev libgmp-dev libltdl-dev \
-          openjdk-17-jdk unzip zip curl
+          libffi-dev libgmp-dev libltdl-dev unzip zip curl
           pip3 install --user --upgrade "Cython<3.0" "buildozer==1.5.0"
+          
+          # الخطوة الحاسمة: قبول تراخيص Android SDK تلقائياً
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          yes | sdkmanager --licenses || true
+          
           echo "export PATH=\$PATH:~/.local/bin" >> $GITHUB_PATH
 
-      - name: 🏗️ 3. Prepare Game Project
-        run: |
-          mkdir -p game_project
-          cat <<EOF > game_project/main.py
-          from kivy.app import App
-          from kivy.uix.label import Label
-          class PhoenixGame(App):
-              def build(self):
-                  return Label(text='Phoenix Engine Active\nBit-Level Integrity: Verified')
-          if __name__ == '__main__':
-              PhoenixGame().run()
-          EOF
-
-          cat <<EOF > game_project/buildozer.spec
-          [app]
-          title = PhoenixGame
-          package.name = phoenix.game
-          package.domain = org.phoenix
-          source.dir = .
-          source.include_exts = py,png,jpg,kv,atlas
-          version = 1.0
-          requirements = python3,kivy==2.2.1
-          orientation = portrait
-          android.archs = arm64-v8a
-          android.accept_sdk_license = True
-          android.api = 31
-          android.minapi = 21
-          android.ndk = 25b
-          p4a.branch = master
-          EOF
-
-      - name: 🚀 4. The Direct Build (No Clean)
+      - name: 🏗️ 4. حقن العقل وضمان التضمين (Deep Injection)
         run: |
           cd game_project
-          # بدلاً من التنظيف، سنبدأ البناء مباشرة وهو سيتكفل بإنشاء المجلدات الناقصة
-          ~/.local/bin/buildozer -v android debug
-        continue-on-error: false
-
-      - name: 📤 5. Export The Phoenix APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: Phoenix_Ultimate_Game
-          path: game_project/bin/*.apk
+          # تأكد أن ملف العقل (brain_core.bin) موجود في المجلد
+          # إذا لم يكن موجوداً، سيقوم هذا الأمر بإنشاء مساحة محجوزة له
+          [ -f brain_core.bin ] || dd if=/dev/urandom of=brain_core.bin bs=1M count=135
