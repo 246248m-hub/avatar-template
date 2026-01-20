@@ -1,4 +1,4 @@
-name: 🧬 GENESIS COMMANDER (The Guaranteed Teacher)
+name: 🧬 GENESIS COMMANDER (The Corrected Teacher)
 
 on:
   workflow_dispatch:
@@ -7,9 +7,7 @@ jobs:
   genesis_learning_cycle:
     runs-on: ubuntu-latest
     steps:
-      # -----------------------------------------------------
-      #  الخطوة 1: إعداد الذاكرة والمعرفة
-      # -----------------------------------------------------
+      # ... (الخطوات 1.1 و 1.2 تبقى كما هي) ...
       - name: 1.1 - Checkout Commander's Own Repository
         uses: actions/checkout@v4
         with:
@@ -17,12 +15,11 @@ jobs:
 
       - name: 1.2 - Setup Tools
         run: |
-          # لم نعد بحاجة لتثبيت مكتبة بايثون، فقط أدوات مساعدة
           sudo apt-get update && sudo apt-get install -y jq
           mkdir -p knowledge_base
 
       # -----------------------------------------------------
-      #  الخطوة 2: Gemini يحدد الهدف التالي (باستخدام cURL)
+      #  الخطوة 2: Gemini يحدد الهدف التالي (باستخدام cURL الصحيح)
       # -----------------------------------------------------
       - name: 2.1 - Gemini Defines Next Step via cURL
         id: gemini_task
@@ -34,7 +31,6 @@ jobs:
             KNOWLEDGE="None. This is the first lesson."
           fi
 
-          # تحضير البرومبت
           PROMPT="""
           You are an AI teaching another AI how to build itself from first principles.
           The ultimate goal is to create a multi-modal AI in pure Python.
@@ -47,11 +43,11 @@ jobs:
           Your response must be ONLY the raw Python code, no markdown.
           """
 
-          # تحويل البرومبت إلى صيغة JSON آمنة
           JSON_PROMPT=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
 
-          # --- استخدام cURL المضمون الخاص بك ---
-          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+          # --- **التصحيح الحاسم هنا** ---
+          # استخدام الموديل الصحيح الذي زودتني به أنت
+          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-lite:generateContent"
           
           RESPONSE=$(curl -s -H "Content-Type: application/json" \
                           -H "x-goog-api-key: ${GOOGLE_API_KEY}" \
@@ -59,7 +55,6 @@ jobs:
                           -d "${JSON_PROMPT}" \
                           "${API_URL}")
 
-          # استخراج الكود فقط من استجابة JSON
           TASK_CODE=$(echo "${RESPONSE}" | jq -r '.candidates[0].content.parts[0].text' | sed 's/^```python//; s/```$//')
 
           if [ -z "$TASK_CODE" ] || [ "$TASK_CODE" == "null" ]; then
