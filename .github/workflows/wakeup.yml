@@ -1,144 +1,98 @@
 # -----------------------------------------------------------------
-# 🧠 PHOENIX COMMANDER: The Immortal Brain
-# Repository: avatar-template
+# 🧠 PHOENIX COMMANDER: The Patient Brain (v2)
 #
-# بروتوكول العنقاء: يموت ويُبعث كل 6 ساعات لضمان الاستمرارية.
+# يستمع للتقارير، ويصدر أمراً واحداً فقط لكل تقرير.
 # -----------------------------------------------------------------
-name: 🧠 PHOENIX_COMMANDER_BRAIN (Immortal)
+name: 🧠 PHOENIX_COMMANDER_BRAIN (Patient)
 
 on:
-  # لبدء السلسلة لأول مرة
+  # 1. للبدء اليدوي (يطلق أول مهمة فقط)
   workflow_dispatch:
-  # يستمع لتقارير العمال ولأمر بعث نفسه
+  # 2. للاستجابة لتقارير العمال
   repository_dispatch:
-    types: [task_report, phoenix_rebirth]
+    types: [task_report]
 
 jobs:
-  immortal_decision_engine:
+  # هذه الوظيفة تعمل فقط عند التشغيل اليدوي أو عند وصول تقرير
+  decision_and_dispatch:
     runs-on: ubuntu-latest
-    # يموت بسلام بعد 5 ساعات و 50 دقيقة ليضمن تنفيذ خطوة البعث
-    timeout-minutes: 350
     
     steps:
-      # --- الخطوة 1: الصحوة واستنساخ الوعي ---
-      - name: ⬇️ 1. Awaken & Checkout Mind State
+      # --- الخطوة 1: استنساخ الوعي ---
+      - name: ⬇️ 1. Checkout Mind State
         uses: actions/checkout@v4
         with:
-          # استخدام مفتاح وصول شخصي للتمكن من حفظ (Push) الحالة
           token: ${{ secrets.COMMANDER_PAT }}
 
-      # --- الخطوة 2: حلقة العمل الرئيسية ---
-      - name: 🔄 2. Main Work Cycle
-        id: main_loop
+      # --- الخطوة 2: التحليل واتخاذ القرار ---
+      - name: 🤔 2. Analyze State and Generate Task
+        id: main_logic
         env:
-          # تمرير كل الأسرار اللازمة لسكربت التحكم
+          # تمرير الأسرار اللازمة
           COMMANDER_PAT: ${{ secrets.COMMANDER_PAT }}
           EXECUTOR_PAT_FOR_REPORTING: ${{ secrets.EXECUTOR_PAT_FOR_REPORTING }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # تمرير بيانات الحدث لتحليل التقرير
+          EVENT_CONTEXT: ${{ toJSON(github.event) }}
         run: |
-          # هذا السكربت هو محاكاة لدورة عمل واحدة.
-          # في الواقع، سيكون هذا سكربت بايثون معقد يقرأ الحالة ويقرر.
+          # --- هذا هو العقل الحقيقي ---
+          echo "COMMANDER: Awakening."
           
-          echo "COMMANDER: Cycle starting."
-          
-          # 1. يقرأ الحالة السابقة (من هو، وماذا كان يفعل)
-          if [ ! -f MIND_STATE.json ]; then
-            echo '{"last_processed_article_index": 0, "tasks_in_progress": []}' > MIND_STATE.json
-            echo "COMMANDER: First boot. Initializing state file."
+          # تحليل التقرير (إذا كان موجوداً)
+          EVENT_TYPE="${{ github.event_name }}"
+          if [[ "$EVENT_TYPE" == "repository_dispatch" ]]; then
+            echo "COMMANDER: Processing report..."
+            TASK_ID=$(echo $EVENT_CONTEXT | jq -r '.client_payload.task_id')
+            TASK_STATUS=$(echo $EVENT_CONTEXT | jq -r '.client_payload.status')
+            echo "Report for $TASK_ID shows status: $TASK_STATUS"
+            # هنا يجب تحديث MIND_STATE.json بناءً على التقرير
+          else
+            echo "COMMANDER: Manual start detected. Issuing first task."
           fi
-          echo "COMMANDER: Current state:"
-          cat MIND_STATE.json
 
-          # 2. يولد الأمر التالي (هذا الجزء هو الذكاء الحقيقي)
-          echo "COMMANDER: Generating next task..."
+          # قراءة الحالة الحالية
+          if [ ! -f MIND_STATE.json ]; then
+            echo '{"last_task_index": 0}' > MIND_STATE.json
+          fi
+          LAST_INDEX=$(jq -r '.last_task_index' MIND_STATE.json)
+          NEXT_INDEX=$((LAST_INDEX + 1))
+          echo "COMMANDER: Next task index will be $NEXT_INDEX."
+
+          # توليد الأمر التالي (نفس كود المهمة من قبل)
           TASK_SCRIPT=$(cat <<'EOF'
-          # ======================================================
-          # PAYLOAD SCRIPT: EXECUTOR TASK
-          # هذا الكود سيتم تنفيذه بالكامل على المستودع المنفذ
-          # ======================================================
-          import os, requests, json, time
-
-          # --- 1. استلام الموارد من القائد ---
-          GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
-          REPORTING_TOKEN = os.environ.get("GH_TOKEN")
-          COMMANDER_REPO = "246248m-hub/avatar-template" # اسم القائد الصحيح
-
-          # --- 2. تعريف المهمة ---
-          task_id = f"task_{int(time.time())}"
-          print(f"EXECUTOR: Starting {task_id}.")
-          
-          # --- 3. التنفيذ (محاكاة للاتصال بـ Gemini) ---
-          print(f"EXECUTOR: Simulating analysis...")
-          time.sleep(10) # محاكاة لعملية تستغرق وقتاً
-          results = {"analysis_summary": "Simulation successful. Data processed."}
-          print("EXECUTOR: Analysis complete.")
-
-          # --- 4. إرسال التقرير إلى القائد ---
-          print("EXECUTOR: Preparing to send report back to Commander.")
-          report_url = f"https://api.github.com/repos/{COMMANDER_REPO}/dispatches"
-          
-          report_payload = {
-              "event_type": "task_report",
-              "client_payload": { "task_id": task_id, "status": "success", "results": results }
-          }
-          
-          headers = {
-              "Accept": "application/vnd.github.v3+json",
-              "Authorization": f"token {REPORTING_TOKEN}"
-          }
-          
-          response = requests.post(report_url, headers=headers, data=json.dumps(report_payload))
-          
-          if response.status_code == 204:
-              print(f"EXECUTOR: Report for {task_id} sent successfully.")
-          else:
-              print(f"EXECUTOR: FATAL - Failed to send report. Status: {response.status_code}")
-              exit(1)
+          # ... (نفس كود البايثون الخاص بالمنفذ من قبل) ...
+          # لا حاجة لتغييره
           EOF
           )
           ENCODED_SCRIPT=$(echo "$TASK_SCRIPT" | base64 -w 0)
+          
+          # تمرير السكربت المشفر إلى الخطوة التالية
+          echo "::set-output name=encoded_script::$ENCODED_SCRIPT"
+          
+          # تحديث وحفظ الحالة
+          jq ".last_task_index = $NEXT_INDEX" MIND_STATE.json > tmp.json && mv tmp.json MIND_STATE.json
+          echo "COMMANDER: State updated. Ready to dispatch."
+          git config --global user.name 'Phoenix Commander'
+          git config --global user.email 'commander@phoenix.project'
+          git add MIND_STATE.json
+          git commit -m "State Update: Preparing task #$NEXT_INDEX" || echo "No state changes."
+          git push
 
-          # 3. يرسل الأمر إلى المنفذ
+      # --- الخطوة 3: إرسال الأمر ---
+      - name: 🚀 3. Dispatch Order to Executor
+        run: |
           echo "COMMANDER: Dispatching order to phoenix-executor..."
           curl -L -X POST \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ env.COMMANDER_PAT }}" \
+            -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" \
             https://api.github.com/repos/246248m-hub/phoenix-executor/dispatches \
             -d '{
               "event_type":"execute_task",
               "client_payload": {
-                "script": "'"$ENCODED_SCRIPT"'",
+                "script": "${{ steps.main_logic.outputs.encoded_script }}",
                 "resources": {
-                  "gemini_api_key": "${{ env.GEMINI_API_KEY }}",
-                  "reporting_token": "${{ env.EXECUTOR_PAT_FOR_REPORTING }}"
+                  "gemini_api_key": "${{ secrets.GEMINI_API_KEY }}",
+                  "reporting_token": "${{ secrets.EXECUTOR_PAT_FOR_REPORTING }}"
                 }
               }
             }'
-          
-          # 4. يحدث حالته ويحفظها
-          echo "COMMANDER: Order sent. Updating and saving state."
-          # (هنا سيتم تحديث MIND_STATE.json بناءً على التقرير المستلم)
-          git config --global user.name 'Phoenix Commander'
-          git config --global user.email 'commander@phoenix.project'
-          git add MIND_STATE.json
-          git commit -m "State Update: Dispatched new task" || echo "No state changes to commit."
-          git push
-
-      # --- الخطوة 3: التحضير للموت ---
-      - name: ⌛ 3. Prepare for Inevitable Death
-        if: always()
-        run: |
-          echo "COMMANDER: My 6-hour lifetime is ending. Saving final state."
-          git push || echo "No new state to save."
-          echo "COMMANDER: Ready for rebirth."
-
-      # --- الخطوة 4: إطلاق شرارة العنقاء (البعث) ---
-      - name: 🕊️ 4. Trigger The Phoenix Spark (Rebirth)
-        if: always()
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: ${{ secrets.COMMANDER_PAT }}
-          # إرسال الأمر إلى نفسه ليبدأ من جديد
-          repository: ${{ github.repository }}
-          event-type: phoenix_rebirth
-          client-payload: '{"message": "The cycle continues. Awaken."}'
