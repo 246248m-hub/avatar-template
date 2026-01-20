@@ -1,4 +1,4 @@
-name: 🧬 GENESIS COMMANDER (Self-Contained Teacher)
+name: 🧬 GENESIS COMMANDER (The Guaranteed Teacher)
 
 on:
   workflow_dispatch:
@@ -13,31 +13,28 @@ jobs:
       - name: 1.1 - Checkout Commander's Own Repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.COMMANDER_PAT }} # مطلوب لعمل git push
+          token: ${{ secrets.COMMANDER_PAT }}
 
-      - name: 1.2 - Setup Python & Gemini
+      - name: 1.2 - Setup Tools
         run: |
-          pip install google-generativeai
-          # إنشاء مجلد المعرفة إذا لم يكن موجوداً
+          # لم نعد بحاجة لتثبيت مكتبة بايثون، فقط أدوات مساعدة
+          sudo apt-get update && sudo apt-get install -y jq
           mkdir -p knowledge_base
 
       # -----------------------------------------------------
-      #  الخطوة 2: Gemini يحدد الهدف التالي
+      #  الخطوة 2: Gemini يحدد الهدف التالي (باستخدام cURL)
       # -----------------------------------------------------
-      - name: 2.1 - Gemini Defines Next Learning Step
+      - name: 2.1 - Gemini Defines Next Step via cURL
         id: gemini_task
         env:
-          # --- التغيير المهم هنا ---
-          # نستخدم اسم السر الصحيح الذي قمت بتعريفه
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: |
-          # قراءة المعرفة الحالية من المجلد المخصص
           KNOWLEDGE=$(find knowledge_base -maxdepth 1 -name '*.py' -print0 | xargs -0 cat)
           if [ -z "$KNOWLEDGE" ]; then
             KNOWLEDGE="None. This is the first lesson."
           fi
 
-          # صياغة البرومبت
+          # تحضير البرومبت
           PROMPT="""
           You are an AI teaching another AI how to build itself from first principles.
           The ultimate goal is to create a multi-modal AI in pure Python.
@@ -47,51 +44,42 @@ jobs:
           ---
           Define the very next logical learning step. Provide ONLY the raw Python code for this single, self-contained task.
           If the code needs libraries, add a '# REQUIREMENTS: <library_name>' line.
+          Your response must be ONLY the raw Python code, no markdown.
           """
 
-          # إنشاء سكربت بايثون للتواصل مع Gemini
-          cat << EOF > get_task.py
-          import os, sys
-          import google.generativeai as genai
-          
-          try:
-              # المكتبة ستبحث تلقائياً عن GOOGLE_API_KEY
-              genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
-              model = genai.GenerativeModel('gemini-1.5-flash')
-              prompt = """${PROMPT}"""
-              response = model.generate_content(prompt, generation_config={'temperature': 0.7})
-              
-              code = response.text.strip()
-              if code.startswith('```python'):
-                  code = code[9:]
-              if code.endswith('```'):
-                  code = code[:-3]
-              
-              print(code.strip())
-          except Exception as e:
-              print(f"Error calling Gemini API: {e}", file=sys.stderr)
-              sys.exit(1)
-          EOF
+          # تحويل البرومبت إلى صيغة JSON آمنة
+          JSON_PROMPT=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
 
-          # تنفيذ السكربت والحصول على المهمة
-          TASK_CODE=$(python get_task.py)
-          if [ $? -ne 0 ]; then
-            echo "Failed to get task from Gemini. Aborting cycle."
+          # --- استخدام cURL المضمون الخاص بك ---
+          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+          
+          RESPONSE=$(curl -s -H "Content-Type: application/json" \
+                          -H "x-goog-api-key: ${GOOGLE_API_KEY}" \
+                          -X POST \
+                          -d "${JSON_PROMPT}" \
+                          "${API_URL}")
+
+          # استخراج الكود فقط من استجابة JSON
+          TASK_CODE=$(echo "${RESPONSE}" | jq -r '.candidates[0].content.parts[0].text' | sed 's/^```python//; s/```$//')
+
+          if [ -z "$TASK_CODE" ] || [ "$TASK_CODE" == "null" ]; then
+            echo "Failed to get task from Gemini. Full response:"
+            echo "${RESPONSE}"
             exit 1
           fi
           
           echo "Generated Task Code:"
           echo "${TASK_CODE}"
           
-          # حفظ المهمة للإرسال
           echo "task_payload<<EOF" >> $GITHUB_ENV
           echo "${TASK_CODE}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
+      # ... (بقية الخطوات 3, 4, 5 تبقى كما هي تماماً) ...
       # -----------------------------------------------------
       #  الخطوة 3: إرسال المهمة إلى "التلميذ"
       # -----------------------------------------------------
-      - name: 3.1 - Dispatch Task and Assume Success (for now)
+      - name: 3.1 - Dispatch Task
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: executor.yml
@@ -105,7 +93,6 @@ jobs:
       - name: 4.1 - Archive New Knowledge
         run: |
           echo "Assuming success, archiving the lesson."
-          # حفظ الكود الناجح في مجلد المعرفة
           LESSON_NUM=$(($(find knowledge_base -maxdepth 1 -name '*.py' | wc -l) + 1))
           echo "${{ env.task_payload }}" > "knowledge_base/lesson_${LESSON_NUM}.py"
           
@@ -122,5 +109,5 @@ jobs:
         if: always()
         run: |
           echo "Triggering next learning cycle..."
-          sleep 10 # إعطاء وقت لـ git push
+          sleep 10
           curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/${{ github.repository }}/actions/workflows/genesis_commander.yml/dispatches -d '{"ref":"main"}'
