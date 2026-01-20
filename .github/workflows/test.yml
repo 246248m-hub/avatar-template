@@ -1,90 +1,41 @@
-name: 🧬 GENESIS COMMANDER
-
-on:
-  workflow_dispatch:
-
-jobs:
-  genesis_learning_cycle:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 1.1 - Checkout Commander's Own Repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.COMMANDER_PAT }}
-
-      - name: 1.2 - Setup Tools
-        run: |
-          sudo apt-get update && sudo apt-get install -y jq
-          mkdir -p knowledge_base
-
       - name: 2.1 - Gemini Defines Next Step via cURL
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: |
-          # جمع المعرفة الحالية
           KNOWLEDGE=$(find knowledge_base -maxdepth 1 -name '*.py' -print0 | xargs -0 cat 2>/dev/null || echo "None. Initial state.")
-          
-          # صياغة البرومبت
           PROMPT="You are an AI teacher. Current knowledge: $KNOWLEDGE. Provide ONLY the next Python lesson code. No markdown, no explanations. Just raw code."
-
-          # إنشاء JSON آمن
           JSON_DATA=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
+          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${GOOGLE_API_KEY}"
 
-          # استخدام الرابط الذي أكدت أنه يعمل (2.5-flash-lite)
-          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent"
+          # محاولة استدعاء الـ API مع نظام إعادة المحاولة عند الخطأ 429
+          MAX_RETRIES=3
+          RETRY_COUNT=0
           
-          RESPONSE=$(curl -s -X POST \
-            -H "Content-Type: application/json" \
-            -H "x-goog-api-key: ${GOOGLE_API_KEY}" \
-            -d "$JSON_DATA" \
-            "$API_URL")
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X POST -H "Content-Type: application/json" -d "$JSON_DATA" "$API_URL")
+            HTTP_STATUS=$(echo "$RESPONSE" | tail -n 1)
+            BODY=$(echo "$RESPONSE" | sed '$d')
 
-          # استخراج الكود وتنظيفه
-          TASK_CODE=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
+            if [ "$HTTP_STATUS" -eq 200 ]; then
+              TASK_CODE=$(echo "$BODY" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
+              break
+            elif [ "$HTTP_STATUS" -eq 429 ]; then
+              echo "⚠️ Quota exceeded. Waiting 60 seconds before retry..."
+              sleep 60
+              RETRY_COUNT=$((RETRY_COUNT+1))
+            else
+              echo "❌ Error: API returned status $HTTP_STATUS"
+              echo "$BODY"
+              exit 1
+            fi
+          done
 
-          if [ -z "$TASK_CODE" ] || [ "$TASK_CODE" == "null" ]; then
-            echo "❌ Error: API Response failed."
-            echo "$RESPONSE"
+          if [ -z "$TASK_CODE" ]; then
+            echo "❌ Failed to get task after retries."
             exit 1
           fi
           
           echo "task_payload<<EOF" >> $GITHUB_ENV
           echo "$TASK_CODE" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-
-      - name: 3.1 - Dispatch Task
-        uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: executor.yml
-          repo: 246248m-hub/phoenix-executor
-          token: ${{ secrets.COMMANDER_PAT }}
-          inputs: >
-            {
-              "task_payload": ${{ toJson(env.task_payload) }},
-              "commander_repo": "${{ github.repository }}",
-              "run_id": "${{ github.run_id }}"
-            }
-
-      - name: 4.1 - Archive New Knowledge
-        if: success()
-        run: |
-          LESSON_NUM=$(($(find knowledge_base -maxdepth 1 -name '*.py' | wc -l) + 1))
-          echo "${{ env.task_payload }}" > "knowledge_base/lesson_${LESSON_NUM}.py"
-          
-          git config --global user.name 'Genesis Teacher'
-          git config --global user.email 'bot@github.com'
-          git add knowledge_base/
-          git commit -m "Learned: Lesson ${LESSON_NUM}"
-          git push || echo "No changes to commit"
-
-      - name: 5.1 - Resurrect for Next Cycle
-        if: always()
-        run: |
-          echo "Triggering next cycle..."
-          sleep 15
-          curl -L -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" \
-            [https://api.github.com/repos/$](https://api.github.com/repos/$){{ github.repository }}/actions/workflows/genesis_commander.yml/dispatches \
-            -d '{"ref":"main"}'
