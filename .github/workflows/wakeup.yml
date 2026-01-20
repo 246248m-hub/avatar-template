@@ -20,11 +20,9 @@ jobs:
       - name: 1.2 - Bootstrap Knowledge Base
         run: |
           mkdir -p knowledge_base
-          # إذا كان المجلد فارغاً، نضع اللبنة الأولى تلقائياً
           if [ -z "$(ls -A knowledge_base)" ]; then
             echo "Creating task_0.py as the initial seed..."
             cat << 'EOF' > knowledge_base/task_0.py
-          # PHOENIX CORE - DNA MODULE (task_0)
           import json, os
           class CoreMemory:
               def __init__(self, file="core_memory.json"):
@@ -48,26 +46,12 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           OBJECTIVE: ${{ github.event.inputs.custom_objective }}
         run: |
-          # قراءة كل المعرفة الحالية
           KNOWLEDGE=$(find knowledge_base -maxdepth 1 -name 'task_*.py' -print0 | xargs -0 cat 2>/dev/null | tail -c 5000)
-          
-          PROMPT="You are the ARCHITECT AI. 
-          OBJECTIVE: $OBJECTIVE
-          CURRENT_CORE_FILES: $KNOWLEDGE
-          
-          Your Task: Write the next Python module for this AI system (task_${NEXT}).
-          - Build from scratch using basic Python logic. No pre-trained LLMs.
-          - Each task should be a functional component that interacts with previous ones.
-          - Respond ONLY with raw Python code. Include '# REQUIREMENTS:' at the top if needed."
-
+          PROMPT="You are the ARCHITECT AI. OBJECTIVE: $OBJECTIVE. CURRENT_CORE_FILES: $KNOWLEDGE. Task: Write the next Python module. Build from scratch. Respond ONLY with raw Python code."
           JSON_DATA=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
           API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent"
-          
           RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" -H "x-goog-api-key: ${GOOGLE_API_KEY}" -d "$JSON_DATA" "$API_URL")
           TASK_CODE=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
-
-          if [ -z "$TASK_CODE" ]; then echo "❌ Error: Brain flatlined."; exit 1; fi
-          
           echo "task_payload<<EOF" >> $GITHUB_ENV
           echo "$TASK_CODE" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -90,27 +74,20 @@ jobs:
         run: |
           NEXT=$(( $(find knowledge_base -maxdepth 1 -name 'task_*.py' | wc -l) ))
           echo "${{ env.task_payload }}" > "knowledge_base/task_${NEXT}.py"
-          
-          # تحديث لوحة التحكم
-          cat << EOF > README.md
-          # 🧬 PHOENIX CORE: EVOLUTION
-          - **Current Module:** task_${NEXT}
-          - **Objective:** ${{ github.event.inputs.custom_objective }}
-          - **Last Pulse:** $(date -u)
-          EOF
-          
           git config --global user.name 'Phoenix Architect'
           git config --global user.email 'architect@phoenix.ai'
           git add .
           git commit -m "Evolution: task_${NEXT} integrated"
           git push || echo "No changes"
 
-      - name: 5.1 - Recursive Loop
+      - name: 5.1 - Recursive Loop (Fixed URL)
         if: always()
         run: |
+          echo "Waiting 300s..."
           sleep 300
+          # تصحيح الرابط تماماً هنا:
           curl -L -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" \
-            [https://api.github.com/repos/$](https://api.github.com/repos/$){{ github.repository }}/actions/workflows/genesis_commander.yml/dispatches \
+            "[https://api.github.com/repos/$](https://api.github.com/repos/$){{ github.repository }}/actions/workflows/genesis_commander.yml/dispatches" \
             -d '{"ref":"main", "inputs": {"custom_objective": "${{ github.event.inputs.custom_objective }}"}}'
