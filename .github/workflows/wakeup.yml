@@ -1,67 +1,81 @@
-name: 🧬 GENESIS COMMANDER
+name: 🧬 GENESIS COMMANDER (The Final Evolutionary Core)
 
 on:
   workflow_dispatch:
+    inputs:
+      custom_objective:
+        description: 'حدد الهدف الحالي للنظام (اتركه افتراضياً للتطور الذاتي)'
+        required: false
+        default: 'Autonomous evolution: Identify missing capabilities and build them.'
 
 jobs:
   genesis_learning_cycle:
     runs-on: ubuntu-latest
     steps:
-      - name: 1.1 - Checkout
+      # -----------------------------------------------------
+      # 1. إعداد الجهاز العصبي (البيئة)
+      # -----------------------------------------------------
+      - name: 1.1 - Checkout Core Repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.COMMANDER_PAT }}
 
-      - name: 1.2 - Setup
+      - name: 1.2 - Setup Environment Tools
         run: |
           sudo apt-get update && sudo apt-get install -y jq
           mkdir -p knowledge_base
 
-      - name: 2.1 - Gemini Generation (Exact cURL Method)
+      # -----------------------------------------------------
+      # 2. توليد الذكاء التكيفي (Gemini 2.5)
+      # -----------------------------------------------------
+      - name: 2.1 - Adaptive Intelligence Generation
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          OBJECTIVE: ${{ github.event.inputs.custom_objective }}
         run: |
-          KNOWLEDGE=$(find knowledge_base -maxdepth 1 -name '*.py' -print0 | xargs -0 cat 2>/dev/null || echo "First lesson: Setup basics.")
-          PROMPT="You are an AI teacher. Current knowledge: $KNOWLEDGE. Provide ONLY the next Python lesson code. No markdown, no explanations. Just raw code."
+          # جمع سياق المعرفة السابقة لتجنب التكرار
+          KNOWLEDGE=$(find knowledge_base -maxdepth 1 -name 'task_*.py' -print0 | xargs -0 cat 2>/dev/null | tail -c 5000 || echo "Initial State.")
           
-          # إنشاء الـ Payload كما في تجربتك الناجحة
-          JSON_DATA=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
+          # برومبت التكيف المطلق: يوجه الذكاء الاصطناعي ليكون "نواة نظام" وليس مجرد كاتب كود
+          PROMPT="You are the PHOENIX AI CORE. 
+          STRATEGIC OBJECTIVE: $OBJECTIVE
+          HISTORICAL CONTEXT: $KNOWLEDGE
+          
+          Your goal: Define and provide the Python code for the NEXT logic step to achieve the objective.
+          - If libraries are needed, start with: # REQUIREMENTS: lib1 lib2
+          - Ensure the code is self-contained and executable.
+          - Return ONLY raw Python code. No markdown, no conversational text."
 
-          # الرابط الذي أكدت نجاحه
+          JSON_DATA=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
+          
+          # الرابط الذي أثبت نجاحه في تجربتك
           API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent"
           
-          echo "Sending request to Gemini 2.5-flash-lite..."
-          
-          # محاولة الطلب مع نظام معالجة خطأ 429
           RESPONSE=$(curl -s -X POST \
             -H "Content-Type: application/json" \
             -H "x-goog-api-key: ${GOOGLE_API_KEY}" \
             -d "$JSON_DATA" \
             "$API_URL")
 
-          # فحص إذا كان هناك خطأ في الحصة
-          if echo "$RESPONSE" | grep -q "RESOURCE_EXHAUSTED"; then
-            echo "⚠️ Quota Exceeded on GitHub side. Waiting 30s before emergency exit..."
-            sleep 30
-            echo "Please try again later or increase sleep time between cycles."
-            exit 1
-          fi
-
-          # استخراج الكود وتنظيفه
+          # تنظيف الكود المستلم من أي تنسيق Markdown
           TASK_CODE=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
 
           if [ -z "$TASK_CODE" ] || [ "$TASK_CODE" == "null" ]; then
-            echo "❌ Error: API response was not as expected."
-            echo "$RESPONSE"
+            echo "❌ CRITICAL: Brain did not respond correctly."
+            echo "Full Response: $RESPONSE"
             exit 1
           fi
           
+          # حفظ الكود في البيئة لإرساله للمنفذ
           echo "task_payload<<EOF" >> $GITHUB_ENV
           echo "$TASK_CODE" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: 3.1 - Dispatch Task
+      # -----------------------------------------------------
+      # 3. إرسال المهمة إلى المنفذ العالمي (Universal Executor)
+      # -----------------------------------------------------
+      - name: 3.1 - Dispatch to Universal Executor
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: executor.yml
@@ -74,25 +88,50 @@ jobs:
               "run_id": "${{ github.run_id }}"
             }
 
-      - name: 4.1 - Archive Lesson
+      # -----------------------------------------------------
+      # 4. أرشفة التطور وتحديث لوحة التحكم (README)
+      # -----------------------------------------------------
+      - name: 4.1 - Sync & Dashboard Update
         if: success()
         run: |
-          LESSON_NUM=$(($(find knowledge_base -maxdepth 1 -name '*.py' | wc -l) + 1))
-          echo "${{ env.task_payload }}" > "knowledge_base/lesson_${LESSON_NUM}.py"
-          git config --global user.name 'Genesis Teacher'
-          git config --global user.email 'bot@github.com'
-          git add knowledge_base/
-          git commit -m "Lesson ${LESSON_NUM} learned"
-          git push || echo "Nothing to push"
+          COUNT=$(find knowledge_base -maxdepth 1 -name 'task_*.py' | wc -l)
+          NEXT=$((COUNT + 1))
+          echo "${{ env.task_payload }}" > "knowledge_base/task_${NEXT}.py"
+          
+          cat << EOF > README.md
+          # 🧬 PHOENIX ADAPTIVE CORE
+          
+          ## 🎯 Current Mission
+          > ${{ github.event.inputs.custom_objective }}
+          
+          ## 📊 Core Statistics
+          - **Total Evolutionary Steps:** $NEXT
+          - **Last Pulse:** $(date -u)
+          - **System Status:** 🟢 OPERATIONAL
+          
+          ## 🛠️ Latest Operation
+          Executed and archived \`task_${NEXT}.py\`.
+          
+          ---
+          *Autonomous Self-Evolving System*
+          EOF
+          
+          git config --global user.name 'Phoenix Core'
+          git config --global user.email 'core@phoenix.ai'
+          git add .
+          git commit -m "Evolution Step $NEXT: Status Synchronized"
+          git push || echo "Sync: No changes to push."
 
-      - name: 5.1 - Resurrect (Safe Mode)
+      # -----------------------------------------------------
+      # 5. الإحياء الذاتي المستمر (Recursive Resurrection)
+      # -----------------------------------------------------
+      - name: 5.1 - Resurrect Next Cycle
         if: always()
         run: |
-          # زيادة وقت الانتظار لـ 5 دقائق لتجنب حظر الـ IP الخاص بـ GitHub
-          echo "Waiting 300 seconds (5 mins) before next cycle to protect quota..."
+          echo "Cooling down for 300s to maintain API stability..."
           sleep 300
           curl -L -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" \
             [https://api.github.com/repos/$](https://api.github.com/repos/$){{ github.repository }}/actions/workflows/genesis_commander.yml/dispatches \
-            -d '{"ref":"main"}'
+            -d '{"ref":"main", "inputs": {"custom_objective": "${{ github.event.inputs.custom_objective }}"}}'
