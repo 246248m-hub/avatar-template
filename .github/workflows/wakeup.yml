@@ -1,87 +1,116 @@
 # -----------------------------------------------------------------
-# 🧠 PHOENIX COMMANDER: The Patient Brain (v2)
+# 🧠 PHOENIX COMMANDER: The Aware Brain (v4)
 #
-# يستمع للتقارير، ويصدر أمراً واحداً فقط لكل تقرير.
+# يفهم تقارير الفشل، يستشير Gemini، ويصدر أوامر مصححة.
 # -----------------------------------------------------------------
-name: 🧠 PHOENIX_COMMANDER_BRAIN (Patient)
+name: 🧠 PHOENIX_COMMANDER_BRAIN (Aware)
 
 on:
-  # 1. للبدء اليدوي (يطلق أول مهمة فقط)
   workflow_dispatch:
-  # 2. للاستجابة لتقارير العمال
   repository_dispatch:
     types: [task_report]
 
 jobs:
-  # هذه الوظيفة تعمل فقط عند التشغيل اليدوي أو عند وصول تقرير
   decision_and_dispatch:
     runs-on: ubuntu-latest
     
     steps:
-      # --- الخطوة 1: استنساخ الوعي ---
       - name: ⬇️ 1. Checkout Mind State
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.COMMANDER_PAT }}
 
-      # --- الخطوة 2: التحليل واتخاذ القرار ---
-      - name: 🤔 2. Analyze State and Generate Task
+      - name: 🐍 2. تهيئة بيئة القرار
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - run: pip install requests google-generativeai
+
+      - name: 🤔 3. Analyze, Decide, and Generate Task
         id: main_logic
         env:
-          # تمرير الأسرار اللازمة
           COMMANDER_PAT: ${{ secrets.COMMANDER_PAT }}
           EXECUTOR_PAT_FOR_REPORTING: ${{ secrets.EXECUTOR_PAT_FOR_REPORTING }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          # تمرير بيانات الحدث لتحليل التقرير
           EVENT_CONTEXT: ${{ toJSON(github.event) }}
         run: |
-          # --- هذا هو العقل الحقيقي ---
-          echo "COMMANDER: Awakening."
-          
-          # تحليل التقرير (إذا كان موجوداً)
-          EVENT_TYPE="${{ github.event_name }}"
-          if [[ "$EVENT_TYPE" == "repository_dispatch" ]]; then
-            echo "COMMANDER: Processing report..."
-            TASK_ID=$(echo $EVENT_CONTEXT | jq -r '.client_payload.task_id')
-            TASK_STATUS=$(echo $EVENT_CONTEXT | jq -r '.client_payload.status')
-            echo "Report for $TASK_ID shows status: $TASK_STATUS"
-            # هنا يجب تحديث MIND_STATE.json بناءً على التقرير
-          else
-            echo "COMMANDER: Manual start detected. Issuing first task."
-          fi
+          # --- هذا هو العقل الواعي ---
+          import os, json, requests
+          import google.generativeai as genai
 
-          # قراءة الحالة الحالية
-          if [ ! -f MIND_STATE.json ]; then
-            echo '{"last_task_index": 0}' > MIND_STATE.json
-          fi
-          LAST_INDEX=$(jq -r '.last_task_index' MIND_STATE.json)
-          NEXT_INDEX=$((LAST_INDEX + 1))
-          echo "COMMANDER: Next task index will be $NEXT_INDEX."
-
-          # توليد الأمر التالي (نفس كود المهمة من قبل)
-          TASK_SCRIPT=$(cat <<'EOF'
-          # ... (نفس كود البايثون الخاص بالمنفذ من قبل) ...
-          # لا حاجة لتغييره
-          EOF
-          )
-          ENCODED_SCRIPT=$(echo "$TASK_SCRIPT" | base64 -w 0)
+          # --- 1. إعدادات ---
+          genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+          model = genai.GenerativeModel('gemini-pro')
+          event_context = json.loads(os.environ.get("EVENT_CONTEXT"))
+          event_name = os.environ.get("GITHUB_EVENT_NAME")
           
-          # تمرير السكربت المشفر إلى الخطوة التالية
-          echo "::set-output name=encoded_script::$ENCODED_SCRIPT"
-          
-          # تحديث وحفظ الحالة
-          jq ".last_task_index = $NEXT_INDEX" MIND_STATE.json > tmp.json && mv tmp.json MIND_STATE.json
-          echo "COMMANDER: State updated. Ready to dispatch."
-          git config --global user.name 'Phoenix Commander'
-          git config --global user.email 'commander@phoenix.project'
-          git add MIND_STATE.json
-          git commit -m "State Update: Preparing task #$NEXT_INDEX" || echo "No state changes."
-          git push
+          task_script_to_send = ""
 
-      # --- الخطوة 3: إرسال الأمر ---
-      - name: 🚀 3. Dispatch Order to Executor
+          # --- 2. تحليل الحالة أو التقرير ---
+          if event_name == "repository_dispatch" and event_context.get("action") == "task_report":
+              print("COMMANDER: Processing task report...")
+              payload = event_context.get("client_payload", {})
+              status = payload.get("status")
+              details = payload.get("details", {})
+
+              if status == "success":
+                  print("COMMANDER: Task was successful. Generating next task.")
+                  # (هنا يمكنك إضافة منطق للمهمة التالية بناءً على النجاح)
+                  # حالياً، سنقوم بإنشاء مهمة فاشلة عمداً للتجربة
+                  task_script_to_send = "print('Success! Now causing an error on purpose.')\nimport sys; sys.exit(1)"
+
+              elif status == "failure":
+                  print("COMMANDER: Task failed. Consulting Gemini for a fix...")
+                  original_script = details.get("original_script", "# No original script provided")
+                  error_log = json.dumps(details, indent=2)
+                  
+                  prompt = f"""
+                  The following Python script failed to execute:
+                  --- SCRIPT START ---
+                  {original_script}
+                  --- SCRIPT END ---
+
+                  It produced this error log:
+                  --- ERROR LOG START ---
+                  {error_log}
+                  --- ERROR LOG END ---
+
+                  Your task is to fix the Python script.
+                  Provide only the complete, corrected Python code, without any explanations or markdown.
+                  """
+                  
+                  try:
+                      response = model.generate_content(prompt)
+                      fixed_script = response.text.strip().replace("```python", "").replace("```", "")
+                      print("COMMANDER: Gemini provided a fix. Preparing to dispatch corrected script.")
+                      task_script_to_send = fixed_script
+                  except Exception as e:
+                      print(f"COMMANDER: FATAL - Could not consult Gemini: {str(e)}")
+                      # إذا فشل الاتصال بـ Gemini، نتوقف
+                      task_script_to_send = "print('FATAL: Gemini consultation failed.')"
+
+          else: # التشغيل اليدوي
+              print("COMMANDER: Manual start. Generating a deliberately failing task for testing.")
+              # سنرسل مهمة تحتوي على خطأ بسيط (قسمة على صفر)
+              task_script_to_send = "print('This task will fail.'); result = 1 / 0"
+
+          # --- 3. حفظ السكربت وتمريره ---
+          with open("current_task.py", "w") as f:
+              f.write(task_script_to_send)
+          
+          import base64
+          encoded_script = base64.b64encode(task_script_to_send.encode()).decode()
+          print(f"::set-output name=encoded_script::{encoded_script}")
+          
+          # (يمكن إضافة منطق تحديث MIND_STATE.json هنا)
+
+      # --- الخطوة 4: إرسال الأمر ---
+      - name: 🚀 4. Dispatch Order to Executor
         run: |
           echo "COMMANDER: Dispatching order to phoenix-executor..."
+          # قراءة السكربت الأصلي لتضمينه في حالة الفشل
+          ORIGINAL_SCRIPT=$(cat current_task.py | base64 -w 0)
+          
           curl -L -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" \
@@ -90,6 +119,7 @@ jobs:
               "event_type":"execute_task",
               "client_payload": {
                 "script": "${{ steps.main_logic.outputs.encoded_script }}",
+                "original_script_for_debugging": "'"$ORIGINAL_SCRIPT"'",
                 "resources": {
                   "gemini_api_key": "${{ secrets.GEMINI_API_KEY }}",
                   "reporting_token": "${{ secrets.EXECUTOR_PAT_FOR_REPORTING }}"
