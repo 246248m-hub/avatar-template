@@ -1,114 +1,75 @@
-name: 🚀 PHOENIX_ULTRA_HEX_FACTORY
+name: 🚀 PHOENIX_FULL_CORE_BUILD
 
 on:
-  workflow_dispatch: # يتيح لك تشغيل البناء يدوياً من GitHub
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - name: 📦 1. سحب الكود المصدر
+      - name: 📦 1. Checkout
         uses: actions/checkout@v4
 
-      - name: ☕ 2. تهيئة جافا 17 (الأمثل للأندرويد)
+      - name: ☕ 2. Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: 🛠️ 3. تثبيت أدوات الحشو والمسرعات
+      - name: 🛠️ 3. Install Build Tools
         run: |
-          sudo apt update
-          sudo apt install -y build-essential git python3-dev python3-pip \
-          libtool autoconf automake pkg-config zlib1g-dev libssl-dev \
-          libffi-dev libgmp-dev libltdl-dev unzip zip curl
           pip3 install --user --upgrade "Cython<3.0" "buildozer==1.5.0"
           echo "export PATH=\$PATH:~/.local/bin" >> $GITHUB_PATH
 
-      - name: 🧠 4. إنشاء العقل (Main Python Engine)
+      - name: 🏗️ 4. Force Injection of 135MB Brain
         run: |
           mkdir -p game_project
+          # توليد ملفات وهمية ضخمة لضمان أن العقل محقون (بمثابة العقل الذي ستستبدله أو تدمجه)
+          dd if=/dev/urandom of=game_project/brain_core.bin bs=1M count=135
+          
           cat <<EOF > game_project/main.py
           import wikipedia
           import binascii
-          import os
           from kivy.app import App
-          from kivy.uix.boxlayout import BoxLayout
-          from kivy.uix.textinput import TextInput
-          from kivy.uix.button import Button
           from kivy.uix.label import Label
-          from concurrent.futures import ThreadPoolExecutor
-
-          class PhoenixUltraEngine(App):
+          
+          class PhoenixEngine(App):
               def build(self):
-                  wikipedia.set_lang("ar")
-                  self.executor = ThreadPoolExecutor(max_workers=8) # مسرع الأنوية الـ 8
-                  
-                  layout = BoxLayout(orientation='vertical', padding=15, spacing=10)
-                  self.status = Label(text="نظام فينيكس: جاهز للحشو (Arabic Wiki-Hex)", color=(0, 1, 0.8, 1))
-                  self.input = TextInput(hint_text="أدخل برومبت اللعبة (مثلاً: ريد ديد عالم مفتوح)...", multiline=True)
-                  
-                  btn = Button(text="إطلاق الحشو المسرّع (Parallel Injection)", background_color=(0.1, 0.6, 0.9, 1))
-                  btn.bind(on_press=self.start_optimized_injection)
-                  
-                  layout.add_widget(self.status)
-                  layout.add_widget(self.input)
-                  layout.add_widget(btn)
-                  return layout
-
-              def start_optimized_injection(self, instance):
-                  query = self.input.text
-                  if not query: return
-                  self.status.text = "🔄 جاري سحب المعرفة وحشو البتات..."
-                  # تشغيل الحشو في خلفية النظام لعدم تجميد التطبيق
-                  self.executor.submit(self.run_injection, query)
-
-              def run_injection(self, query):
-                  try:
-                      # 1. سحب بيانات العقل
-                      data = wikipedia.summary(query, sentences=5)
-                      # 2. تحويل لهيكس عبر المسرع
-                      hex_payload = binascii.hexlify(data.encode('utf-8')).decode()
-                      # 3. الحشو المباشر في الذاكرة
-                      with open("output_game.hex", "w") as f:
-                          f.write(f"OFF_001_INJECT: {hex_payload}")
-                      self.status.text = "✅ اكتمل الحشو بمستوى AAA"
-                  except:
-                      self.status.text = "❌ فشل الاتصال بالعقل"
+                  # كود التحقق من وجود العقل
+                  if os.path.exists("brain_core.bin"):
+                      size = os.path.getsize("brain_core.bin") / (1024*1024)
+                      status = f"Core Active: {size:.1f} MB"
+                  else:
+                      status = "Core Missing!"
+                  return Label(text=f"Phoenix Engine\n{status}")
 
           if __name__ == '__main__':
-              PhoenixUltraEngine().run()
+              PhoenixEngine().run()
           EOF
 
-      - name: ⚙️ 5. ضبط إعدادات المصنع (Buildozer Spec)
+      - name: ⚙️ 5. Final Spec Fix (The Inclusion Key)
         run: |
           cat <<EOF > game_project/buildozer.spec
           [app]
-          title = PhoenixUltra
-          package.name = phoenix.ultra.injector
+          title = PhoenixFullCore
+          package.name = phoenix.ultra.full
           package.domain = org.phoenix
           source.dir = .
-          source.include_exts = py,png,jpg,kv,atlas,bin,hex
+          # التعديل الذهبي: تضمين كل الصيغ وإلغاء الفلترة
+          source.include_exts = py,png,jpg,kv,atlas,bin,hex,dat,so,asset
+          source.include_patterns = assets/*, *.bin, *.dat
           version = 1.0
           requirements = python3,kivy==2.2.1,wikipedia,requests,urllib3,chardet,idna
-          orientation = portrait
           android.archs = arm64-v8a
-          android.accept_sdk_license = True
-          android.api = 33
-          android.minapi = 21
-          android.ndk = 25b
           android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE, MANAGE_EXTERNAL_STORAGE
-          p4a.branch = master
+          # إجبار النظام على عدم ضغط الملفات التي تحتاج سرعة
+          android.no_compress_extensions = bin, hex, dat
+          android.api = 33
+          android.ndk = 25b
           EOF
 
-      - name: 🚀 6. تشغيل توربين البناء (Final APK Build)
+      - name: 🚀 6. Build High-Capacity APK
         run: |
           cd game_project
           export JAVA_HOME=$JAVA_HOME_17_X64
           buildozer -v android debug
-
-      - name: 📤 7. رفع التطبيق النهائي
-        uses: actions/upload-artifact@v4
-        with:
-          name: Phoenix_Ultra_v1
-          path: game_project/bin/*.apk
