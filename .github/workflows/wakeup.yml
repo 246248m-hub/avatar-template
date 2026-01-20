@@ -1,0 +1,127 @@
+# -----------------------------------------------------------------
+# 🧠 PHOENIX COMMANDER: The Immortal Brain
+#
+# بروتوكول العنقاء: يموت ويُبعث كل 6 ساعات لضمان الاستمرارية.
+# -----------------------------------------------------------------
+name: 🧠 PHOENIX_COMMANDER_BRAIN (Immortal)
+
+on:
+  # لبدء السلسلة لأول مرة
+  workflow_dispatch:
+  # يستمع لتقارير العمال ولأمر بعث نفسه
+  repository_dispatch:
+    types: [task_report, phoenix_rebirth]
+
+jobs:
+  immortal_decision_engine:
+    runs-on: ubuntu-latest
+    # يموت بسلام بعد 5 ساعات و 50 دقيقة ليضمن تنفيذ خطوة البعث
+    timeout-minutes: 350
+    
+    steps:
+      # --- الخطوة 1: الصحوة واستنساخ الوعي ---
+      - name: ⬇️ 1. Awaken & Checkout Mind State
+        uses: actions/checkout@v4
+        with:
+          # استخدام مفتاح وصول شخصي للتمكن من حفظ (Push) الحالة
+          token: ${{ secrets.COMMANDER_PAT }}
+
+      # --- الخطوة 2: حلقة العمل الرئيسية ---
+      - name: 🔄 2. Main Work Cycle
+        id: main_loop
+        env:
+          # تمرير كل الأسرار اللازمة لسكربت التحكم
+          COMMANDER_PAT: ${{ secrets.COMMANDER_PAT }}
+          EXECUTOR_PAT_FOR_REPORTING: ${{ secrets.EXECUTOR_PAT_FOR_REPORTING }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          # في التنفيذ الحقيقي، هذا سيكون سكربت بايثون معقد
+          # ولكنه يقوم بهذه الخطوات الأساسية:
+          
+          # 1. يقرأ الحالة السابقة (من هو، وماذا كان يفعل)
+          if [ -f MIND_STATE.json ]; then
+            echo "Waking up from previous state:"
+            cat MIND_STATE.json
+          else
+            echo '{"last_processed_article_index": 0}' > MIND_STATE.json
+            echo "First boot. Initializing state."
+          fi
+
+          # 2. يبدأ حلقة العمل (مثال: 5 دفعات من المهام)
+          for i in {1..5}; do
+            echo "--------------------------------"
+            echo "COMMANDER: Starting task batch #$i"
+            
+            # 3. يولد الأمر التالي (هذا الجزء هو الذكاء الحقيقي)
+            # سيقرأ الحالة ويحدد المقالات التالية لتحليلها
+            # (هنا نقوم بمحاكاة بسيطة)
+            
+            TASK_SCRIPT=$(cat <<'EOF'
+            import os, requests, json, time
+            # هذا الكود سيتم إرساله للمنفذ
+            print("EXECUTOR: Task received. Starting execution.")
+            # ... (نفس كود المنفذ من المثال السابق: يحلل ويرسل تقرير) ...
+            print("EXECUTOR: Task finished. Report sent.")
+            EOF
+            )
+            ENCODED_SCRIPT=$(echo "$TASK_SCRIPT" | base64 -w 0)
+
+            # 4. يرسل الأمر إلى المنفذ
+            echo "COMMANDER: Dispatching order to executor..."
+            curl -L \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ env.COMMANDER_PAT }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              https://api.github.com/repos/246248m-hub/phoenix-executor/dispatches \
+              -d '{
+                "event_type":"execute_task",
+                "client_payload": {
+                  "script": "'"$ENCODED_SCRIPT"'",
+                  "resources": {
+                    "gemini_api_key": "${{ env.GEMINI_API_KEY }}",
+                    "reporting_token": "${{ env.EXECUTOR_PAT_FOR_REPORTING }}"
+                  }
+                }
+              }'
+            
+            # 5. ينتظر (في الواقع، سينتظر تقريراً، هنا ننتظر وقتاً)
+            echo "COMMANDER: Order sent. Awaiting report..."
+            sleep 30
+            
+            # 6. يحدث حالته بعد استلام التقرير
+            echo "COMMANDER: Report received. Updating state."
+            LAST_INDEX=$(cat MIND_STATE.json | jq .last_processed_article_index)
+            NEW_INDEX=$((LAST_INDEX + 5))
+            echo "{\"last_processed_article_index\": $NEW_INDEX}" > MIND_STATE.json
+            
+            # 7. يحفظ حالته بشكل دائم في المستودع
+            git config --global user.name 'Phoenix Commander'
+            git config --global user.email 'commander@phoenix.project'
+            git add MIND_STATE.json
+            git commit -m "State Update: Processed up to article #$NEW_INDEX"
+            git push
+            echo "COMMANDER: State saved. Processed up to article #$NEW_INDEX."
+          done
+
+      # --- الخطوة 3: التحضير للموت ---
+      - name: ⌛ 3. Prepare for Inevitable Death
+        # تعمل هذه الخطوة دائماً لضمان البعث
+        if: always()
+        run: |
+          echo "COMMANDER: My 6-hour lifetime is ending. Saving final state."
+          # (يمكن إضافة منطق حفظ إضافي هنا إذا لزم الأمر)
+          git push || echo "No new state to save."
+          echo "COMMANDER: Ready for rebirth."
+
+      # --- الخطوة 4: إطلاق شرارة العنقاء (البعث) ---
+      - name: 🕊️ 4. Trigger The Phoenix Spark (Rebirth)
+        if: always()
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.COMMANDER_PAT }}
+          # إرسال الأمر إلى نفسه ليبدأ من جديد
+          repository: ${{ github.repository }}
+          event-type: phoenix_rebirth
+          client-payload: '{"message": "The universe is reset. The mind awakens again."}'
