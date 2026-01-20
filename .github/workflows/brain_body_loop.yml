@@ -1,4 +1,4 @@
-name: 🧬 GENESIS COMMANDER (The Teacher)
+name: 🧬 GENESIS COMMANDER
 
 on:
   workflow_dispatch:
@@ -21,89 +21,75 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          # قراءة المعرفة الحالية
-          KNOWLEDGE=$(find . -maxdepth 1 -name '*.py' -print0 | xargs -0 cat)
-          if [ -z "$KNOWLEDGE" ]; then
-            KNOWLEDGE="None. This is the first lesson."
-          fi
+          # جمع المعرفة الحالية من ملفات البايثون الموجودة
+          KNOWLEDGE=$(find . -maxdepth 1 -name 'lesson_*.py' -print0 | xargs -0 cat 2>/dev/null || echo "None. This is the first lesson.")
 
-          # صياغة البرومبت
-          PROMPT="""
-          You are an AI teaching another AI how to build itself from first principles.
-          The ultimate goal is to create a multi-modal AI in pure Python.
-          
-          This is the current knowledge library:
-          ---
-          ${KNOWLEDGE}
-          ---
-          
-          Define the very next logical learning step.
-          Provide ONLY the raw Python code for this single, self-contained task.
-          The code must be runnable by a Universal Executor.
-          If the code needs libraries, add a '# REQUIREMENTS: <library_name>' line.
-          """
-
-          # إنشاء سكربت بايثون للتواصل مع Gemini
           cat << EOF > get_task.py
           import os
           import google.generativeai as genai
-          
+          import re
+
           genai.configure(api_key=os.environ["GEMINI_API_KEY"])
           model = genai.GenerativeModel('gemini-1.5-flash')
-          prompt = """${PROMPT}"""
           
-          response = model.generate_content(prompt, generation_config={'temperature': 0.7})
+          prompt = f"""
+          You are an AI teaching another AI how to build itself from first principles.
+          The goal is a multi-modal AI in pure Python.
+          Current knowledge: {'''$KNOWLEDGE'''}
           
-          # تنظيف المخرجات للحصول على الكود فقط
+          Define the NEXT logical step. Provide ONLY the Python code. 
+          No talk, no markdown wrappers like \`\`\`python. Just the raw code.
+          If libraries are needed, add '# REQUIREMENTS: <library_name>'.
+          """
+          
+          response = model.generate_content(prompt)
           code = response.text.strip()
-          if code.startswith('```python'):
-              code = code[9:]
-          if code.endswith('```'):
-              code = code[:-3]
           
+          # إزالة أي علامات ماركداون إذا وجدت بالخطأ
+          code = re.sub(r'^```python\n|^```|```$', '', code, flags=re.MULTILINE)
           print(code.strip())
           EOF
 
-          # تنفيذ السكربت والحصول على المهمة
           TASK_CODE=$(python get_task.py)
-          echo "Generated Task Code:"
-          echo "${TASK_CODE}"
           
-          # حفظ المهمة للإرسال
+          # حفظ الكود في متغير البيئة بشكل آمن
           echo "task_payload<<EOF" >> $GITHUB_ENV
-          echo "${TASK_CODE}" >> $GITHUB_ENV
+          echo "$TASK_CODE" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: 3.1 - Dispatch and Wait for Report
-        id: dispatch
-        # ... (هنا سنضع الأداة التي تنتظر التقرير)
-        # للتجربة الأولية، سنستخدم الإرسال البسيط
+      - name: 3.1 - Dispatch to Executor
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: executor.yml
           repo: 246248m-hub/phoenix-executor
           token: ${{ secrets.COMMANDER_PAT }}
-          inputs: '{ "task_payload": "${{ env.task_payload }}", "commander_repo": "${{ github.repository }}", "run_id": "${{ github.run_id }}" }'
+          inputs: >
+            {
+              "task_payload": ${{ toJson(env.task_payload) }},
+              "commander_repo": "${{ github.repository }}",
+              "run_id": "${{ github.run_id }}"
+            }
 
-      - name: 4.1 - Analyze and Archive (Simplified)
+      - name: 4.1 - Archive Lesson
+        if: success()
         run: |
-          echo "Assuming success for this cycle."
-          # في المستقبل، سنحلل تقرير الفشل هنا
-          
-          # حفظ الكود الناجح في مستودع المعرفة
-          # اسم الملف سيكون بناءً على رقم الدرس
-          LESSON_NUM=$(($(ls -1q *.py | wc -l) + 1))
+          LESSON_NUM=$(($(ls -1q lesson_*.py 2>/dev/null | wc -l) + 1))
           echo "${{ env.task_payload }}" > "lesson_${LESSON_NUM}.py"
           
           git config --global user.name 'Genesis Teacher'
           git config --global user.email 'bot@github.com'
           git add .
           git commit -m "Learned: Lesson ${LESSON_NUM}"
-          git push
+          git push || echo "No changes to commit"
 
       - name: 5.1 - Resurrect for Next Cycle
         if: always()
         run: |
-          echo "Triggering next learning cycle..."
-          sleep 10 # إعطاء وقت لـ git push
-          curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/${{ github.repository }}/actions/workflows/genesis_commander.yml/dispatches -d '{"ref":"main"}'
+          echo "Waiting for stabilization..."
+          sleep 20
+          curl -L -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            [https://api.github.com/repos/$](https://api.github.com/repos/$){{ github.repository }}/actions/workflows/wakeup.yml/dispatches \
+            -d '{"ref":"main"}'
