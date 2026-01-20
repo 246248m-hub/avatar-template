@@ -1,10 +1,10 @@
-name: 🏭 The Apprentice Factory (v9.0)
+name: 🏭 The Apprentice Factory (v9.1 - Corrected)
 
 on:
-  workflow_dispatch: # التشغيل اليدوي لبدء عملية التعلم
+  workflow_dispatch:
     inputs:
       target_apk_url:
-        description: 'رابط التحميل المباشر لملف APK المراد تشريحه (e.g., Flappy Bird)'
+        description: 'رابط التحميل المباشر لملف APK المراد تشريحه'
         required: true
         default: 'https://example.com/sample-game.apk'
 
@@ -17,37 +17,31 @@ jobs:
     outputs:
       analysis_report_url: ${{ steps.upload_report.outputs.report_url }}
     steps:
-      - name: 📥 1.1 - تحميل العينة للتشريح
+      - name: 1.1 - تحميل العينة للتشريح
         id: download_apk
         run: |
           echo "EXECUTOR: Downloading target APK from ${{ github.event.inputs.target_apk_url }}"
           curl -L -o target.apk "${{ github.event.inputs.target_apk_url }}"
           echo "EXECUTOR: Download complete. File size: $(ls -lh target.apk)"
 
-      - name: 🛠️ 1.2 - تثبيت أدوات التشريح
+      - name: 1.2 - تثبيت أدوات التشريح
         run: |
           sudo apt-get update
           sudo apt-get install -y apktool binwalk
 
-      - name: 🔬 1.3 - تفكيك الـ APK واستخراج الكود الثنائي
+      - name: 1.3 - تفكيك الـ APK واستخراج الكود الثنائي
         id: decompile
         run: |
           echo "EXECUTOR: Decompiling APK to extract binary code..."
           apktool d target.apk -o decompiled_apk
-          
           echo "EXECUTOR: Searching for native binary files (.so)..."
-          # البحث عن ملفات .so التي تحتوي على لغة الآلة الحقيقية
           find decompiled_apk/lib -name "*.so" > binary_files.txt
-          
           if [ ! -s binary_files.txt ]; then
             echo "EXECUTOR: FATAL - No native binary files (.so) found in this APK."
             exit 1
           fi
-          
           echo "EXECUTOR: Found binary files:"
           cat binary_files.txt
-          
-          # إنشاء تقرير أولي بالملفات المستخرجة
           mkdir -p analysis_package
           cp -r decompiled_apk/lib analysis_package/
           echo "Analysis of APK from ${{ github.event.inputs.target_apk_url }}" > analysis_package/report.txt
@@ -55,7 +49,7 @@ jobs:
           echo "Extracted binary (.so) files for analysis:" >> analysis_package/report.txt
           cat binary_files.txt >> analysis_package/report.txt
 
-      - name: 📤 1.4 - رفع تقرير التشريح إلى سحابة التخزين
+      - name: 1.4 - رفع تقرير التشريح
         id: upload_report
         uses: actions/upload-artifact@v4
         with:
@@ -63,7 +57,7 @@ jobs:
           path: analysis_package/
           retention-days: 1
       
-      - name: ✅ 1.5 - إعلان نجاح مرحلة التشريح
+      - name: 1.5 - إعلان نجاح مرحلة التشريح
         run: echo "COMMANDER: Autopsy complete. Analysis report is ready for the Comprehension phase."
 
   # =================================================================
@@ -75,44 +69,34 @@ jobs:
     outputs:
       learned_rules_url: ${{ steps.upload_rules.outputs.rules_url }}
     steps:
-      - name: 📥 2.1 - تحميل تقرير التشريح
+      - name: 2.1 - تحميل تقرير التشريح
         uses: actions/download-artifact@v4
         with:
           name: autopsy-report-${{ github.run_id }}
           path: analysis_input
 
-      - name: 🧠 2.2 - تحليل الكود الثنائي بواسطة Gemini
+      - name: 2.2 - تحليل الكود الثنائي بواسطة Gemini (محاكاة)
         id: gemini_analysis
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          # هذا مجرد مثال مبسط جداً للمنطق
-          # في الواقع، سيكون هذا سكربت بايثون معقد يتواصل مع Gemini
           echo "COMMANDER: Sending binary code to Gemini for analysis..."
-          
-          # محاكاة تحليل Gemini
-          sleep 10 
-          
-          # محاكاة "القاموس" الذي تعلمه Gemini
+          sleep 10
           echo "COMMANDER: Gemini analysis complete. Generating learned rules..."
           mkdir -p learned_rules
           cat <<EOF > learned_rules/hex_dictionary.txt
           # Phoenix Hex Dictionary v0.1
           # Learned from: ${{ github.event.inputs.target_apk_url }}
-          
           # Pattern for 'Jump' function (example)
           JUMP_PATTERN = "B8 01 00 00 00 C3"
-          
           # Pattern for 'Move Right' function (example)
           MOVE_RIGHT_PATTERN = "8B 4D F8 83 C1 04 89 4D F8"
-          
           # Pattern for 'Gravity Tick' (example)
           GRAVITY_PATTERN = "F3 0F 10 45 D8 0F 2F C1 72 02"
           EOF
-          
           echo "Learned rules generated successfully."
 
-      - name: 📤 2.3 - رفع "قاموس الهيكس" المكتسب
+      - name: 2.3 - رفع "قاموس الهيكس" المكتسب
         id: upload_rules
         uses: actions/upload-artifact@v4
         with:
@@ -120,7 +104,7 @@ jobs:
           path: learned_rules/
           retention-days: 1
 
-      - name: ✅ 2.4 - إعلان نجاح مرحلة الفهم
+      - name: 2.4 - إعلان نجاح مرحلة الفهم
         run: echo "COMMANDER: Comprehension complete. The Hex Dictionary is ready for the Creation phase."
 
   # =================================================================
@@ -130,41 +114,35 @@ jobs:
     needs: comprehension
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 3.1 - تحميل "قاموس الهيكس" المكتسب
+      - name: 3.1 - تحميل "قاموس الهيكس" المكتسب
         uses: actions/download-artifact@v4
         with:
           name: learned-rules-${{ github.run_id }}
           path: creation_input
 
-      - name: 🎨 3.2 - استخدام القاموس لخلق لعبة جديدة بلغة الهيكس
+      - name: 3.2 - استخدام القاموس لخلق لعبة جديدة (محاكاة)
         id: create_game
         run: |
           echo "COMMANDER: Using the learned Hex Dictionary to create a new game from scratch..."
-          
-          # محاكاة عملية بناء اللعبة الجديدة
           mkdir -p new_game_binaries
           echo "Creating new game logic..."
           cat creation_input/hex_dictionary.txt > new_game_binaries/new_game_logic.hex
           echo "NEW_PATTERN_FOR_DODGE = 'F3 0F 11 45 DC'" >> new_game_binaries/new_game_logic.hex
-          
           echo "COMMANDER: New game binary code generated."
 
-      - name: 🏗️ 3.3 - بناء الـ APK النهائي للعبة الجديدة
-        # هذه الخطوة تتطلب بيئة بناء أندرويد كاملة (NDK, SDK)
-        # هنا سنقوم بمحاكاة عملية البناء فقط
+      - name: 3.3 - بناء الـ APK النهائي للعبة الجديدة (محاكاة)
         run: |
           echo "COMMANDER: Starting final APK build process..."
           mkdir -p final_apk
           echo "This is the new game APK, built from pure hex." > final_apk/new_phoenix_game.apk
-          # في الواقع، هذه الخطوة ستستغرق وقتاً طويلاً
           sleep 15
           echo "COMMANDER: Build successful!"
 
-      - name: 📤 3.4 - رفع اللعبة الجديدة النهائية
+      - name: 3.4 - رفع اللعبة الجديدة النهائية
         uses: actions/upload-artifact@v4
         with:
           name: Phoenix_New_Game_v1
           path: final_apk/
 
-      - name: ✅ 3.5 - إعلان نجاح المهمة النهائية
+      - name: 3.5 - إعلان نجاح المهمة النهائية
         run: echo "MISSION COMPLETE: The Apprentice Factory has successfully analyzed an existing game and created a new one."
