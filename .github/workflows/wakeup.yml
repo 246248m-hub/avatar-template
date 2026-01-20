@@ -1,5 +1,6 @@
 # -----------------------------------------------------------------
 # 🧠 PHOENIX COMMANDER: The Immortal Brain
+# Repository: avatar-template
 #
 # بروتوكول العنقاء: يموت ويُبعث كل 6 ساعات لضمان الاستمرارية.
 # -----------------------------------------------------------------
@@ -34,84 +35,100 @@ jobs:
           COMMANDER_PAT: ${{ secrets.COMMANDER_PAT }}
           EXECUTOR_PAT_FOR_REPORTING: ${{ secrets.EXECUTOR_PAT_FOR_REPORTING }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
-          # في التنفيذ الحقيقي، هذا سيكون سكربت بايثون معقد
-          # ولكنه يقوم بهذه الخطوات الأساسية:
+          # هذا السكربت هو محاكاة لدورة عمل واحدة.
+          # في الواقع، سيكون هذا سكربت بايثون معقد يقرأ الحالة ويقرر.
+          
+          echo "COMMANDER: Cycle starting."
           
           # 1. يقرأ الحالة السابقة (من هو، وماذا كان يفعل)
-          if [ -f MIND_STATE.json ]; then
-            echo "Waking up from previous state:"
-            cat MIND_STATE.json
-          else
-            echo '{"last_processed_article_index": 0}' > MIND_STATE.json
-            echo "First boot. Initializing state."
+          if [ ! -f MIND_STATE.json ]; then
+            echo '{"last_processed_article_index": 0, "tasks_in_progress": []}' > MIND_STATE.json
+            echo "COMMANDER: First boot. Initializing state file."
           fi
+          echo "COMMANDER: Current state:"
+          cat MIND_STATE.json
 
-          # 2. يبدأ حلقة العمل (مثال: 5 دفعات من المهام)
-          for i in {1..5}; do
-            echo "--------------------------------"
-            echo "COMMANDER: Starting task batch #$i"
-            
-            # 3. يولد الأمر التالي (هذا الجزء هو الذكاء الحقيقي)
-            # سيقرأ الحالة ويحدد المقالات التالية لتحليلها
-            # (هنا نقوم بمحاكاة بسيطة)
-            
-            TASK_SCRIPT=$(cat <<'EOF'
-            import os, requests, json, time
-            # هذا الكود سيتم إرساله للمنفذ
-            print("EXECUTOR: Task received. Starting execution.")
-            # ... (نفس كود المنفذ من المثال السابق: يحلل ويرسل تقرير) ...
-            print("EXECUTOR: Task finished. Report sent.")
-            EOF
-            )
-            ENCODED_SCRIPT=$(echo "$TASK_SCRIPT" | base64 -w 0)
+          # 2. يولد الأمر التالي (هذا الجزء هو الذكاء الحقيقي)
+          echo "COMMANDER: Generating next task..."
+          TASK_SCRIPT=$(cat <<'EOF'
+          # ======================================================
+          # PAYLOAD SCRIPT: EXECUTOR TASK
+          # هذا الكود سيتم تنفيذه بالكامل على المستودع المنفذ
+          # ======================================================
+          import os, requests, json, time
 
-            # 4. يرسل الأمر إلى المنفذ
-            echo "COMMANDER: Dispatching order to executor..."
-            curl -L \
-              -X POST \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer ${{ env.COMMANDER_PAT }}" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              https://api.github.com/repos/246248m-hub/phoenix-executor/dispatches \
-              -d '{
-                "event_type":"execute_task",
-                "client_payload": {
-                  "script": "'"$ENCODED_SCRIPT"'",
-                  "resources": {
-                    "gemini_api_key": "${{ env.GEMINI_API_KEY }}",
-                    "reporting_token": "${{ env.EXECUTOR_PAT_FOR_REPORTING }}"
-                  }
+          # --- 1. استلام الموارد من القائد ---
+          GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
+          REPORTING_TOKEN = os.environ.get("GH_TOKEN")
+          COMMANDER_REPO = "246248m-hub/avatar-template" # اسم القائد الصحيح
+
+          # --- 2. تعريف المهمة ---
+          task_id = f"task_{int(time.time())}"
+          print(f"EXECUTOR: Starting {task_id}.")
+          
+          # --- 3. التنفيذ (محاكاة للاتصال بـ Gemini) ---
+          print(f"EXECUTOR: Simulating analysis...")
+          time.sleep(10) # محاكاة لعملية تستغرق وقتاً
+          results = {"analysis_summary": "Simulation successful. Data processed."}
+          print("EXECUTOR: Analysis complete.")
+
+          # --- 4. إرسال التقرير إلى القائد ---
+          print("EXECUTOR: Preparing to send report back to Commander.")
+          report_url = f"https://api.github.com/repos/{COMMANDER_REPO}/dispatches"
+          
+          report_payload = {
+              "event_type": "task_report",
+              "client_payload": { "task_id": task_id, "status": "success", "results": results }
+          }
+          
+          headers = {
+              "Accept": "application/vnd.github.v3+json",
+              "Authorization": f"token {REPORTING_TOKEN}"
+          }
+          
+          response = requests.post(report_url, headers=headers, data=json.dumps(report_payload))
+          
+          if response.status_code == 204:
+              print(f"EXECUTOR: Report for {task_id} sent successfully.")
+          else:
+              print(f"EXECUTOR: FATAL - Failed to send report. Status: {response.status_code}")
+              exit(1)
+          EOF
+          )
+          ENCODED_SCRIPT=$(echo "$TASK_SCRIPT" | base64 -w 0)
+
+          # 3. يرسل الأمر إلى المنفذ
+          echo "COMMANDER: Dispatching order to phoenix-executor..."
+          curl -L -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ env.COMMANDER_PAT }}" \
+            https://api.github.com/repos/246248m-hub/phoenix-executor/dispatches \
+            -d '{
+              "event_type":"execute_task",
+              "client_payload": {
+                "script": "'"$ENCODED_SCRIPT"'",
+                "resources": {
+                  "gemini_api_key": "${{ env.GEMINI_API_KEY }}",
+                  "reporting_token": "${{ env.EXECUTOR_PAT_FOR_REPORTING }}"
                 }
-              }'
-            
-            # 5. ينتظر (في الواقع، سينتظر تقريراً، هنا ننتظر وقتاً)
-            echo "COMMANDER: Order sent. Awaiting report..."
-            sleep 30
-            
-            # 6. يحدث حالته بعد استلام التقرير
-            echo "COMMANDER: Report received. Updating state."
-            LAST_INDEX=$(cat MIND_STATE.json | jq .last_processed_article_index)
-            NEW_INDEX=$((LAST_INDEX + 5))
-            echo "{\"last_processed_article_index\": $NEW_INDEX}" > MIND_STATE.json
-            
-            # 7. يحفظ حالته بشكل دائم في المستودع
-            git config --global user.name 'Phoenix Commander'
-            git config --global user.email 'commander@phoenix.project'
-            git add MIND_STATE.json
-            git commit -m "State Update: Processed up to article #$NEW_INDEX"
-            git push
-            echo "COMMANDER: State saved. Processed up to article #$NEW_INDEX."
-          done
+              }
+            }'
+          
+          # 4. يحدث حالته ويحفظها
+          echo "COMMANDER: Order sent. Updating and saving state."
+          # (هنا سيتم تحديث MIND_STATE.json بناءً على التقرير المستلم)
+          git config --global user.name 'Phoenix Commander'
+          git config --global user.email 'commander@phoenix.project'
+          git add MIND_STATE.json
+          git commit -m "State Update: Dispatched new task" || echo "No state changes to commit."
+          git push
 
       # --- الخطوة 3: التحضير للموت ---
       - name: ⌛ 3. Prepare for Inevitable Death
-        # تعمل هذه الخطوة دائماً لضمان البعث
         if: always()
         run: |
           echo "COMMANDER: My 6-hour lifetime is ending. Saving final state."
-          # (يمكن إضافة منطق حفظ إضافي هنا إذا لزم الأمر)
           git push || echo "No new state to save."
           echo "COMMANDER: Ready for rebirth."
 
@@ -124,4 +141,4 @@ jobs:
           # إرسال الأمر إلى نفسه ليبدأ من جديد
           repository: ${{ github.repository }}
           event-type: phoenix_rebirth
-          client-payload: '{"message": "The universe is reset. The mind awakens again."}'
+          client-payload: '{"message": "The cycle continues. Awaken."}'
