@@ -7,6 +7,9 @@ jobs:
   genesis_learning_cycle:
     runs-on: ubuntu-latest
     steps:
+      # -----------------------------------------------------
+      # 1. إعداد البيئة والذاكرة
+      # -----------------------------------------------------
       - name: 1.1 - Checkout Commander's Own Repository
         uses: actions/checkout@v4
         with:
@@ -17,31 +20,52 @@ jobs:
           sudo apt-get update && sudo apt-get install -y jq
           mkdir -p knowledge_base
 
+      # -----------------------------------------------------
+      # 2. استدعاء Gemini مع نظام حماية من الـ Quota 429
+      # -----------------------------------------------------
       - name: 2.1 - Gemini Defines Next Step via cURL
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: |
-          # قراءة المعرفة الحالية
+          # جمع الدروس السابقة لتوفير سياق للنموذج
           KNOWLEDGE=$(find knowledge_base -maxdepth 1 -name '*.py' -print0 | xargs -0 cat 2>/dev/null || echo "None. Initial state.")
           
-          # صياغة البرومبت بدقة
           PROMPT="You are an AI teacher. Current knowledge: $KNOWLEDGE. Provide ONLY the next Python lesson code. No markdown, no explanations. Just raw code."
-
-          # إنشاء JSON آمن للطلب
           JSON_DATA=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
-
-          # استخدام رابط الإصدار المستقر v1
-          API_URL="https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}"
           
-          RESPONSE=$(curl -s -H "Content-Type: application/json" -X POST -d "$JSON_DATA" "$API_URL")
+          # الرابط الذي يعمل لديك
+          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${GOOGLE_API_KEY}"
 
-          # استخراج الكود وتنظيفه من أي علامات Markdown
-          TASK_CODE=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text' | sed 's/^```python//; s/^```//; s/```$//')
+          MAX_RETRIES=3
+          RETRY_COUNT=0
+          SUCCESS=false
 
-          if [ "$TASK_CODE" == "null" ] || [ -z "$TASK_CODE" ]; then
-            echo "Error: Gemini response was empty or invalid."
-            echo "$RESPONSE"
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            echo "Attempt $((RETRY_COUNT+1)) to contact Gemini..."
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X POST -H "Content-Type: application/json" -d "$JSON_DATA" "$API_URL")
+            HTTP_STATUS=$(echo "$RESPONSE" | tail -n 1)
+            BODY=$(echo "$RESPONSE" | sed '$d')
+
+            if [ "$HTTP_STATUS" -eq 200 ]; then
+              TASK_CODE=$(echo "$BODY" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
+              if [ ! -z "$TASK_CODE" ]; then
+                SUCCESS=true
+                break
+              fi
+            elif [ "$HTTP_STATUS" -eq 429 ]; then
+              echo "⚠️ Quota Exceeded (429). Waiting 60 seconds before retry..."
+              sleep 60
+              RETRY_COUNT=$((RETRY_COUNT+1))
+            else
+              echo "❌ API Error: $HTTP_STATUS"
+              echo "$BODY"
+              exit 1
+            fi
+          done
+
+          if [ "$SUCCESS" = false ]; then
+            echo "❌ Failed to get a valid task after $MAX_RETRIES attempts."
             exit 1
           fi
           
@@ -49,13 +73,15 @@ jobs:
           echo "$TASK_CODE" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
+      # -----------------------------------------------------
+      # 3. إرسال الكود إلى المنفذ (Executor)
+      # -----------------------------------------------------
       - name: 3.1 - Dispatch Task
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: executor.yml
           repo: 246248m-hub/phoenix-executor
           token: ${{ secrets.COMMANDER_PAT }}
-          # استخدام toJson ضروري جداً هنا لمنع انهيار الـ JSON بسبب الأسطر الجديدة في الكود
           inputs: >
             {
               "task_payload": ${{ toJson(env.task_payload) }},
@@ -63,6 +89,9 @@ jobs:
               "run_id": "${{ github.run_id }}"
             }
 
+      # -----------------------------------------------------
+      # 4. حفظ الدرس في مستودع المعرفة
+      # -----------------------------------------------------
       - name: 4.1 - Archive New Knowledge
         if: success()
         run: |
@@ -75,13 +104,17 @@ jobs:
           git commit -m "Learned: Lesson ${LESSON_NUM}"
           git push || echo "No changes to commit"
 
+      # -----------------------------------------------------
+      # 5. الإحياء الذاتي (تكرار الدورة ببطء لتجنب الحظر)
+      # -----------------------------------------------------
       - name: 5.1 - Resurrect for Next Cycle
         if: always()
         run: |
-          echo "Triggering next cycle..."
-          sleep 15
+          echo "Waiting 2 minutes before starting the next cycle to respect API limits..."
+          sleep 120
           curl -L -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
             [https://api.github.com/repos/$](https://api.github.com/repos/$){{ github.repository }}/actions/workflows/genesis_commander.yml/dispatches \
             -d '{"ref":"main"}'
