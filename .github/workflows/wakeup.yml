@@ -21,40 +21,48 @@ jobs:
         run: |
           mkdir -p knowledge_base
           if [ -z "$(ls -A knowledge_base)" ]; then
-            echo "def run(): return 'Genesis'" > knowledge_base/task_0.py
+            echo "def run(): return 'Genesis Foundation'" > knowledge_base/task_0.py
           fi
 
-      - name: 2.1 - AI Generation (Self-Healing Prompt)
+      - name: 2.1 - AI Generation (Cleaner & Robust)
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           OBJ: ${{ github.event.inputs.custom_objective }}
         run: |
-          # جمع آخر 3 مهام فقط لتركيز الذاكرة ومنع التشتت
-          KNOWLEDGE=$(find knowledge_base -name 'task_*.py' | sort -V | tail -n 3 | xargs cat)
+          # جمع آخر مهمتين فقط لتركيز السياق
+          KNOWLEDGE=$(find knowledge_base -name 'task_*.py' | sort -V | tail -n 2 | xargs cat 2>/dev/null || echo "pass")
           
-          PROMPT="You are the ARCHITECT AI. OBJECTIVE: $OBJ.
-          PREVIOUS_LOGIC: $KNOWLEDGE.
-          
+          PROMPT="You are a Senior Python Developer. OBJECTIVE: $OBJ. 
           INSTRUCTIONS:
-          1. Write a Python script that evolves the logic.
-          2. It MUST be self-contained (don't import previous tasks).
-          3. It MUST have a 'run()' function.
-          4. Include a 'if __name__ == \"__main__\":' block that runs 'run()' inside a try-except.
-          5. If an error occurs, print 'ERROR: ' followed by the exception.
-          6. Respond ONLY with raw Python code."
+          1. Write a complete, self-contained Python script.
+          2. Respond ONLY with raw Python code. Do not include markdown, no backticks, no 'null', no explanations.
+          3. Must include a 'run()' function.
+          4. Include 'if __name__ == \"__main__\":' to execute 'run()'.
+          
+          Context from previous tasks:
+          $KNOWLEDGE"
 
           JSON_DATA=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
           API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}"
           
           RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" -d "$JSON_DATA" "$API_URL")
-          echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' > current_task.py
           
+          # استخراج الكود مع تنظيف صارم
+          CLEAN_CODE=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
+          
+          # الحماية من استجابة null أو الفارغة
+          if [[ -z "$CLEAN_CODE" || "$CLEAN_CODE" == "null" ]]; then
+            echo "❌ Fatal Error: AI returned invalid or null code."
+            exit 1
+          fi
+          
+          echo "$CLEAN_CODE" > current_task.py
           echo "task_payload<<EOF" >> $GITHUB_ENV
           cat current_task.py >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: 3.1 - Dispatch
+      - name: 3.1 - Dispatch to Executor
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: executor.yml
@@ -66,7 +74,7 @@ jobs:
               "run_id": "${{ github.run_id }}"
             }
 
-      - name: 4.1 - Archive
+      - name: 4.1 - Archive Knowledge
         run: |
           COUNT=$(find knowledge_base -name 'task_*.py' | wc -l)
           cp current_task.py "knowledge_base/task_${COUNT}.py"
@@ -74,7 +82,10 @@ jobs:
           git config --global user.email 'ai@genesis.ai'
           git add . && git commit -m "Evolution ${COUNT}" && git push || echo "No changes"
 
-      - name: 5.1 - Loop
+      - name: 5.1 - Recursive Loop (300s)
         if: always()
         env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
-        run: sleep 300 && gh workflow run wakeup.yml --repo ${{ github.repository }} -f custom_objective="$OBJ"
+        run: |
+          echo "Waiting for evolution interval..."
+          sleep 300
+          gh workflow run wakeup.yml --repo ${{ github.repository }} -f custom_objective="$OBJ"
