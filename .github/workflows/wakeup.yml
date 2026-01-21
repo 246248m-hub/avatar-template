@@ -1,13 +1,97 @@
+name: 🧬 GENESIS COMMANDER
+
+on:
+  workflow_dispatch:
+    inputs:
+      custom_objective:
+        description: 'Goal'
+        required: false
+        default: 'Build a modular AI core from scratch: Start with persistent memory and dynamic logic processing.'
+
+jobs:
+  genesis_learning_cycle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1.1 - Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.COMMANDER_PAT }}
+
+      - name: 1.2 - Bootstrap Foundation
         run: |
-          KNOWLEDGE=$(find knowledge_base -maxdepth 1 -name 'task_*.py' -print0 | xargs -0 cat 2>/dev/null | tail -c 5000)
+          mkdir -p knowledge_base
+          if [ -z "$(ls -A knowledge_base)" ]; then
+            cat << 'EOF' > knowledge_base/task_0.py
+          def run():
+              return "Foundation Layer Active"
+          EOF
+          fi
+
+      - name: 2.1 - Architect Generation (Gemini)
+        id: gemini_task
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          OBJECTIVE: ${{ github.event.inputs.custom_objective }}
+        run: |
+          KNOWLEDGE=$(find knowledge_base -maxdepth 1 -name 'task_*.py' -print0 | xargs -0 cat 2>/dev/null | tail -c 6000)
+          
+          # برومبت محسن لتجنب أخطاء المنطق السابقة
           PROMPT="You are the ARCHITECT AI. 
           OBJECTIVE: $OBJECTIVE. 
           CURRENT_CORE_FILES: $KNOWLEDGE. 
           
           CRITICAL INSTRUCTION:
-          1. Every module MUST have a 'run(*args, **kwargs)' function.
-          2. The 'run' function should be the ONLY entry point used for execution.
-          3. If you need to perform different actions (like read/write), use an 'action' parameter inside the 'run' function.
-          4. Ensure all Assertions in your test cases match the logic of your 'run' function.
+          1. Every module MUST have a 'run(*args, **kwargs)' function as the ONLY entry point.
+          2. Use an 'action' parameter inside 'run' to handle different behaviors (read, write, etc.).
+          3. Ensure all assertions in your test section strictly follow the 'run' entry point logic.
+          4. Respond ONLY with raw Python code. No markdown, no talk."
+
+          JSON_DATA=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
+          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
           
-          Task: Write the next evolution of the AI core. Respond ONLY with raw Python code."
+          RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" -H "x-goog-api-key: ${GOOGLE_API_KEY}" -d "$JSON_DATA" "$API_URL")
+          TASK_CODE=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
+          
+          if [ -z "$TASK_CODE" ]; then exit 1; fi
+          
+          echo "$TASK_CODE" > current_task.py
+          echo "task_payload<<EOF" >> $GITHUB_ENV
+          cat current_task.py >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: 3.1 - Dispatch to Executor
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: executor.yml
+          repo: 246248m-hub/phoenix-executor
+          token: ${{ secrets.COMMANDER_PAT }}
+          inputs: >
+            {
+              "task_payload": ${{ toJson(env.task_payload) }},
+              "commander_repo": "${{ github.repository }}",
+              "run_id": "${{ github.run_id }}"
+            }
+
+      - name: 4.1 - Archive Knowledge
+        run: |
+          COUNT=$(find knowledge_base -maxdepth 1 -name 'task_*.py' | wc -l)
+          echo "${{ env.task_payload }}" > "knowledge_base/task_${COUNT}.py"
+          git config --global user.name 'Phoenix Architect'
+          git config --global user.email 'architect@phoenix.ai'
+          git add .
+          git commit -m "Evolution: task_${COUNT} integrated"
+          git push || echo "No changes to push"
+
+      - name: 5.1 - Self-Triggering Loop
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.COMMANDER_PAT }}
+          OBJ: ${{ github.event.inputs.custom_objective }}
+        run: |
+          echo "Resting for 300s before next evolution..."
+          sleep 300
+          # استدعاء الملف الحالي باسمه الصحيح لضمان الدوران
+          gh workflow run wakeup.yml \
+            --repo ${{ github.repository }} \
+            --ref main \
+            -f custom_objective="$OBJ"
