@@ -77,28 +77,27 @@ jobs:
         run: |
           COUNT=$(find knowledge_base -maxdepth 1 -name 'task_*.py' | wc -l)
           FILENAME="knowledge_base/task_${COUNT}.py"
-          
-          # حفظ الكود بأمان
           cat << 'EOF_TASK' > "$FILENAME"
           ${{ env.task_payload }}
           EOF_TASK
-          
           git config --global user.name 'Phoenix Architect'
           git config --global user.email 'architect@phoenix.ai'
           git add .
           git commit -m "Evolution: task_${COUNT} integrated"
           git push || echo "No changes"
 
-      - name: 5.1 - Recursive Loop (Fixed URL)
+      - name: 5.1 - Recursive Loop (The Final Fix)
         if: always()
         run: |
-          echo "Waiting 300s..."
+          echo "Waiting 300s before next cycle..."
           sleep 300
-          # الرابط هنا نظيف تماماً من أي تنسيق Markdown
-          API_ENDPOINT="[https://api.github.com/repos/$](https://api.github.com/repos/$){{ github.repository }}/actions/workflows/genesis_commander.yml/dispatches"
           
-          curl -L -X POST \
+          # بناء الرابط يدوياً لضمان عدم وجود أي رموز غريبة
+          REPO_FULL_NAME="${{ github.repository }}"
+          TARGET_URL="[https://api.github.com/repos/$REPO_FULL_NAME/actions/workflows/genesis_commander.yml/dispatches](https://api.github.com/repos/$REPO_FULL_NAME/actions/workflows/genesis_commander.yml/dispatches)"
+          
+          curl -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" \
-            "$API_ENDPOINT" \
+            "$TARGET_URL" \
             -d '{"ref":"main", "inputs": {"custom_objective": "${{ github.event.inputs.custom_objective }}"}}'
