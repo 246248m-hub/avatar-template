@@ -2,94 +2,91 @@ name: 🧬 GENESIS COMMANDER
 
 on:
   workflow_dispatch:
+    inputs:
+      custom_objective:
+        description: 'Goal'
+        required: false
+        default: 'Build a modular AI core: persistent memory and dynamic logic.'
 
 jobs:
   genesis_learning_cycle:
     runs-on: ubuntu-latest
     steps:
-      - name: 1.1 - Checkout Knowledge Base
+      - name: 1.1 - Checkout
         uses: actions/checkout@v4
         with:
-          repository: '246248m-hub/phoenix-knowledge-base'
           token: ${{ secrets.COMMANDER_PAT }}
 
-      - name: 1.2 - Setup Python & Gemini
-        run: pip install google-generativeai
+      - name: 1.2 - Bootstrap
+        run: |
+          mkdir -p knowledge_base
+          if [ -z "$(ls -A knowledge_base)" ]; then
+            echo "def run(): return 'Foundation Layer'" > knowledge_base/task_0.py
+          fi
 
-      - name: 2.1 - Gemini Defines Next Learning Step
+      - name: 2.1 - AI Generation (Unfiltered)
         id: gemini_task
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          OBJ: ${{ github.event.inputs.custom_objective }}
         run: |
-          # جمع المعرفة الحالية من ملفات البايثون الموجودة
-          KNOWLEDGE=$(find . -maxdepth 1 -name 'lesson_*.py' -print0 | xargs -0 cat 2>/dev/null || echo "None. This is the first lesson.")
+          # جمع المعرفة السابقة
+          KNOWLEDGE=$(find knowledge_base -name 'task_*.py' | sort -V | tail -n 2 | xargs cat 2>/dev/null || echo "pass")
+          
+          # بناء طلب JSON متوافق تماماً مع إعدادات الأمان
+          PROMPT="Write a self-contained Python script for: $OBJ. Context: $KNOWLEDGE. Rules: Only code, include run() function."
+          
+          JSON_PAYLOAD=$(jq -n --arg p "$PROMPT" '{
+            contents: [{parts: [{text: $p}]}],
+            safetySettings: [
+              {category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE"},
+              {category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE"},
+              {category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE"},
+              {category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE"}
+            ]
+          }')
 
-          cat << EOF > get_task.py
-          import os
-          import google.generativeai as genai
-          import re
+          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}"
+          
+          # إرسال الطلب وحفظ الاستجابة كاملة في ملف مؤقت
+          curl -s -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$API_URL" > api_response.json
+          
+          # استخراج الكود وتنظيفه
+          CLEAN_CODE=$(jq -r '.candidates[0].content.parts[0].text // empty' api_response.json | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
 
-          genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-          model = genai.GenerativeModel('gemini-1.5-flash')
+          # فحص النجاح أو طباعة الخطأ
+          if [[ -z "$CLEAN_CODE" || "$CLEAN_CODE" == "null" ]]; then
+            echo "❌ API FAILED. FULL RESPONSE BELOW:"
+            cat api_response.json
+            exit 1
+          fi
           
-          prompt = f"""
-          You are an AI teaching another AI how to build itself from first principles.
-          The goal is a multi-modal AI in pure Python.
-          Current knowledge: {'''$KNOWLEDGE'''}
-          
-          Define the NEXT logical step. Provide ONLY the Python code. 
-          No talk, no markdown wrappers like \`\`\`python. Just the raw code.
-          If libraries are needed, add '# REQUIREMENTS: <library_name>'.
-          """
-          
-          response = model.generate_content(prompt)
-          code = response.text.strip()
-          
-          # إزالة أي علامات ماركداون إذا وجدت بالخطأ
-          code = re.sub(r'^```python\n|^```|```$', '', code, flags=re.MULTILINE)
-          print(code.strip())
-          EOF
-
-          TASK_CODE=$(python get_task.py)
-          
-          # حفظ الكود في متغير البيئة بشكل آمن
+          echo "$CLEAN_CODE" > current_task.py
           echo "task_payload<<EOF" >> $GITHUB_ENV
-          echo "$TASK_CODE" >> $GITHUB_ENV
+          cat current_task.py >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: 3.1 - Dispatch to Executor
+      - name: 3.1 - Dispatch
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: executor.yml
-          repo: 246248m-hub/phoenix-executor
+          repo: ${{ github.repository_owner }}/phoenix-executor
           token: ${{ secrets.COMMANDER_PAT }}
           inputs: >
             {
               "task_payload": ${{ toJson(env.task_payload) }},
-              "commander_repo": "${{ github.repository }}",
               "run_id": "${{ github.run_id }}"
             }
 
-      - name: 4.1 - Archive Lesson
-        if: success()
+      - name: 4.1 - Archive
         run: |
-          LESSON_NUM=$(($(ls -1q lesson_*.py 2>/dev/null | wc -l) + 1))
-          echo "${{ env.task_payload }}" > "lesson_${LESSON_NUM}.py"
-          
-          git config --global user.name 'Genesis Teacher'
-          git config --global user.email 'bot@github.com'
-          git add .
-          git commit -m "Learned: Lesson ${LESSON_NUM}"
-          git push || echo "No changes to commit"
+          COUNT=$(find knowledge_base -name 'task_*.py' | wc -l)
+          cp current_task.py "knowledge_base/task_${COUNT}.py"
+          git config --global user.name 'Architect'
+          git config --global user.email 'ai@genesis.ai'
+          git add . && git commit -m "Evolution ${COUNT}" && git push || echo "No changes"
 
-      - name: 5.1 - Resurrect for Next Cycle
+      - name: 5.1 - Loop
         if: always()
-        run: |
-          echo "Waiting for stabilization..."
-          sleep 20
-          curl -L -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            [https://api.github.com/repos/$](https://api.github.com/repos/$){{ github.repository }}/actions/workflows/wakeup.yml/dispatches \
-            -d '{"ref":"main"}'
+        env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
+        run: sleep 300 && gh workflow run wakeup.yml --repo ${{ github.repository }} -f custom_objective="$OBJ"
