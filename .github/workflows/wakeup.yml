@@ -21,10 +21,10 @@ jobs:
         run: |
           mkdir -p knowledge_base
           if [ -z "$(ls -A knowledge_base)" ]; then
-            echo "def run(): return 'Foundation Layer'" > knowledge_base/task_0.py
+            echo "def run(): return 'Genesis Start'" > knowledge_base/task_0.py
           fi
 
-      - name: 2.1 - AI Generation (Beta Link Fixed)
+      - name: 2.1 - AI Generation (Gemini 2.5 Flash Lite)
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
@@ -38,12 +38,11 @@ jobs:
             contents: [{parts: [{text: $p}]}]
           }')
 
-          # الرابط الذي يعمل في حسابك (v1beta)
-          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GOOGLE_API_KEY}"
+          # الرابط اللي أنت حددته وشغال عندك
+          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GOOGLE_API_KEY}"
           
           curl -s -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$API_URL" > api_response.json
           
-          # استخراج الكود وتنظيفه من أي علامات Markdown
           CLEAN_CODE=$(jq -r '.candidates[0].content.parts[0].text // empty' api_response.json | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
 
           if [[ -z "$CLEAN_CODE" || "$CLEAN_CODE" == "null" ]]; then
@@ -77,7 +76,7 @@ jobs:
           git config --global user.email 'ai@genesis.ai'
           git add . && git commit -m "Evolution ${COUNT}" && git push || echo "No changes"
 
-      - name: 5.1 - Recursive Loop
+      - name: 5.1 - Loop (300s)
         if: always()
         env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
         run: sleep 300 && gh workflow run wakeup.yml --repo ${{ github.repository }} -f custom_objective="$OBJ"
