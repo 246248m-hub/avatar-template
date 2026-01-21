@@ -14,16 +14,16 @@
     }
   ],
   "usageMetadata": {
-    "promptTokenCount": 6207,
+    "promptTokenCount": 6202,
     "candidatesTokenCount": 3089,
-    "totalTokenCount": 9296,
+    "totalTokenCount": 9291,
     "promptTokensDetails": [
       {
         "modality": "TEXT",
-        "tokenCount": 6207
+        "tokenCount": 6202
       }
     ]
   },
   "modelVersion": "gemini-2.5-flash-lite",
-  "responseId": "PAxxabr7Opbiz7IP0pat8Qc"
+  "responseId": "dBJxadiQAtSQmtkPtPvD6QY"
 }
