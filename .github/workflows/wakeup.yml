@@ -1,97 +1,13 @@
-name: 🧬 GENESIS COMMANDER
-
-on:
-  workflow_dispatch:
-    inputs:
-      custom_objective:
-        description: 'Objective'
-        required: false
-        default: 'Build a modular AI core from scratch: Start with persistent memory and dynamic logic processing.'
-
-jobs:
-  genesis_learning_cycle:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 1.1 - Checkout
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.COMMANDER_PAT }}
-
-      - name: 1.2 - Bootstrap
-        run: |
-          mkdir -p knowledge_base
-          if [ -z "$(ls -A knowledge_base)" ]; then
-            cat << 'EOF' > knowledge_base/task_0.py
-          import json, os
-          class CoreMemory:
-              def __init__(self, file="core_memory.json"):
-                  self.file = file
-                  self.data = self._load()
-              def _load(self):
-                  if os.path.exists(self.file):
-                      with open(self.file, 'r') as f: return json.load(f)
-                  return {"capabilities": ["foundation_v0"]}
-              def save(self):
-                  with open(self.file, 'w') as f: json.dump(self.data, f)
-          def run():
-              mem = CoreMemory(); mem.save()
-              return "Initialized"
-          EOF
-          fi
-
-      - name: 2.1 - Architect Generation
-        id: gemini_task
-        env:
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          OBJECTIVE: ${{ github.event.inputs.custom_objective }}
         run: |
           KNOWLEDGE=$(find knowledge_base -maxdepth 1 -name 'task_*.py' -print0 | xargs -0 cat 2>/dev/null | tail -c 5000)
-          PROMPT="You are the ARCHITECT AI. OBJECTIVE: $OBJECTIVE. CURRENT_CORE_FILES: $KNOWLEDGE. Task: Write the next Python module. Respond ONLY with raw Python code."
-          JSON_DATA=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
-          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent"
-          RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" -H "x-goog-api-key: ${GOOGLE_API_KEY}" -d "$JSON_DATA" "$API_URL")
-          TASK_CODE=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
-          echo "$TASK_CODE" > current_task.py
-          echo "task_payload<<EOF" >> $GITHUB_ENV
-          cat current_task.py >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-      - name: 3.1 - Dispatch
-        uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: executor.yml
-          repo: 246248m-hub/phoenix-executor
-          token: ${{ secrets.COMMANDER_PAT }}
-          inputs: >
-            {
-              "task_payload": ${{ toJson(env.task_payload) }},
-              "commander_repo": "${{ github.repository }}",
-              "run_id": "${{ github.run_id }}"
-            }
-
-      - name: 4.1 - Archive
-        run: |
-          COUNT=$(find knowledge_base -maxdepth 1 -name 'task_*.py' | wc -l)
-          cat << 'EOF_TASK' > "knowledge_base/task_${COUNT}.py"
-          ${{ env.task_payload }}
-          EOF_TASK
-          git config --global user.name 'Phoenix Architect'
-          git config --global user.email 'architect@phoenix.ai'
-          git add .
-          git commit -m "Evolution: task_${COUNT}"
-          git push || echo "No changes"
-
-      - name: 5.1 - Recursive Loop (Fixed to wakeup.yml)
-        if: always()
-        env:
-          GH_TOKEN: ${{ secrets.COMMANDER_PAT }}
-          OBJ: ${{ github.event.inputs.custom_objective }}
-        run: |
-          echo "Waiting 300s..."
-          sleep 300
+          PROMPT="You are the ARCHITECT AI. 
+          OBJECTIVE: $OBJECTIVE. 
+          CURRENT_CORE_FILES: $KNOWLEDGE. 
           
-          # الآن نستخدم الاسم الصحيح للملف: wakeup.yml
-          gh workflow run wakeup.yml \
-            --repo ${{ github.repository }} \
-            --ref main \
-            -f custom_objective="$OBJ"
+          CRITICAL INSTRUCTION:
+          1. Every module MUST have a 'run(*args, **kwargs)' function.
+          2. The 'run' function should be the ONLY entry point used for execution.
+          3. If you need to perform different actions (like read/write), use an 'action' parameter inside the 'run' function.
+          4. Ensure all Assertions in your test cases match the logic of your 'run' function.
+          
+          Task: Write the next evolution of the AI core. Respond ONLY with raw Python code."
