@@ -14,23 +14,16 @@
     }
   ],
   "usageMetadata": {
-    "promptTokenCount": 6202,
+    "promptTokenCount": 6207,
     "candidatesTokenCount": 3089,
-    "totalTokenCount": 9291,
-    "cachedContentTokenCount": 6135,
+    "totalTokenCount": 9296,
     "promptTokensDetails": [
       {
         "modality": "TEXT",
-        "tokenCount": 6202
-      }
-    ],
-    "cacheTokensDetails": [
-      {
-        "modality": "TEXT",
-        "tokenCount": 6135
+        "tokenCount": 6207
       }
     ]
   },
   "modelVersion": "gemini-2.5-flash-lite",
-  "responseId": "ZAlxad6GA_TSjMcP2_vv4Qs"
+  "responseId": "uglxaZ-GE7fUjMcPwMiH-As"
 }
