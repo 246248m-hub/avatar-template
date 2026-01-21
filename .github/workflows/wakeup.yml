@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       custom_objective:
-        description: 'الهدف الاستراتيجي'
+        description: 'Objective'
         required: false
         default: 'Build a modular AI core from scratch: Start with persistent memory and dynamic logic processing.'
 
@@ -17,7 +17,7 @@ jobs:
         with:
           token: ${{ secrets.COMMANDER_PAT }}
 
-      - name: 1.2 - Bootstrap Knowledge Base
+      - name: 1.2 - Bootstrap
         run: |
           mkdir -p knowledge_base
           if [ -z "$(ls -A knowledge_base)" ]; then
@@ -36,24 +36,21 @@ jobs:
           def run():
               mem = CoreMemory(); mem.save()
               return "Memory Initialized"
-          if __name__ == "__main__":
-              print(run())
           EOF
           fi
 
-      - name: 2.1 - Architect Generation (Gemini 2.5)
+      - name: 2.1 - Architect Generation
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           OBJECTIVE: ${{ github.event.inputs.custom_objective }}
         run: |
           KNOWLEDGE=$(find knowledge_base -maxdepth 1 -name 'task_*.py' -print0 | xargs -0 cat 2>/dev/null | tail -c 5000)
-          PROMPT="You are the ARCHITECT AI. OBJECTIVE: $OBJECTIVE. CURRENT_CORE_FILES: $KNOWLEDGE. Task: Write the next Python module. Build from scratch. Respond ONLY with raw Python code. Important: Every module must have a 'run()' function as an entry point."
+          PROMPT="You are the ARCHITECT AI. OBJECTIVE: $OBJECTIVE. CURRENT_CORE_FILES: $KNOWLEDGE. Task: Write the next Python module. Build from scratch. Respond ONLY with raw Python code."
           JSON_DATA=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
           API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent"
           RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" -H "x-goog-api-key: ${GOOGLE_API_KEY}" -d "$JSON_DATA" "$API_URL")
           TASK_CODE=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
-          
           echo "$TASK_CODE" > current_task.py
           echo "task_payload<<EOF" >> $GITHUB_ENV
           cat current_task.py >> $GITHUB_ENV
@@ -73,31 +70,25 @@ jobs:
             }
 
       - name: 4.1 - Sync & Archive
-        if: success()
         run: |
           COUNT=$(find knowledge_base -maxdepth 1 -name 'task_*.py' | wc -l)
-          FILENAME="knowledge_base/task_${COUNT}.py"
-          cat << 'EOF_TASK' > "$FILENAME"
+          cat << 'EOF_TASK' > "knowledge_base/task_${COUNT}.py"
           ${{ env.task_payload }}
           EOF_TASK
-          git config --global user.name 'Phoenix Architect'
+          git config --global user.name 'Architect'
           git config --global user.email 'architect@phoenix.ai'
           git add .
-          git commit -m "Evolution: task_${COUNT} integrated"
+          git commit -m "task_${COUNT}"
           git push || echo "No changes"
 
-      - name: 5.1 - Recursive Loop (The Final Fix)
+      - name: 5.1 - Recursive Loop
         if: always()
         run: |
-          echo "Waiting 300s before next cycle..."
+          echo "Cycle complete. Restarting in 300s..."
           sleep 300
-          
-          # بناء الرابط يدوياً لضمان عدم وجود أي رموز غريبة
-          REPO_FULL_NAME="${{ github.repository }}"
-          TARGET_URL="[https://api.github.com/repos/$REPO_FULL_NAME/actions/workflows/genesis_commander.yml/dispatches](https://api.github.com/repos/$REPO_FULL_NAME/actions/workflows/genesis_commander.yml/dispatches)"
-          
+          # تم تنظيف السطر تماماً من أي أقواس أو تنسيق روابط
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" \
-            "$TARGET_URL" \
+            "[https://api.github.com/repos/$](https://api.github.com/repos/$){{ github.repository }}/actions/workflows/genesis_commander.yml/dispatches" \
             -d '{"ref":"main", "inputs": {"custom_objective": "${{ github.event.inputs.custom_objective }}"}}'
