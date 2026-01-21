@@ -31,30 +31,27 @@ jobs:
           OBJ: ${{ github.event.inputs.custom_objective }}
         run: |
           KNOWLEDGE=$(find knowledge_base -name 'task_*.py' | sort -V | tail -n 2 | xargs cat 2>/dev/null || echo "pass")
-          
           PROMPT="Write a self-contained Python script for: $OBJ. Rules: Only code, include run() function. Context: $KNOWLEDGE"
-          
-          JSON_PAYLOAD=$(jq -n --arg p "$PROMPT" '{
-            contents: [{parts: [{text: $p}]}]
-          }')
+          JSON_PAYLOAD=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
 
-          # الرابط اللي أنت حددته وشغال عندك
           API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GOOGLE_API_KEY}"
           
           curl -s -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$API_URL" > api_response.json
           
+          # استخراج الكود وتنظيفه
           CLEAN_CODE=$(jq -r '.candidates[0].content.parts[0].text // empty' api_response.json | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
 
           if [[ -z "$CLEAN_CODE" || "$CLEAN_CODE" == "null" ]]; then
-            echo "❌ API FAILED. FULL RESPONSE BELOW:"
+            echo "❌ API FAILED. FULL RESPONSE:"
             cat api_response.json
             exit 1
           fi
           
           echo "$CLEAN_CODE" > current_task.py
-          echo "task_payload<<EOF" >> $GITHUB_ENV
-          cat current_task.py >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          
+          # التشفير لضمان سلامة النقل
+          ENCODED_PAYLOAD=$(cat current_task.py | base64 -w 0)
+          echo "task_payload=$ENCODED_PAYLOAD" >> $GITHUB_ENV
 
       - name: 3.1 - Dispatch to Executor
         uses: benc-uk/workflow-dispatch@v1
@@ -64,7 +61,7 @@ jobs:
           token: ${{ secrets.COMMANDER_PAT }}
           inputs: >
             {
-              "task_payload": ${{ toJson(env.task_payload) }},
+              "task_payload": "${{ env.task_payload }}",
               "run_id": "${{ github.run_id }}"
             }
 
