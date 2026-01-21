@@ -1,30 +1,4 @@
-name: 🧬 GENESIS COMMANDER
-
-on:
-  workflow_dispatch:
-    inputs:
-      custom_objective:
-        description: 'Goal'
-        required: false
-        default: 'Build a modular AI core: persistent memory and dynamic logic.'
-
-jobs:
-  genesis_learning_cycle:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 1.1 - Checkout
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.COMMANDER_PAT }}
-
-      - name: 1.2 - Bootstrap
-        run: |
-          mkdir -p knowledge_base
-          if [ -z "$(ls -A knowledge_base)" ]; then
-            echo "def run(): return 'Foundation Layer'" > knowledge_base/task_0.py
-          fi
-
-      - name: 2.1 - AI Generation (Stable Version)
+      - name: 2.1 - AI Generation (Beta Link Fix)
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
@@ -32,18 +6,19 @@ jobs:
         run: |
           KNOWLEDGE=$(find knowledge_base -name 'task_*.py' | sort -V | tail -n 2 | xargs cat 2>/dev/null || echo "pass")
           
-          PROMPT="Write a self-contained Python script for: $OBJ. Rules: Only code, include run() function. Previous context: $KNOWLEDGE"
+          PROMPT="Write a self-contained Python script for: $OBJ. Rules: Only code, include run() function. Context: $KNOWLEDGE"
           
           JSON_PAYLOAD=$(jq -n --arg p "$PROMPT" '{
             contents: [{parts: [{text: $p}]}]
           }')
 
-          # استخدام الرابط المستقر v1 لحل مشكلة 404
-          API_URL="https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}"
+          # الرابط الذي يعمل معك (v1beta)
+          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GOOGLE_API_KEY}"
+          
+          # ملاحظة: يمكنك تجربة gemini-2.0-flash-exp أو الموديل الذي ذكرته في الـ Curl الخاص بك
           
           curl -s -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$API_URL" > api_response.json
           
-          # استخراج الكود وتنظيفه
           CLEAN_CODE=$(jq -r '.candidates[0].content.parts[0].text // empty' api_response.json | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
 
           if [[ -z "$CLEAN_CODE" || "$CLEAN_CODE" == "null" ]]; then
@@ -56,28 +31,3 @@ jobs:
           echo "task_payload<<EOF" >> $GITHUB_ENV
           cat current_task.py >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-
-      - name: 3.1 - Dispatch to Executor
-        uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: executor.yml
-          repo: ${{ github.repository_owner }}/phoenix-executor
-          token: ${{ secrets.COMMANDER_PAT }}
-          inputs: >
-            {
-              "task_payload": ${{ toJson(env.task_payload) }},
-              "run_id": "${{ github.run_id }}"
-            }
-
-      - name: 4.1 - Archive Knowledge
-        run: |
-          COUNT=$(find knowledge_base -name 'task_*.py' | wc -l)
-          cp current_task.py "knowledge_base/task_${COUNT}.py"
-          git config --global user.name 'Architect'
-          git config --global user.email 'ai@genesis.ai'
-          git add . && git commit -m "Evolution ${COUNT}" && git push || echo "No changes"
-
-      - name: 5.1 - Recursive Loop (300s)
-        if: always()
-        env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
-        run: sleep 300 && gh workflow run wakeup.yml --repo ${{ github.repository }} -f custom_objective="$OBJ"
