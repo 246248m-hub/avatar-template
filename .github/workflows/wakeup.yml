@@ -1,4 +1,30 @@
-      - name: 2.1 - AI Generation (Termux-Style Bypass)
+name: 🧬 GENESIS COMMANDER
+
+on:
+  workflow_dispatch:
+    inputs:
+      custom_objective:
+        description: 'The strategic mission'
+        required: false
+        default: 'Build a Python module to download arwiki-latest-pages-articles.xml.bz2 and decompress it efficiently.'
+
+jobs:
+  genesis_learning_cycle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1.1 - Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.COMMANDER_PAT }}
+
+      - name: 1.2 - Bootstrap Core
+        run: |
+          mkdir -p knowledge_base
+          if [ -z "$(ls -A knowledge_base)" ]; then
+            echo "# Initial Seed" > knowledge_base/task_0.py
+          fi
+
+      - name: 2.1 - AI Generation (Resilient Bypass)
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
@@ -8,34 +34,70 @@
           PROMPT="You are an AI Architect. Objective: $OBJECTIVE. Context: $KNOWLEDGE_CONTEXT. Write a self-contained Python script. Respond ONLY with raw code."
           JSON_PAYLOAD=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
 
-          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GOOGLE_API_KEY}"
+          # قائمة الموديلات للتبديل في حال فشل الكوتا على GitHub
+          MODELS=("gemini-2.5-flash-lite" "gemini-1.5-flash" "gemini-1.5-flash-8b")
           
-          # محاولة الطلب مع نظام إعادة المحاولة (Up to 3 times)
-          for i in {1..3}; do
-            echo "Attempt $i..."
-            # إضافة User-Agent لخداع نظام الحماية
-            RESPONSE=$(curl -s -X POST \
-              -H "Content-Type: application/json" \
-              -H "User-Agent: Mozilla/5.0" \
-              -d "$JSON_PAYLOAD" "$API_URL")
+          SUCCESS=false
+          for MODEL in "${MODELS[@]}"; do
+            echo "🤖 Attempting with Model: $MODEL"
+            API_URL="https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GOOGLE_API_KEY}"
+            
+            # محاولة الطلب مرتين لكل موديل مع انتظار
+            for i in {1..2}; do
+              RESPONSE=$(curl -s -X POST \
+                -H "Content-Type: application/json" \
+                -H "User-Agent: Mozilla/5.0" \
+                -d "$JSON_PAYLOAD" "$API_URL")
 
-            if echo "$RESPONSE" | grep -q "candidates"; then
-              echo "✅ Success!"
-              break
-            else
-              echo "⚠️ Attempt $i failed. Wait 20s..."
-              echo "$RESPONSE"
-              sleep 20
-            fi
+              if echo "$RESPONSE" | grep -q "candidates"; then
+                TASK_CODE=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
+                if [[ ! -z "$TASK_CODE" && "$TASK_CODE" != "null" ]]; then
+                  echo "$TASK_CODE" > current_task.py
+                  SUCCESS=true
+                  break 2
+                fi
+              else
+                echo "⚠️ Attempt $i for $MODEL failed. Waiting 30s..."
+                sleep 30
+              fi
+            done
           done
 
-          TASK_CODE=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
-
-          if [[ -z "$TASK_CODE" || "$TASK_CODE" == "null" ]]; then
-            echo "❌ CRITICAL: AI failed after retries."
+          if [ "$SUCCESS" = false ]; then
+            echo "❌ ALL ATTEMPTS FAILED. Last Response:"
+            echo "$RESPONSE"
             exit 1
           fi
-          
-          echo "$TASK_CODE" > current_task.py
+
           ENCODED_PAYLOAD=$(cat current_task.py | base64 -w 0)
           echo "task_payload=$ENCODED_PAYLOAD" >> $GITHUB_ENV
+
+      - name: 3.1 - Dispatch to Executor
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: executor.yml
+          repo: ${{ github.repository_owner }}/phoenix-executor
+          token: ${{ secrets.COMMANDER_PAT }}
+          inputs: >
+            {
+              "task_payload": "${{ env.task_payload }}",
+              "run_id": "${{ github.run_id }}"
+            }
+
+      - name: 4.1 - Archive & Update README
+        run: |
+          COUNT=$(find knowledge_base -name 'task_*.py' | wc -l)
+          echo "${{ env.task_payload }}" | base64 -d > "knowledge_base/task_${COUNT}.py"
+          
+          echo "### 🧬 PHOENIX CORE STATUS" > README.md
+          echo "- **Objective:** ${{ github.event.inputs.custom_objective }}" >> README.md
+          echo "- **Last Pulse:** $(date)" >> README.md
+          
+          git config --global user.name 'Architect'
+          git config --global user.email 'architect@phoenix.ai'
+          git add . && git commit -m "Evolution ${COUNT}" && git push || echo "No changes"
+
+      - name: 5.1 - Recursive Loop (Auto-Recovery)
+        if: always()
+        env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
+        run: sleep 300 && gh workflow run wakeup.yml --repo ${{ github.repository }} -f custom_objective="$OBJ"
