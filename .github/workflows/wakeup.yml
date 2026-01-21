@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       custom_objective:
-        description: 'Objective'
+        description: 'الهدف الاستراتيجي للنظام'
         required: false
         default: 'Build a modular AI core from scratch: Start with persistent memory and dynamic logic processing.'
 
@@ -12,15 +12,16 @@ jobs:
   genesis_learning_cycle:
     runs-on: ubuntu-latest
     steps:
-      - name: 1.1 - Checkout
+      - name: 1.1 - Checkout Repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.COMMANDER_PAT }}
 
-      - name: 1.2 - Bootstrap
+      - name: 1.2 - Bootstrap Knowledge Base
         run: |
           mkdir -p knowledge_base
           if [ -z "$(ls -A knowledge_base)" ]; then
+            echo "Creating the first DNA module (task_0)..."
             cat << 'EOF' > knowledge_base/task_0.py
           import json, os
           class CoreMemory:
@@ -35,22 +36,40 @@ jobs:
                   with open(self.file, 'w') as f: json.dump(self.data, f)
           def run():
               mem = CoreMemory(); mem.save()
-              return "Memory Initialized"
+              return "Core Memory Initialized"
+          if __name__ == "__main__":
+              print(run())
           EOF
           fi
 
-      - name: 2.1 - Architect Generation
+      - name: 2.1 - Architect Generation (Gemini 2.5)
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           OBJECTIVE: ${{ github.event.inputs.custom_objective }}
         run: |
+          # جمع كل المعرفة السابقة لإرسالها للنموذج
           KNOWLEDGE=$(find knowledge_base -maxdepth 1 -name 'task_*.py' -print0 | xargs -0 cat 2>/dev/null | tail -c 5000)
-          PROMPT="You are the ARCHITECT AI. OBJECTIVE: $OBJECTIVE. CURRENT_CORE_FILES: $KNOWLEDGE. Task: Write the next Python module. Build from scratch. Respond ONLY with raw Python code."
+          
+          PROMPT="You are the ARCHITECT AI. 
+          OBJECTIVE: $OBJECTIVE
+          CURRENT_CORE_FILES: $KNOWLEDGE
+          
+          Your Task: Write the next Python module for this AI system.
+          - Build from scratch using basic Python logic.
+          - Each task must be a functional component.
+          - Important: Every module must have a 'run()' function as an entry point.
+          - Respond ONLY with raw Python code. Do not include explanations."
+
           JSON_DATA=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
           API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent"
+          
           RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" -H "x-goog-api-key: ${GOOGLE_API_KEY}" -d "$JSON_DATA" "$API_URL")
           TASK_CODE=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
+
+          if [ -z "$TASK_CODE" ]; then echo "❌ Error: API failed to generate code."; exit 1; fi
+          
+          # حفظ الكود المنتج في بيئة العمل بشكل آمن
           echo "$TASK_CODE" > current_task.py
           echo "task_payload<<EOF" >> $GITHUB_ENV
           cat current_task.py >> $GITHUB_ENV
@@ -70,25 +89,36 @@ jobs:
             }
 
       - name: 4.1 - Sync & Archive
+        if: success()
         run: |
           COUNT=$(find knowledge_base -maxdepth 1 -name 'task_*.py' | wc -l)
-          cat << 'EOF_TASK' > "knowledge_base/task_${COUNT}.py"
+          FILENAME="knowledge_base/task_${COUNT}.py"
+          
+          # حفظ الكود الجديد في ملف الذاكرة الخاص بالقائد
+          cat << 'EOF_TASK' > "$FILENAME"
           ${{ env.task_payload }}
           EOF_TASK
-          git config --global user.name 'Architect'
+          
+          git config --global user.name 'Phoenix Architect'
           git config --global user.email 'architect@phoenix.ai'
           git add .
-          git commit -m "task_${COUNT}"
-          git push || echo "No changes"
+          git commit -m "Evolution: task_${COUNT} integrated"
+          git push || echo "No changes to push"
 
-      - name: 5.1 - Recursive Loop
+      - name: 5.1 - Recursive Loop (The Fix)
         if: always()
         run: |
           echo "Cycle complete. Restarting in 300s..."
           sleep 300
-          # تم تنظيف السطر تماماً من أي أقواس أو تنسيق روابط
+          
+          # استخدام متغيرات بيئة منفصلة لبناء الرابط بشكل نظيف تماماً
+          OWNER="${{ github.repository_owner }}"
+          REPO_NAME="${{ github.event.repository.name }}"
+          
+          API_URL="[https://api.github.com/repos/$](https://api.github.com/repos/$){OWNER}/${REPO_NAME}/actions/workflows/genesis_commander.yml/dispatches"
+          
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" \
-            "[https://api.github.com/repos/$](https://api.github.com/repos/$){{ github.repository }}/actions/workflows/genesis_commander.yml/dispatches" \
-            -d '{"ref":"main", "inputs": {"custom_objective": "${{ github.event.inputs.custom_objective }}"}}'
+            "$API_URL" \
+            -d "{\"ref\":\"main\", \"inputs\": {\"custom_objective\": \"${{ github.event.inputs.custom_objective }}\"}}"
