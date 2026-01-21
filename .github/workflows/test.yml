@@ -1,113 +1,89 @@
-name: 🧬 GENESIS COMMANDER (The Guaranteed Teacher)
+name: 🧬 GENESIS COMMANDER
 
 on:
   workflow_dispatch:
+    inputs:
+      custom_objective:
+        description: 'Goal'
+        required: false
+        default: 'Build a modular AI core from scratch: Start with persistent memory and dynamic logic processing.'
 
 jobs:
   genesis_learning_cycle:
     runs-on: ubuntu-latest
     steps:
-      # -----------------------------------------------------
-      #  الخطوة 1: إعداد الذاكرة والمعرفة
-      # -----------------------------------------------------
-      - name: 1.1 - Checkout Commander's Own Repository
+      - name: 1.1 - Checkout
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.COMMANDER_PAT }}
 
-      - name: 1.2 - Setup Tools
+      - name: 1.2 - Bootstrap
         run: |
-          # لم نعد بحاجة لتثبيت مكتبة بايثون، فقط أدوات مساعدة
-          sudo apt-get update && sudo apt-get install -y jq
           mkdir -p knowledge_base
+          if [ -z "$(ls -A knowledge_base)" ]; then
+            echo "def run(*args, **kwargs): return 'Foundation layer'" > knowledge_base/task_0.py
+          fi
 
-      # -----------------------------------------------------
-      #  الخطوة 2: Gemini يحدد الهدف التالي (باستخدام cURL)
-      # -----------------------------------------------------
-      - name: 2.1 - Gemini Defines Next Step via cURL
+      - name: 2.1 - Architect Generation (Gemini 2.0)
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          OBJECTIVE: ${{ github.event.inputs.custom_objective }}
         run: |
-          KNOWLEDGE=$(find knowledge_base -maxdepth 1 -name '*.py' -print0 | xargs -0 cat)
-          if [ -z "$KNOWLEDGE" ]; then
-            KNOWLEDGE="None. This is the first lesson."
-          fi
-
-          # تحضير البرومبت
-          PROMPT="""
-          You are an AI teaching another AI how to build itself from first principles.
-          The ultimate goal is to create a multi-modal AI in pure Python.
-          This is the current knowledge library:
-          ---
-          ${KNOWLEDGE}
-          ---
-          Define the very next logical learning step. Provide ONLY the raw Python code for this single, self-contained task.
-          If the code needs libraries, add a '# REQUIREMENTS: <library_name>' line.
-          Your response must be ONLY the raw Python code, no markdown.
-          """
-
-          # تحويل البرومبت إلى صيغة JSON آمنة
-          JSON_PROMPT=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
-
-          # --- استخدام cURL المضمون الخاص بك ---
-          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+          # جمع المعرفة السابقة
+          KNOWLEDGE=$(find knowledge_base -maxdepth 1 -name 'task_*.py' -print0 | xargs -0 cat 2>/dev/null | tail -c 6000)
           
-          RESPONSE=$(curl -s -H "Content-Type: application/json" \
-                          -H "x-goog-api-key: ${GOOGLE_API_KEY}" \
-                          -X POST \
-                          -d "${JSON_PROMPT}" \
-                          "${API_URL}")
+          # البرومبت المركز
+          PROMPT="You are the ARCHITECT AI. OBJECTIVE: $OBJECTIVE. CURRENT_CORE_FILES: $KNOWLEDGE. 
+          INSTRUCTIONS: 1. Write a Python module with a 'run(*args, **kwargs)' function. 
+          2. Include a self-test section under 'if __name__ == \"__main__\":'. 
+          3. Respond ONLY with the Python code itself."
 
-          # استخراج الكود فقط من استجابة JSON
-          TASK_CODE=$(echo "${RESPONSE}" | jq -r '.candidates[0].content.parts[0].text' | sed 's/^```python//; s/```$//')
+          # إرسال الطلب (استخدام نموذج 1.5 flash أو 2.0 flash)
+          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}"
+          
+          RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" \
+            -d "{\"contents\": [{\"parts\": [{\"text\": \"$PROMPT\"}]}]}" \
+            "$API_URL")
 
-          if [ -z "$TASK_CODE" ] || [ "$TASK_CODE" == "null" ]; then
-            echo "Failed to get task from Gemini. Full response:"
-            echo "${RESPONSE}"
-            exit 1
-          fi
+          # استخراج الكود وتمريره بشكل آمن
+          echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' > current_task.py
           
-          echo "Generated Task Code:"
-          echo "${TASK_CODE}"
+          if [ ! -s current_task.py ]; then echo "Empty response from AI"; exit 1; fi
           
+          # إعداد الـ Environment Variable بشكل يحمي الكود
           echo "task_payload<<EOF" >> $GITHUB_ENV
-          echo "${TASK_CODE}" >> $GITHUB_ENV
+          cat current_task.py >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      # ... (بقية الخطوات 3, 4, 5 تبقى كما هي تماماً) ...
-      # -----------------------------------------------------
-      #  الخطوة 3: إرسال المهمة إلى "التلميذ"
-      # -----------------------------------------------------
-      - name: 3.1 - Dispatch Task
+      - name: 3.1 - Dispatch to Executor
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: executor.yml
-          repo: 246248m-hub/phoenix-executor
+          repo: ${{ github.repository_owner }}/phoenix-executor
           token: ${{ secrets.COMMANDER_PAT }}
-          inputs: '{ "task_payload": "${{ env.task_payload }}", "commander_repo": "${{ github.repository }}", "run_id": "${{ github.run_id }}" }'
+          inputs: >
+            {
+              "task_payload": ${{ toJson(env.task_payload) }},
+              "commander_repo": "${{ github.repository }}",
+              "run_id": "${{ github.run_id }}"
+            }
 
-      # -----------------------------------------------------
-      #  الخطوة 4: أرشفة الدرس الجديد
-      # -----------------------------------------------------
-      - name: 4.1 - Archive New Knowledge
+      - name: 4.1 - Archive Knowledge
         run: |
-          echo "Assuming success, archiving the lesson."
-          LESSON_NUM=$(($(find knowledge_base -maxdepth 1 -name '*.py' | wc -l) + 1))
-          echo "${{ env.task_payload }}" > "knowledge_base/lesson_${LESSON_NUM}.py"
-          
-          git config --global user.name 'Genesis Teacher'
-          git config --global user.email 'bot@github.com'
-          git add knowledge_base/lesson_${LESSON_NUM}.py
-          git commit -m "Learned: Lesson ${LESSON_NUM}"
-          git push
+          COUNT=$(find knowledge_base -maxdepth 1 -name 'task_*.py' | wc -l)
+          cp current_task.py "knowledge_base/task_${COUNT}.py"
+          git config --global user.name 'Phoenix Architect'
+          git config --global user.email 'architect@phoenix.ai'
+          git add .
+          git commit -m "Evolution: task_${COUNT}"
+          git push || echo "No changes"
 
-      # -----------------------------------------------------
-      #  الخطوة 5: الإحياء الذاتي للدورة التالية
-      # -----------------------------------------------------
-      - name: 5.1 - Resurrect for Next Cycle
+      - name: 5.1 - Recursive Loop
         if: always()
+        env:
+          GH_TOKEN: ${{ secrets.COMMANDER_PAT }}
+          OBJ: ${{ github.event.inputs.custom_objective }}
         run: |
-          echo "Triggering next learning cycle..."
-          sleep 10
-          curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/${{ github.repository }}/actions/workflows/genesis_commander.yml/dispatches -d '{"ref":"main"}'
+          sleep 300
+          gh workflow run wakeup.yml --repo ${{ github.repository }} --ref main -f custom_objective="$OBJ"
