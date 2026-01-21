@@ -21,7 +21,6 @@ jobs:
         run: |
           mkdir -p knowledge_base
           if [ -z "$(ls -A knowledge_base)" ]; then
-            echo "Creating task_0.py as the initial seed..."
             cat << 'EOF' > knowledge_base/task_0.py
           import json, os
           class CoreMemory:
@@ -34,9 +33,11 @@ jobs:
                   return {"capabilities": ["foundation_v0"]}
               def save(self):
                   with open(self.file, 'w') as f: json.dump(self.data, f)
-          if __name__ == "__main__":
+          def run():
               mem = CoreMemory(); mem.save()
-              print("Core Initialized.")
+              return "Memory Initialized"
+          if __name__ == "__main__":
+              print(run())
           EOF
           fi
 
@@ -47,13 +48,16 @@ jobs:
           OBJECTIVE: ${{ github.event.inputs.custom_objective }}
         run: |
           KNOWLEDGE=$(find knowledge_base -maxdepth 1 -name 'task_*.py' -print0 | xargs -0 cat 2>/dev/null | tail -c 5000)
-          PROMPT="You are the ARCHITECT AI. OBJECTIVE: $OBJECTIVE. CURRENT_CORE_FILES: $KNOWLEDGE. Task: Write the next Python module. Build from scratch. Respond ONLY with raw Python code."
+          PROMPT="You are the ARCHITECT AI. OBJECTIVE: $OBJECTIVE. CURRENT_CORE_FILES: $KNOWLEDGE. Task: Write the next Python module. Build from scratch. Respond ONLY with raw Python code. Important: Every module must have a 'run()' function as an entry point."
           JSON_DATA=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
           API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent"
           RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" -H "x-goog-api-key: ${GOOGLE_API_KEY}" -d "$JSON_DATA" "$API_URL")
           TASK_CODE=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
+          
+          # حفظ الكود في ملف مؤقت لتجنب مشاكل الأقواس في ENV
+          echo "$TASK_CODE" > current_task.py
           echo "task_payload<<EOF" >> $GITHUB_ENV
-          echo "$TASK_CODE" >> $GITHUB_ENV
+          cat current_task.py >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: 3.1 - Dispatch to Executor
@@ -72,20 +76,25 @@ jobs:
       - name: 4.1 - Sync & Archive
         if: success()
         run: |
-          NEXT=$(( $(find knowledge_base -maxdepth 1 -name 'task_*.py' | wc -l) ))
-          echo "${{ env.task_payload }}" > "knowledge_base/task_${NEXT}.py"
+          # حساب رقم الملف التالي بأمان
+          COUNT=$(find knowledge_base -maxdepth 1 -name 'task_*.py' | wc -l)
+          FILENAME="knowledge_base/task_${COUNT}.py"
+          
+          # استخدام cat لحفظ الكود دون تفسير الأقواس
+          cat << 'EOF_TASK' > "$FILENAME"
+          ${{ env.task_payload }}
+          EOF_TASK
+          
           git config --global user.name 'Phoenix Architect'
           git config --global user.email 'architect@phoenix.ai'
           git add .
-          git commit -m "Evolution: task_${NEXT} integrated"
+          git commit -m "Evolution: task_${COUNT} integrated"
           git push || echo "No changes"
 
-      - name: 5.1 - Recursive Loop (Fixed URL)
+      - name: 5.1 - Recursive Loop
         if: always()
         run: |
-          echo "Waiting 300s..."
           sleep 300
-          # تصحيح الرابط تماماً هنا:
           curl -L -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.COMMANDER_PAT }}" \
