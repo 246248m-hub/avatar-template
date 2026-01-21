@@ -81,7 +81,7 @@ jobs:
           git commit -m "Evolution: task_${COUNT}"
           git push || echo "No changes"
 
-      - name: 5.1 - Recursive Loop
+      - name: 5.1 - Recursive Loop (Fixed to wakeup.yml)
         if: always()
         env:
           GH_TOKEN: ${{ secrets.COMMANDER_PAT }}
@@ -90,10 +90,8 @@ jobs:
           echo "Waiting 300s..."
           sleep 300
           
-          # استخدام gh cli بدلاً من curl لتجنب مشاكل الروابط تماماً
-          gh api \
-            --method POST \
-            -H "Accept: application/vnd.github+json" \
-            /repos/${{ github.repository }}/actions/workflows/genesis_commander.yml/dispatches \
-            -f ref='main' \
-            -f inputs[custom_objective]="$OBJ"
+          # الآن نستخدم الاسم الصحيح للملف: wakeup.yml
+          gh workflow run wakeup.yml \
+            --repo ${{ github.repository }} \
+            --ref main \
+            -f custom_objective="$OBJ"
