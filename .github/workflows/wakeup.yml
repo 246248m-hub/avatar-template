@@ -24,7 +24,7 @@ jobs:
             echo "# Initial Seed" > knowledge_base/task_0.py
           fi
 
-      - name: 2.1 - AI Generation (Resilient Bypass)
+      - name: 2.1 - AI Generation (Gemini 2.5 ONLY)
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
@@ -34,38 +34,38 @@ jobs:
           PROMPT="You are an AI Architect. Objective: $OBJECTIVE. Context: $KNOWLEDGE_CONTEXT. Write a self-contained Python script. Respond ONLY with raw code."
           JSON_PAYLOAD=$(jq -n --arg p "$PROMPT" '{contents: [{parts: [{text: $p}]}]}')
 
-          # قائمة الموديلات للتبديل في حال فشل الكوتا على GitHub
-          MODELS=("gemini-2.5-flash-lite" "gemini-1.5-flash" "gemini-1.5-flash-8b")
+          # الرابط الذي يعمل عندك (v1beta + gemini-2.5-flash-lite)
+          API_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GOOGLE_API_KEY}"
           
           SUCCESS=false
-          for MODEL in "${MODELS[@]}"; do
-            echo "🤖 Attempting with Model: $MODEL"
-            API_URL="https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GOOGLE_API_KEY}"
+          # محاولة الطلب 5 مرات بنفس الرابط مع انتظار متزايد لتجاوز الـ 429
+          for i in {1..5}; do
+            echo "🤖 Attempt $i using Gemini 2.5 Flash Lite..."
             
-            # محاولة الطلب مرتين لكل موديل مع انتظار
-            for i in {1..2}; do
-              RESPONSE=$(curl -s -X POST \
-                -H "Content-Type: application/json" \
-                -H "User-Agent: Mozilla/5.0" \
-                -d "$JSON_PAYLOAD" "$API_URL")
+            RESPONSE=$(curl -s -X POST \
+              -H "Content-Type: application/json" \
+              -d "$JSON_PAYLOAD" "$API_URL")
 
-              if echo "$RESPONSE" | grep -q "candidates"; then
-                TASK_CODE=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
-                if [[ ! -z "$TASK_CODE" && "$TASK_CODE" != "null" ]]; then
-                  echo "$TASK_CODE" > current_task.py
-                  SUCCESS=true
-                  break 2
-                fi
-              else
-                echo "⚠️ Attempt $i for $MODEL failed. Waiting 30s..."
-                sleep 30
+            if echo "$RESPONSE" | grep -q "candidates"; then
+              TASK_CODE=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty' | sed -e 's/^```python//' -e 's/^```//' -e 's/```$//' | sed '/./,$!d')
+              if [[ ! -z "$TASK_CODE" && "$TASK_CODE" != "null" ]]; then
+                echo "$TASK_CODE" > current_task.py
+                echo "✅ Success!"
+                SUCCESS=true
+                break
               fi
-            done
+            elif echo "$RESPONSE" | grep -q "RESOURCE_EXHAUSTED"; then
+              WAIT=$((i * 20))
+              echo "⚠️ Quota Hit (429). Waiting $WAIT seconds..."
+              sleep $WAIT
+            else
+              echo "❌ Error details: $(echo "$RESPONSE" | jq -r '.error.message // "Unknown error"')"
+              sleep 10
+            fi
           done
 
           if [ "$SUCCESS" = false ]; then
-            echo "❌ ALL ATTEMPTS FAILED. Last Response:"
-            echo "$RESPONSE"
+            echo "❌ Failed after 5 attempts."
             exit 1
           fi
 
@@ -97,7 +97,7 @@ jobs:
           git config --global user.email 'architect@phoenix.ai'
           git add . && git commit -m "Evolution ${COUNT}" && git push || echo "No changes"
 
-      - name: 5.1 - Recursive Loop (Auto-Recovery)
+      - name: 5.1 - Recursive Loop
         if: always()
         env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
         run: sleep 300 && gh workflow run wakeup.yml --repo ${{ github.repository }} -f custom_objective="$OBJ"
