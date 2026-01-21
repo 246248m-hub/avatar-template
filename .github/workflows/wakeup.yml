@@ -81,18 +81,19 @@ jobs:
           git commit -m "Evolution: task_${COUNT}"
           git push || echo "No changes"
 
-      - name: 5.1 - Recursive Loop (Fixed)
+      - name: 5.1 - Recursive Loop
         if: always()
         env:
-          REPO: ${{ github.repository }}
-          TOKEN: ${{ secrets.COMMANDER_PAT }}
+          GH_TOKEN: ${{ secrets.COMMANDER_PAT }}
           OBJ: ${{ github.event.inputs.custom_objective }}
         run: |
           echo "Waiting 300s..."
           sleep 300
-          # استخدام متغيرات البيئة مباشرة داخل URL لتجنب مشاكل الأقواس
-          curl -X POST \
+          
+          # استخدام gh cli بدلاً من curl لتجنب مشاكل الروابط تماماً
+          gh api \
+            --method POST \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $TOKEN" \
-            "[https://api.github.com/repos/$REPO/actions/workflows/genesis_commander.yml/dispatches](https://api.github.com/repos/$REPO/actions/workflows/genesis_commander.yml/dispatches)" \
-            -d "{\"ref\":\"main\", \"inputs\": {\"custom_objective\": \"$OBJ\"}}"
+            /repos/${{ github.repository }}/actions/workflows/genesis_commander.yml/dispatches \
+            -f ref='main' \
+            -f inputs[custom_objective]="$OBJ"
