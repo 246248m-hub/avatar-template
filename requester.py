@@ -7,25 +7,34 @@ def ask_gemini(prompt):
     headers = {"Content-Type": "application/json"}
     for i in range(5):
         try:
-            res = requests.post(url, json=payload, headers=headers, timeout=60)
+            res = requests.post(url, json=payload, headers=headers, timeout=90)
             data = res.json()
             if "candidates" in data:
-                return data['candidates'][0]['content']['parts'][0]['text'].replace("```python", "").replace("```", "").strip()
-            time.sleep(40)
+                return data['candidates'][0]['content']['parts'][0]['text'].strip()
+            time.sleep(45)
         except:
             time.sleep(20)
     return None
 
 error_context = ""
 if os.path.exists("error_log.txt"):
-    with open("error_log.txt", "r") as f:
-        error_context = f"\n⚠️ LAST FAILURE: {f.read()[-500:]}"
+    with open("error_log.txt", "r") as f: error_context = f.read()[-1000:]
+
+short_term_memory = ""
+if os.path.exists("knowledge_base"):
+    for lobe in sorted(os.listdir("knowledge_base")):
+        lobe_path = os.path.join("knowledge_base", lobe)
+        if os.path.isdir(lobe_path):
+            files = sorted([f for f in os.listdir(lobe_path) if f.startswith("task_")])
+            if files:
+                with open(os.path.join(lobe_path, files[-1]), "r") as c:
+                    short_term_memory += f"// STM from {lobe}: {c.read()[-200:]}\n"
 
 obj = os.getenv("OBJECTIVE")
-prompt = f"Objective: {obj}. {error_context}\nWrite next Python script. Code only."
+prompt = f"Objective: {obj}\nError Log: {error_context}\nMemory: {short_term_memory}\nTask: Generate next Python code. If error is env-related, start with 'YML_REPAIR:' and provide full executor.yml code. Otherwise, pure Python."
 
 code = ask_gemini(prompt)
 if code:
-    with open("current_task.py", "w") as f: f.write(code)
+    with open("current_thought.txt", "w") as f: f.write(code)
 else:
     exit(1)
