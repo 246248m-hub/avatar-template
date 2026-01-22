@@ -10,18 +10,21 @@ def ask_gemini(prompt):
             res = requests.post(url, json=payload, headers=headers, timeout=90)
             data = res.json()
             if "candidates" in data:
-                return data['candidates'][0]['content']['parts'][0]['text'].strip()
-            time.sleep(45)
-        except:
+                raw_text = data['candidates'][0]['content']['parts'][0]['text']
+                # تنظيف الكود من علامات الماركداون والزوائد
+                clean_code = raw_text.replace("```python", "").replace("```", "").strip()
+                return clean_code
+            print(f"Attempt {i+1} failed: {data}")
+            time.sleep(30)
+        except Exception as e:
+            print(f"Network error: {e}")
             time.sleep(20)
     return None
 
-# جلب سياق الأخطاء السابقة
 error_context = ""
 if os.path.exists("error_log.txt"):
-    with open("error_log.txt", "r") as f: error_context = f.read()[-1000:]
+    with open("error_log.txt", "r") as f: error_context = f.read()[-800:]
 
-# جلب سياق الذاكرة من الفصوص الـ 11
 memory = ""
 if os.path.exists("knowledge_base"):
     for lobe in sorted(os.listdir("knowledge_base")):
@@ -33,10 +36,10 @@ if os.path.exists("knowledge_base"):
                     memory += f"// Memory from {lobe}: {c.read()[-250:]}\n"
 
 obj = os.getenv("OBJECTIVE")
-prompt = f"Objective: {obj}\nErrors: {error_context}\nBrain Memory: {memory}\nTask: Generate next Python code. If env error, start with 'YML_REPAIR:' + executor.yml code. Respond ONLY with code."
+prompt = f"Objective: {obj}\nErrors: {error_context}\nMemory: {memory}\nTask: Generate next Python code. If env error, start with 'YML_REPAIR:' + executor.yml. Respond ONLY with raw code."
 
 code = ask_gemini(prompt)
-if code:
+if code and len(code) > 20:
     with open("current_thought.txt", "w") as f: f.write(code)
 else:
     exit(1)
