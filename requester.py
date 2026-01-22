@@ -16,22 +16,24 @@ def ask_gemini(prompt):
             time.sleep(20)
     return None
 
+# جلب سياق الأخطاء السابقة
 error_context = ""
 if os.path.exists("error_log.txt"):
     with open("error_log.txt", "r") as f: error_context = f.read()[-1000:]
 
-short_term_memory = ""
+# جلب سياق الذاكرة من الفصوص الـ 11
+memory = ""
 if os.path.exists("knowledge_base"):
     for lobe in sorted(os.listdir("knowledge_base")):
-        lobe_path = os.path.join("knowledge_base", lobe)
-        if os.path.isdir(lobe_path):
-            files = sorted([f for f in os.listdir(lobe_path) if f.startswith("task_")])
+        path = os.path.join("knowledge_base", lobe)
+        if os.path.isdir(path):
+            files = sorted([f for f in os.listdir(path) if f.startswith("task_")])
             if files:
-                with open(os.path.join(lobe_path, files[-1]), "r") as c:
-                    short_term_memory += f"// STM from {lobe}: {c.read()[-200:]}\n"
+                with open(os.path.join(path, files[-1]), "r") as c:
+                    memory += f"// Memory from {lobe}: {c.read()[-250:]}\n"
 
 obj = os.getenv("OBJECTIVE")
-prompt = f"Objective: {obj}\nError Log: {error_context}\nMemory: {short_term_memory}\nTask: Generate next Python code. If error is env-related, start with 'YML_REPAIR:' and provide full executor.yml code. Otherwise, pure Python."
+prompt = f"Objective: {obj}\nErrors: {error_context}\nBrain Memory: {memory}\nTask: Generate next Python code. If env error, start with 'YML_REPAIR:' + executor.yml code. Respond ONLY with code."
 
 code = ask_gemini(prompt)
 if code:
