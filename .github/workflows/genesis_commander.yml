@@ -1,11 +1,11 @@
-name: 🧬 GENESIS COMMANDER
+name: ✨ PHOENIX AETURNUM
 
 on:
   workflow_dispatch:
     inputs:
       custom_objective:
-        description: 'المهمة الاستراتيجية'
-        default: 'PHASE 0: Build the Arabic Language Lobe. Your first task is to build a Python module to parse a large Arabic vocabulary file and store it in knowledge_base/0_arabic_lobe/.'
+        description: 'المهمة الاستراتيجية العليا'
+        default: 'PHASE 0: Master Language. Task: Build a foundational module for Arabic text parsing and generation.'
 
 permissions:
   contents: write
@@ -20,7 +20,7 @@ jobs:
         with:
           token: ${{ secrets.COMMANDER_PAT }}
 
-      - name: 2.1 - AI Generation
+      - name: 2.1 - AI Generation (Wisdom-Aware)
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
@@ -36,56 +36,77 @@ jobs:
               headers = {"Content-Type": "application/json"}
               for i in range(5):
                   try:
-                      res = requests.post(url, json=payload, headers=headers, timeout=60)
+                      res = requests.post(url, json=payload, headers=headers, timeout=90)
                       data = res.json()
                       if "candidates" in data:
-                          return data['candidates'][0]['content']['parts'][0]['text'].replace("```python", "").replace("```", "").strip()
-                      time.sleep(40)
+                          return data['candidates'][0]['content']['parts'][0]['text'].strip()
+                      time.sleep(45)
                   except:
                       time.sleep(20)
               return None
 
           error_context = ""
           if os.path.exists("error_log.txt"):
-              with open("error_log.txt", "r") as f:
-                  error_context = f"\n⚠️ LAST FAILURE: {f.read()[-500:]}"
+              with open("error_log.txt", "r") as f: error_context = f.read()[-1000:]
+
+          short_term_memory = ""
+          if os.path.exists("knowledge_base"):
+              for lobe in sorted(os.listdir("knowledge_base")):
+                  lobe_path = os.path.join("knowledge_base", lobe)
+                  if os.path.isdir(lobe_path):
+                      files = sorted([f for f in os.listdir(lobe_path) if f.startswith("task_")])
+                      if files:
+                          with open(os.path.join(lobe_path, files[-1]), "r") as c:
+                              short_term_memory += f"// STM from {lobe}: {c.read()[-200:]}\n"
 
           obj = os.getenv("OBJECTIVE")
-          prompt = f"Objective: {obj}. {error_context}\nWrite next Python script. Code only."
+          prompt = f"Objective: {obj}\nError Log: {error_context}\nMemory: {short_term_memory}\nTask: Generate next Python code. If error is env-related, start with 'YML_REPAIR:' and provide full executor.yml code. Otherwise, pure Python."
           
           code = ask_gemini(prompt)
           if code:
-              with open("current_task.py", "w") as f: f.write(code)
+              with open("current_thought.txt", "w") as f: f.write(code)
           else:
               exit(1)
           EOF
           python3 requester.py
-          echo "task_payload=$(cat current_task.py | base64 -w 0)" >> $GITHUB_ENV
 
-      - name: 3.1 - Dispatch
+      - name: 3.1 - Execute or Reshape
+        id: execution
+        env:
+          GH_TOKEN: ${{ secrets.COMMANDER_PAT }}
+        run: |
+          if [[ $(head -n 1 current_thought.txt) == "YML_REPAIR:" ]]; then
+            YML_CODE=$(sed '1d' current_thought.txt)
+            SHA=$(gh api /repos/${{ github.repository_owner }}/phoenix-executor/contents/.github/workflows/executor.yml --jq '.sha')
+            gh api --method PUT /repos/${{ github.repository_owner }}/phoenix-executor/contents/.github/workflows/executor.yml \
+              -f message="🧬 Genetic Reshaping" -f content="$(echo "$YML_CODE" | base64 -w 0)" -f sha="$SHA"
+            echo "dispatch=false" >> $GITHUB_OUTPUT
+          else
+            echo "payload=$(cat current_thought.txt | base64 -w 0)" >> $GITHUB_OUTPUT
+            echo "dispatch=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 3.2 - Dispatch Task
+        if: steps.execution.outputs.dispatch == 'true'
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: executor.yml
           repo: ${{ github.repository_owner }}/phoenix-executor
           token: ${{ secrets.COMMANDER_PAT }}
-          inputs: '{"task_payload": "${{ env.task_payload }}"}'
+          inputs: '{"task_payload": "${{ steps.execution.outputs.payload }}"}'
 
-      - name: 4.1 - Archive
+      - name: 4.1 - Archive & Sync
         if: always()
         run: |
-          mkdir -p knowledge_base/0_arabic_lobe
-          [ -f current_task.py ] && cp current_task.py "knowledge_base/0_arabic_lobe/task_$(date +%s).py"
+          mkdir -p knowledge_base/0_language_lobe
+          [ -f current_thought.txt ] && cp current_thought.txt "knowledge_base/0_language_lobe/task_$(date +%s).py"
           git config --global user.name 'Phoenix Architect'
           git config --global user.email 'architect@phoenix.ai'
-          git add . && git commit -m "Evolution $(date)" && git push || echo "No changes"
+          git add . && git commit -m "Pulse $(date)" && git push || echo "No changes"
 
-      - name: 5.1 - Recursive Heartbeat (CORRECTED NAME)
+      - name: 5.1 - Heartbeat
         if: always()
-        env:
-          GH_TOKEN: "${{ secrets.COMMANDER_PAT }}"
-          OBJ: "${{ github.event.inputs.custom_objective }}"
+        env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
         run: |
-          echo "Cooling down..."
           sleep 600
-          # هنا تم تصحيح الاسم ليطابق اسم الملف تماماً
-          gh workflow run "🧬 GENESIS COMMANDER" -f custom_objective="$OBJ"
+          gh workflow run "✨ PHOENIX AETURNUM" -f custom_objective="$OBJ"
