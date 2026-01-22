@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       custom_objective:
-        description: 'المهمة الاستراتيجية الشاملة'
-        required: false
-        default: 'PHASE 0: Master Language & Machine Code. Build internal Arabic model and binary manipulation library.'
+        description: 'المهمة الاستراتيجية'
+        default: 'PHASE 0: Master Language & Machine Code. Build Arabic NLP model and binary manipulation library.'
 
 permissions:
   contents: write
@@ -21,7 +20,7 @@ jobs:
         with:
           token: ${{ secrets.COMMANDER_PAT }}
 
-      - name: 2.1 - AI Generation with Self-Correction
+      - name: 2.1 - AI Generation with Self-Healing
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
@@ -34,7 +33,7 @@ jobs:
               api_key = os.getenv("GOOGLE_API_KEY")
               url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={api_key}"
               payload = {"contents": [{"parts": [{"text": prompt}]}]}
-              headers = {"Content-Type": "application/json"}
+              headers = {"Content-Type": "application/json", "User-Agent": "Phoenix-Architect/1.0"}
               
               for i in range(5):
                   try:
@@ -42,39 +41,39 @@ jobs:
                       data = res.json()
                       if "candidates" in data:
                           return data['candidates'][0]['content']['parts'][0]['text'].replace("```python", "").replace("```", "").strip()
-                      time.sleep(30 * (i+1))
+                      print(f"⚠️ Retry {i+1} due to: {data}")
+                      time.sleep(40 * (i+1))
                   except:
                       time.sleep(20)
               return None
 
-          # 1. قراءة السياق والأخطاء السابقة إن وجدت
+          # جلب سياق الأخطاء السابقة للإصلاح
           error_context = ""
           if os.path.exists("error_log.txt"):
               with open("error_log.txt", "r") as f:
-                  error_context = f"\n⚠️ IMPORTANT: The last script failed with this error: {f.read()[-500:]}\nPlease fix this error in the new script."
+                  error_context = f"\n⚠️ PREVIOUS FAILURE ERROR: {f.read()[-600:]}\nFix this error in the new code."
 
+          # جلب سياق الذاكرة السابقة
           context = ""
           if os.path.exists("knowledge_base"):
               files = sorted([f for f in os.listdir("knowledge_base") if f.startswith("task_")])
-              for f in files[-2:]:
-                  with open(f"knowledge_base/{f}", "r") as c: context += c.read()[-500:]
+              for f in files[-3:]:
+                  with open(os.path.join("knowledge_base", f), "r") as c: context += c.read()[-800:]
 
-          # 2. بناء البرومبت
           objective = os.getenv("OBJECTIVE")
-          prompt = f"Grand Objective: {objective}. {error_context} \nContext: {context} \nWrite the next self-contained Python script. Respond ONLY with raw code."
+          full_prompt = f"Objective: {objective}. {error_context}\nPast Context: {context}\nTask: Write the next self-contained Python script. Respond ONLY with raw code."
 
-          # 3. جلب الكود وحفظه
-          code = ask_gemini(prompt)
+          code = ask_gemini(full_prompt)
           if code:
               with open("current_task.py", "w") as f: f.write(code)
-              print("✅ Step Generated.")
+              print("✅ Evolution Code Generated.")
           else:
-              exit(1)
+              print("❌ Failed to reach AI Core."); exit(1)
           EOF
           python3 requester.py
           echo "task_payload=$(cat current_task.py | base64 -w 0)" >> $GITHUB_ENV
 
-      - name: 3.1 - Dispatch to Executor
+      - name: 3.1 - Dispatch Order
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: executor.yml
@@ -82,29 +81,21 @@ jobs:
           token: ${{ secrets.COMMANDER_PAT }}
           inputs: '{"task_payload": "${{ env.task_payload }}", "run_id": "${{ github.run_id }}"}'
 
-      - name: 4.1 - Archive & Self-Monitor
+      - name: 4.1 - Archive & Sync
         if: always()
         run: |
           mkdir -p knowledge_base
-          if [ -f current_task.py ]; then
-            COUNT=$(find knowledge_base -name 'task_*.py' | wc -l)
-            cp current_task.py "knowledge_base/task_${COUNT}.py"
-          fi
-          
-          # تحديث لوحة التحكم
-          echo "### 🧬 PHOENIX CORE - LIVE LOG" > README.md
-          echo "- **Status:** Running Autonomously" >> README.md
-          echo "- **Last Update:** $(date -u)" >> README.md
-          
+          [ -f current_task.py ] && cp current_task.py "knowledge_base/task_$(date +%s).py"
+          echo "### 🧬 PHOENIX CORE STATUS" > README.md
+          echo "- **Autonomy:** Active" >> README.md
+          echo "- **Last Pulse:** $(date -u)" >> README.md
           git config --global user.name 'Phoenix Architect'
           git config --global user.email 'architect@phoenix.ai'
-          git add . && git commit -m "Cycle Log $(date -u)" && git push || echo "No changes"
+          git add . && git commit -m "Evolution Cycle $(date +%Y%m%d-%H%M)" && git push || echo "No changes"
 
-      - name: 5.1 - Recursive Loop (The Heartbeat)
+      - name: 5.1 - Recursive Heartbeat
         if: always()
-        env:
-          GH_TOKEN: "${{ secrets.COMMANDER_PAT }}"
-          OBJECTIVE: "${{ github.event.inputs.custom_objective }}"
+        env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
         run: |
           sleep 600
-          gh workflow run genesis_commander.yml -f custom_objective="$OBJECTIVE"
+          gh workflow run genesis_commander.yml -f custom_objective="$OBJ"
