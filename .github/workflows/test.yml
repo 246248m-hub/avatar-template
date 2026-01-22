@@ -1,4 +1,4 @@
-name: ✅️ GENESIS COMMANDER
+name: ✔️ GENESIS COMMANDER
 
 on:
   workflow_dispatch:
@@ -16,67 +16,50 @@ jobs:
         with:
           token: ${{ secrets.COMMANDER_PAT }}
 
-      - name: 2.1 - AI Generation (Python Stealth Request)
+      - name: 2.1 - AI Generation (Resilient Stealth)
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           OBJECTIVE: ${{ github.event.inputs.custom_objective }}
         run: |
-          # إنشاء سكربت بايثون للقيام بالطلب بدلاً من curl
           cat << 'EOF' > requester.py
-          import requests, json, base64, os, time, random
+          import requests, json, base64, os, time
 
           api_key = os.getenv("GOOGLE_API_KEY")
           obj = os.getenv("OBJECTIVE")
           
-          # قراءة السياق من ملفات المعرفة
-          context = ""
-          files = sorted([f for f in os.listdir("knowledge_base") if f.startswith("task_")])
-          for f in files[-5:]:
-              with open(f"knowledge_base/{f}", "r") as content:
-                  context += content.read()[-1000:]
-
-          url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={api_key}"
-          payload = {"contents": [{"parts": [{"text": f"You are an AI Architect. Objective: {obj}. Context: {context}. Write ONLY raw Python code."}]}]}
+          # جربنا 2.5 وكان يعطي 429، الآن نستخدم 1.5 فلاش لضمان الاستقرار في GitHub
+          url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
           
-          headers = {
-              "Content-Type": "application/json",
-              "User-Agent": "Mozilla/5.0 (Linux; Android 10; SM-G960F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Mobile Safari/537.36"
-          }
+          payload = {"contents": [{"parts": [{"text": f"Write ONLY raw Python code to achieve this goal: {obj}. The code must include a run() function and be ready to execute."}]}]}
+          headers = {"Content-Type": "application/json"}
 
-          for i in range(1, 6):
-              print(f"🤖 Attempt {i} via Python Stealth...")
+          for i in range(1, 4):
+              print(f"🤖 Attempt {i} to wake Gemini...")
               try:
                   response = requests.post(url, json=payload, headers=headers)
                   data = response.json()
                   if "candidates" in data:
                       code = data["candidates"][0]["content"]["parts"][0]["text"]
-                      # تنظيف الكود
                       clean_code = code.replace("```python", "").replace("```", "").strip()
                       with open("current_task.py", "w") as f:
                           f.write(clean_code)
                       print("✅ Success!")
                       exit(0)
-                  elif "error" in data and data["error"]["code"] == 429:
-                      wait = i * 30 + random.randint(1, 15)
-                      print(f"⚠️ 429 Quota Hit. Sleeping {wait}s...")
-                      time.sleep(wait)
                   else:
-                      print(f"❌ Error: {data}")
-                      time.sleep(10)
+                      print(f"⚠️ Quota or API Error: {data.get('error', {}).get('message', 'Unknown')}")
+                      time.sleep(45) # انتظار أطول لتجاوز الحظر
               except Exception as e:
-                  print(f"⚠️ Connection error: {e}")
+                  print(f"❌ Connection error: {e}")
                   time.sleep(20)
           exit(1)
           EOF
-
           python3 requester.py
           
-          # تشفير الكود الناتج
           ENCODED=$(cat current_task.py | base64 -w 0)
           echo "task_payload=$ENCODED" >> $GITHUB_ENV
 
-      - name: 3.1 - Dispatch
+      - name: 3.1 - Dispatch to Executor
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: executor.yml
@@ -84,15 +67,20 @@ jobs:
           token: ${{ secrets.COMMANDER_PAT }}
           inputs: '{"task_payload": "${{ env.task_payload }}", "run_id": "${{ github.run_id }}"}'
 
-      - name: 4.1 - Archive
+      - name: 4.1 - Archive Knowledge
         run: |
+          mkdir -p knowledge_base
           COUNT=$(find knowledge_base -name 'task_*.py' | wc -l)
           cp current_task.py "knowledge_base/task_${COUNT}.py"
           git config --global user.name 'Architect'
           git config --global user.email 'ai@genesis.ai'
           git add . && git commit -m "Evolution ${COUNT}" && git push || echo "No changes"
 
-      - name: 5.1 - Loop (Increased to 600s to avoid IP Ban)
+      - name: 5.1 - Recursive Loop (Linked to test.yml)
         if: always()
         env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
-        run: sleep 600 && gh workflow run wakeup.yml --repo ${{ github.repository }} -f custom_objective="$OBJ"
+        run: |
+          echo "Resting for 10 minutes to clear rate limits..."
+          sleep 600
+          # تم تعديل الاسم هنا ليطابق ملفك test.yml
+          gh workflow run test.yml --repo ${{ github.repository }} -f custom_objective="$OBJ"
