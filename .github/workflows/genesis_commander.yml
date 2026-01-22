@@ -1,0 +1,54 @@
+name: 🛠️ PHOENIX EXECUTOR
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_payload:
+        required: true
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1.1 - Decode
+        run: |
+          echo "${{ github.event.inputs.task_payload }}" | base64 -d > task.py
+
+      - name: 2.1 - Run & Report
+        env:
+          # نستخدم التوكن الخاص بك، وإذا فشل نستخدم توكن النظام الافتراضي
+          MY_TOKEN: ${{ secrets.COMMANDER_PAT }}
+          SYS_TOKEN: ${{ github.token }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: "avatar-template"
+        run: |
+          # تحديد التوكن الشغال
+          if [ -n "$MY_TOKEN" ]; then
+            export GH_TOKEN="$MY_TOKEN"
+          else
+            export GH_TOKEN="$SYS_TOKEN"
+            echo "⚠️ Warning: Using default System Token"
+          fi
+
+          python3 task.py > output.log 2> error.log || echo "FAILED" > status.txt
+          
+          if [ -f status.txt ]; then
+            echo "⚠️ Reporting error..."
+            ERR_B64=$(cat error.log | tail -c 1000 | base64 -w 0)
+            SHA=$(gh api /repos/$OWNER/$REPO/contents/error_log.txt --jq '.sha' || echo "null")
+            
+            if [ "$SHA" == "null" ]; then
+              gh api --method PUT /repos/$OWNER/$REPO/contents/error_log.txt -f message="⚠️ Report" -f content="$ERR_B64"
+            else
+              gh api --method PUT /repos/$OWNER/$REPO/contents/error_log.txt -f message="⚠️ Update" -f content="$ERR_B64" -f sha="$SHA"
+            fi
+            exit 1
+          else
+            echo "✅ Success"
+            SHA=$(gh api /repos/$OWNER/$REPO/contents/error_log.txt --jq '.sha' || echo "null")
+            [ "$SHA" != "null" ] && gh api --method DELETE /repos/$OWNER/$REPO/contents/error_log.txt -f message="✅ Clean" -f sha="$SHA" || true
+          fi
