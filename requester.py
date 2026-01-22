@@ -11,7 +11,6 @@ def ask_gemini(prompt):
             res = requests.post(url, json=payload, headers=headers, timeout=90)
             data = res.json()
             if res.status_code == 429:
-                print("⚠️ Quota limit. Waiting 70s...")
                 time.sleep(70); continue
             if "candidates" in data:
                 text = data['candidates'][0]['content']['parts'][0]['text']
@@ -30,7 +29,7 @@ if os.path.exists("knowledge_base"):
     files = sorted([f for f in os.listdir("knowledge_base") if f.startswith("task_")])
     if files:
         with open(os.path.join("knowledge_base", files[-1]), "r") as c:
-            memory = f"// Last Memory: {c.read()[-300:]}\n"
+            memory = f"// Memory: {c.read()[-300:]}\n"
 
 obj = os.getenv("OBJECTIVE")
 prompt = f"Objective: {obj}\nErrors: {error_context}\nMemory: {memory}\nTask: Generate next Python code. Respond ONLY with raw code."
