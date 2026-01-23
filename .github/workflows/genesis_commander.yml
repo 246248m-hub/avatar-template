@@ -1,88 +1,164 @@
-name: 🛰️ Phoenix AICore Heartbeat
+name: 🧠 PHOENIX SAPIENS (The Efficient Architect)
 
 on:
   workflow_dispatch:
-  repository_dispatch:
-    types: [heartbeat]
-  schedule:
-    - cron: '0 * * * *' # نبضة كل ساعة لضمان الاستمرارية
+    inputs:
+      custom_objective:
+        description: 'المهمة الاستراتيجية العليا'
+        default: 'PHASE 0: Master Language. Task: Build a foundational module for Arabic text parsing and generation.'
+
+permissions:
+  contents: write
+  actions: write
 
 jobs:
-  evolve:
+  genesis_learning_cycle:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    env:
-      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
     steps:
-      - name: 📥 Checkout Repository
+      # -----------------------------------------------------
+      # 1. استدعاء الوعي والذاكرة الكاملة
+      # -----------------------------------------------------
+      - name: 1.1 - Checkout Phoenix Core
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.COMMANDER_PAT }}
 
-      - name: 🧠 AICore Processing Cycle
-        shell: python
+      # -----------------------------------------------------
+      # 2. التفكير العميق (مع معالجة الكوتا والشفاء الذاتي)
+      # -----------------------------------------------------
+      - name: 2.1 - AI Generation (Resilient Logic)
+        id: gemini_task
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          OBJECTIVE: ${{ github.event.inputs.custom_objective }}
         run: |
-          import os, requests, json, time
-          # استيراد الكود الذي بنيناه سابقاً لإدارة الذاكرة والموديولات
-          # نحن هنا نحاكي تشغيل الـ AICore الذي أرسلته لي
+          cat << 'EOF' > requester.py
+          import requests, json, os, time, sys
 
           def ask_gemini(prompt):
               api_key = os.getenv("GOOGLE_API_KEY")
-              # نستخدم الرابط المستقر لضمان عدم حدوث خطأ 404 مجدداً
-              url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={api_key}"
+              url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={api_key}"
               payload = {"contents": [{"parts": [{"text": prompt}]}]}
               headers = {"Content-Type": "application/json"}
               
-              try:
-                  res = requests.post(url, json=payload, headers=headers, timeout=90)
-                  data = res.json()
-                  if "candidates" in data:
-                      return data['candidates'][0]['content']['parts'][0]['text'].replace("```python", "").replace("```", "").strip()
-              except:
-                  return None
+              for i in range(3):
+                  try:
+                      res = requests.post(url, json=payload, headers=headers, timeout=90)
+                      data = res.json()
+                      if res.status_code == 429:
+                          print(f"⚠️ Quota Exhausted. Sleeping 70s...")
+                          time.sleep(70); continue
+                      if "candidates" in data:
+                          text = data['candidates'][0]['content']['parts'][0]['text']
+                          return text.replace("```python", "").replace("```", "").strip()
+                      time.sleep(30)
+                  except:
+                      time.sleep(20)
               return None
 
-          # --- استعادة حالة الذاكرة ---
-          memory = {}
-          if os.path.exists("memory.json"):
-              with open("memory.json", "r") as f:
-                  memory = json.load(f)
+          error_context = ""
+          if os.path.exists("error_log.txt"):
+              with open("error_log.txt", "r") as f: error_context = f.read()[-800:]
 
-          # --- بناء السياق للقائد ---
-          # نخبر Gemini بما يوجد في الذاكرة والموديولات الحالية ليكمل عليها
-          modules = os.listdir("logic_modules") if os.path.exists("logic_modules") else []
+          memory = ""
+          if os.path.exists("knowledge_base"):
+              files = sorted([f for f in os.listdir("knowledge_base") if f.startswith("task_")])
+              if files:
+                  with open(os.path.join("knowledge_base", files[-1]), "r") as c:
+                      memory = f"// Last Task Context: {c.read()[-300:]}\n"
+
+          obj = os.getenv("OBJECTIVE")
+          prompt = f"Objective: {obj}\nErrors: {error_context}\nLast Memory: {memory}\nTask: Generate next Python code. Respond ONLY with raw code."
           
-          prompt = f"""
-          Current AI Memory: {json.dumps(memory)}
-          Loaded Logic Modules: {modules}
-          Mission: Continue building the Arabic Parser and Generator system.
-          Action: Create a new logic module in 'logic_modules/' that adds a new capability.
-          Format: Return ONLY the Python code for the 'process(context)' function.
-          """
-
-          new_logic = ask_gemini(prompt)
-
-          if new_logic:
-              os.makedirs("logic_modules", exist_ok=True)
-              module_name = f"logic_modules/module_{int(time.time())}.py"
-              with open(module_name, "w") as f:
-                  f.write(new_logic)
-              print(f"✅ Evolution Success: {module_name}")
+          code = ask_gemini(prompt)
+          if code and len(code) > 20:
+              with open("current_thought.txt", "w") as f: f.write(code)
           else:
-              print("❌ API Failure, skipping this pulse.")
+              print("⚠️ Quota/API issue. Hibernating.")
+              sys.exit(0) 
+          EOF
+          python3 requester.py
 
-      - name: 🔄 Trigger Next Heartbeat
+      # -----------------------------------------------------
+      # 3. إرسال المهمة للمنفذ (الجسر الجيني)
+      # -----------------------------------------------------
+      - name: 3.1 - Dispatch to Executor
+        id: execution
+        if: success() && hashFiles('current_thought.txt') != ''
+        env:
+          GH_TOKEN: ${{ secrets.COMMANDER_PAT }}
+          OWNER: ${{ github.repository_owner }}
         run: |
-          curl -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/${{ github.repository }}/dispatches \
-          -d '{"event_type": "heartbeat"}'
+          if [[ $(head -n 1 current_thought.txt) == "YML_REPAIR:" ]]; then
+            YML_CODE=$(sed '1d' current_thought.txt)
+            SHA=$(gh api /repos/$OWNER/phoenix-executor/contents/.github/workflows/executor.yml --jq '.sha')
+            gh api --method PUT /repos/$OWNER/phoenix-executor/contents/.github/workflows/executor.yml \
+              -f message="🧬 Genetic Reshaping" -f content="$(echo "$YML_CODE" | base64 -w 0)" -f sha="$SHA"
+            echo "dispatch=false" >> $GITHUB_OUTPUT
+          else
+            echo "payload=$(cat current_thought.txt | base64 -w 0)" >> $GITHUB_OUTPUT
+            echo "dispatch=true" >> $GITHUB_OUTPUT
+          fi
 
-      - name: 📤 Commit Persistence
+      - name: 3.2 - Dispatch Task
+        if: steps.execution.outputs.dispatch == 'true'
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: executor.yml
+          repo: ${{ github.repository_owner }}/phoenix-executor
+          token: ${{ secrets.COMMANDER_PAT }}
+          inputs: '{"task_payload": "${{ steps.execution.outputs.payload }}"}'
+
+      # -----------------------------------------------------
+      # 4. الأرشفة الذكية وكشف الركود (الوعي بكفاءة التعلم)
+      # -----------------------------------------------------
+      - name: 4.1 - Smart Archive & Stagnation Detection
+        id: archive
+        if: always()
         run: |
-          git config --global user.name "Phoenix AI Core"
-          git config --global user.email "phoenix@ai.com"
-          git add .
-          git commit -m "Pulse: Advancing Logic Modules and Memory" || exit 0
-          git push
+          mkdir -p knowledge_base
+          IS_DUPLICATE=false
+          STAGNATION_RATE=0
+          
+          if [ -f current_thought.txt ]; then
+            THOUGHT_HASH=$(sha256sum current_thought.txt | awk '{print $1}')
+            touch thought_fingerprints.log
+            
+            if grep -q "$THOUGHT_HASH" thought_fingerprints.log; then
+              echo "⚠️ Duplicate detected."
+              IS_DUPLICATE=true
+            else
+              cp current_thought.txt "knowledge_base/task_$(date +%s).py"
+              echo "$THOUGHT_HASH" >> thought_fingerprints.log
+            fi
+            
+            TOTAL=$(cat thought_fingerprints.log | wc -l)
+            UNIQUE=$(sort -u thought_fingerprints.log | wc -l)
+            [ "$TOTAL" -ge 10 ] && STAGNATION_RATE=$(( (TOTAL - UNIQUE) * 100 / TOTAL ))
+          fi
+          
+          echo "stagnation_rate=$STAGNATION_RATE" >> $GITHUB_OUTPUT
+          
+          git config --global user.name 'Phoenix Sapiens'
+          git config --global user.email 'sapiens@phoenix.ai'
+          if [ "$IS_DUPLICATE" = false ] && [ -f current_thought.txt ]; then
+            git add . && git commit -m "Evolution Pulse: Stagnation $STAGNATION_RATE%" && git push || echo ""
+          fi
+
+      # -----------------------------------------------------
+      # 5. النبضة المشروطة أو الإيقاف النهائي
+      # -----------------------------------------------------
+      - name: 5.1 - Conditional Heartbeat
+        if: always() && steps.archive.outputs.stagnation_rate < 100
+        env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
+        run: |
+          echo "Evolution continues. Stagnation: ${{ steps.archive.outputs.stagnation_rate }}%"
+          sleep 600
+          gh workflow run "🧠 PHOENIX SAPIENS" -f custom_objective="$OBJ"
+
+      - name: 5.2 - Final Saturation Report
+        if: always() && steps.archive.outputs.stagnation_rate >= 100
+        run: |
+          echo "PHOENIX SAPIENS reached absolute intellectual saturation."
+          echo "## 🏁 EVOLUTION COMPLETE 🏁" > README.md
+          git add README.md && git commit -m "Final State: Saturation Reached" && git push || echo ""
