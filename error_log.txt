@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 211, in <module>
-    setup_module()
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 183, in setup_module
-    with open(TASK_MODULE_DIR / "arabic_parsing.py", "w", encoding="utf-8") as f:
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/tasks/arabic_parsing/arabic_parsing.py'
