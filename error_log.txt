@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 253, in <module>
+    run_all_tests()
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 241, in run_all_tests
+    test_parsing_and_generation()
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 184, in test_parsing_and_generation
+    assert generated_greeting == "مرحباً يا أحمد!"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
