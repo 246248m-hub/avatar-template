@@ -1,94 +1,133 @@
-name: 🛰️ Phoenix Eternal Heartbeat (Gemini 2.5)
+name: 🧠 PHOENIX SAPIENS (The Efficient Architect)
 
 on:
   workflow_dispatch:
-  repository_dispatch:
-    types: [heartbeat]
-  schedule:
-    - cron: '*/15 * * * *' # نبضة احتياطية كل 15 دقيقة
+    inputs:
+      custom_objective:
+        description: 'المهمة الاستراتيجية العليا'
+        default: 'PHASE 0: Master Language. Task: Build a foundational module for Arabic text parsing and generation.'
+
+permissions:
+  contents: write
+  actions: write
 
 jobs:
-  evolve:
+  genesis_learning_cycle:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    env:
-      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      OWNER: ${{ github.repository_owner }}
-      REPO: ${{ github.event.repository.name }}
-
     steps:
-      - name: 📥 Checkout Repository
+      - name: 1.1 - Checkout Phoenix Core
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.COMMANDER_PAT }}
 
-      - name: 🧠 AI Evolution Cycle
-        shell: python
+      - name: 2.1 - AI Generation (Resilient Logic)
+        id: gemini_task
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          OBJECTIVE: ${{ github.event.inputs.custom_objective }}
         run: |
-          import os, requests, json, time, base64
+          cat << 'EOF' > requester.py
+          import requests, json, os, time, sys
 
           def ask_gemini(prompt):
               api_key = os.getenv("GOOGLE_API_KEY")
-              # تم تحديث الرابط لـ v1beta مع موديل 2.5
-              url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
-              
-              payload = {
-                  "contents": [{"parts": [{"text": prompt}]}],
-                  "generationConfig": {"temperature": 0.8, "maxOutputTokens": 2048}
-              }
+              url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={api_key}"
+              payload = {"contents": [{"parts": [{"text": prompt}]}]}
               headers = {"Content-Type": "application/json"}
               
-              for _ in range(3):
+              for i in range(3):
                   try:
-                      res = requests.post(url, json=payload, headers=headers, timeout=120)
+                      res = requests.post(url, json=payload, headers=headers, timeout=90)
+                      data = res.json()
                       if res.status_code == 429:
                           time.sleep(70); continue
-                      data = res.json()
                       if "candidates" in data:
-                          return data['candidates'][0]['content']['parts'][0]['text'].replace("```python", "").replace("```", "").strip()
+                          text = data['candidates'][0]['content']['parts'][0]['text']
+                          return text.replace("```python", "").replace("```", "").strip()
+                      time.sleep(30)
                   except:
                       time.sleep(20)
               return None
 
-          # 1. جمع السياق (الذاكرة) لعدم التكرار
-          kb_files = os.listdir("knowledge_base") if os.path.exists("knowledge_base") else []
+          error_context = ""
+          if os.path.exists("error_log.txt"):
+              with open("error_log.txt", "r") as f: error_context = f.read()[-800:]
+
           memory = ""
-          if os.path.exists("memory.json"):
-              with open("memory.json", "r") as f: memory = f.read()
+          if os.path.exists("knowledge_base"):
+              files = sorted([f for f in os.listdir("knowledge_base") if f.startswith("task_")])
+              if files:
+                  with open(os.path.join("knowledge_base", files[-1]), "r") as c:
+                      memory = f"// Memory: {c.read()[-300:]}\n"
 
-          # 2. بناء الأمر (Prompt)
-          prompt = f"""
-          Current Files in Knowledge Base: {kb_files}
-          AI Memory: {memory}
-          Task: Continue developing the Arabic NLP ecosystem. 
-          If there is an 'error_log.txt', fix it first. 
-          If not, create a new advanced module in 'logic_modules/' or 'knowledge_base/'.
-          Return ONLY pure Python code. No explanations.
-          """
-
-          # 3. الحصول على الكود الجديد
-          new_code = ask_gemini(prompt)
-          if new_code:
-              filename = f"knowledge_base/task_{int(time.time())}.py"
-              os.makedirs("knowledge_base", exist_ok=True)
-              with open(filename, "w") as f: f.write(new_code)
-              print(f"✅ New evolution saved: {filename}")
+          obj = os.getenv("OBJECTIVE")
+          prompt = f"Objective: {obj}\nErrors: {error_context}\nMemory: {memory}\nTask: Generate next Python code. Respond ONLY with raw code."
+          
+          code = ask_gemini(prompt)
+          if code and len(code) > 20:
+              with open("current_thought.txt", "w") as f: f.write(code)
           else:
-              print("❌ AI failed to evolve this cycle.")
+              sys.exit(0) 
+          EOF
+          python3 requester.py
 
-      - name: 🔄 Trigger Next Heartbeat
+      - name: 3.1 - Execute or Reshape
+        id: execution
+        if: success() && hashFiles('current_thought.txt') != ''
+        env:
+          GH_TOKEN: ${{ secrets.COMMANDER_PAT }}
+          OWNER: ${{ github.repository_owner }}
         run: |
-          # استدعاء النبضة القادمة برمجياً لضمان الاستمرار
-          curl -X POST -H "Authorization: token $GH_TOKEN" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/$OWNER/$REPO/dispatches \
-          -d '{"event_type": "heartbeat"}'
+          if [[ $(head -n 1 current_thought.txt) == "YML_REPAIR:" ]]; then
+            YML_CODE=$(sed '1d' current_thought.txt)
+            SHA=$(gh api /repos/$OWNER/phoenix-executor/contents/.github/workflows/executor.yml --jq '.sha')
+            gh api --method PUT /repos/$OWNER/phoenix-executor/contents/.github/workflows/executor.yml \
+              -f message="🧬 Genetic Reshaping" -f content="$(echo "$YML_CODE" | base64 -w 0)" -f sha="$SHA"
+            echo "dispatch=false" >> $GITHUB_OUTPUT
+          else
+            echo "payload=$(cat current_thought.txt | base64 -w 0)" >> $GITHUB_OUTPUT
+            echo "dispatch=true" >> $GITHUB_OUTPUT
+          fi
 
-      - name: 📤 Commit Changes
+      - name: 3.2 - Dispatch Task
+        if: steps.execution.outputs.dispatch == 'true'
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: executor.yml
+          repo: ${{ github.repository_owner }}/phoenix-executor
+          token: ${{ secrets.COMMANDER_PAT }}
+          inputs: '{"task_payload": "${{ steps.execution.outputs.payload }}"}'
+
+      - name: 4.1 - Smart Archive & Stagnation Detection
+        id: archive
+        if: always()
         run: |
-          git config --global user.name "Phoenix AI"
-          git config --global user.email "phoenix@ai.com"
-          git add .
-          git commit -m "Cycle: ${{ github.run_number }} | Mode: Gemini 2.5" || exit 0
-          git push
+          mkdir -p knowledge_base
+          IS_DUPLICATE=false
+          STAGNATION_RATE=0
+          if [ -f current_thought.txt ]; then
+            THOUGHT_HASH=$(sha256sum current_thought.txt | awk '{print $1}')
+            touch thought_fingerprints.log
+            if grep -q "$THOUGHT_HASH" thought_fingerprints.log; then
+              IS_DUPLICATE=true
+            else
+              cp current_thought.txt "knowledge_base/task_$(date +%s).py"
+              echo "$THOUGHT_HASH" >> thought_fingerprints.log
+            fi
+            TOTAL=$(cat thought_fingerprints.log | wc -l)
+            UNIQUE=$(sort -u thought_fingerprints.log | wc -l)
+            [ "$TOTAL" -ge 10 ] && STAGNATION_RATE=$(( (TOTAL - UNIQUE) * 100 / TOTAL ))
+          fi
+          echo "stagnation_rate=$STAGNATION_RATE" >> $GITHUB_OUTPUT
+          git config --global user.name 'Phoenix Sapiens'
+          git config --global user.email 'sapiens@phoenix.ai'
+          if [ "$IS_DUPLICATE" = false ] && [ -f current_thought.txt ]; then
+            git add . && git commit -m "Pulse: Stagnation $STAGNATION_RATE%" && git push || echo ""
+          fi
 
+      - name: 5.1 - Eternal Heartbeat
+        if: always() && steps.archive.outputs.stagnation_rate < 100
+        env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
+        run: |
+          sleep 600
+          gh workflow run genesis_commander.yml -f custom_objective="$OBJ"
