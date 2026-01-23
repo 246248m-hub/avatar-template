@@ -1,0 +1,6 @@
+/home/runner/work/phoenix-executor/phoenix-executor/task.py:12: SyntaxWarning: invalid escape sequence '\w'
+  DUMMY_MODULE_CONTENT = """
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 3, in <module>
+    import pytest
+ModuleNotFoundError: No module named 'pytest'
