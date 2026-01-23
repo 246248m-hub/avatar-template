@@ -1,4 +1,14 @@
 Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 3, in <module>
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 7, in <module>
     import pytest
 ModuleNotFoundError: No module named 'pytest'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 15, in <module>
+    import mock_pytest as pytest
+  File "/home/runner/work/phoenix-executor/phoenix-executor/mock_pytest.py", line 16
+    def mark:
+            ^
+SyntaxError: expected '('
