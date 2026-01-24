@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 192, in main
+    test_arabic_parser_module()
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 165, in test_arabic_parser_module
+    assert "Is 'بِسْمِ ٱللَّٰهِ ٱٱلرَّحْمَٰنِ ٱلرَّحِيمِ' Arabic? True" in stdout
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
