@@ -24,7 +24,7 @@ if os.path.exists("action_log.txt"):
 # 2. إدارة الثقة (Oracle Confidence)
 conf = open("oracle_confidence.txt").read() if os.path.exists("oracle_confidence.txt") else "100"
 
-# 3. جرد ذاكرة الفصوص الـ 12
+# 3. جرد ذاكرة الفصوص الـ 12 للترابط المعرفي
 memory = ""
 if os.path.exists("knowledge_base"):
     for lobe in sorted(os.listdir("knowledge_base")):
@@ -38,6 +38,7 @@ prompt += "Task: Generate next step. Respond with Python code or 'COMMANDER_REPA
 code = ask_gemini(prompt)
 if code:
     with open("current_thought.txt", "w") as f: f.write(code)
+    # تحديث مقياس الثقة بناءً على جودة الاستجابة
     new_conf = min(100, int(conf) + 5) if len(code) > 100 else max(0, int(conf) - 10)
     with open("oracle_confidence.txt", "w") as f: f.write(str(new_conf))
 else: sys.exit(0)
