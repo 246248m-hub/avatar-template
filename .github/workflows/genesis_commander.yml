@@ -1,4 +1,4 @@
-name: 🧠 PHOENIX SAPIENS
+name: ✔️ PHOENIX SAPIENS (The Efficient Architect)
 
 on:
   workflow_dispatch:
@@ -6,8 +6,6 @@ on:
       custom_objective:
         description: 'المهمة الاستراتيجية العليا'
         default: 'PHASE 0: Master Language. Task: Build a foundational module for Arabic text parsing and generation.'
-  repository_dispatch:
-    types: [heartbeat]
 
 permissions:
   contents: write
@@ -17,14 +15,18 @@ jobs:
   genesis_learning_cycle:
     runs-on: ubuntu-latest
     steps:
-      # 1. سحب الكود الحالي والذاكرة
-      - name: 1.1 - Checkout Core
+      # -----------------------------------------------------
+      # 1. استدعاء الوعي والذاكرة الكاملة
+      # -----------------------------------------------------
+      - name: 1.1 - Checkout Phoenix Core
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.COMMANDER_PAT }}
 
-      # 2. توليد الكود (مع ذكاء 2.0/2.5 المحسن)
-      - name: 2.1 - AI Logic Generation
+      # -----------------------------------------------------
+      # 2. التفكير العميق (مع معالجة الكوتا والشفاء الذاتي)
+      # -----------------------------------------------------
+      - name: 2.1 - AI Generation (Resilient Logic)
         id: gemini_task
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
@@ -35,8 +37,7 @@ jobs:
 
           def ask_gemini(prompt):
               api_key = os.getenv("GOOGLE_API_KEY")
-              # نستخدم الرابط المستقر لضمان استمرارية العمل في غيابك
-              url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={api_key}"
+              url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={api_key}"
               payload = {"contents": [{"parts": [{"text": prompt}]}]}
               headers = {"Content-Type": "application/json"}
               
@@ -45,39 +46,43 @@ jobs:
                       res = requests.post(url, json=payload, headers=headers, timeout=90)
                       data = res.json()
                       if res.status_code == 429:
-                          time.sleep(75); continue
+                          print(f"⚠️ Quota Exhausted. Sleeping 70s...")
+                          time.sleep(70); continue
                       if "candidates" in data:
                           text = data['candidates'][0]['content']['parts'][0]['text']
                           return text.replace("```python", "").replace("```", "").strip()
+                      time.sleep(30)
                   except:
                       time.sleep(20)
               return None
 
-          # جمع سياق الخطأ والذاكرة
-          error_ctx = ""
+          error_context = ""
           if os.path.exists("error_log.txt"):
-              with open("error_log.txt", "r") as f: error_ctx = f.read()[-500:]
+              with open("error_log.txt", "r") as f: error_context = f.read()[-800:]
 
-          last_mem = ""
+          memory = ""
           if os.path.exists("knowledge_base"):
-              files = sorted([f for f in os.listdir("knowledge_base")])
+              files = sorted([f for f in os.listdir("knowledge_base") if f.startswith("task_")])
               if files:
-                  with open(os.path.join("knowledge_base", files[-1]), "r") as f:
-                      last_mem = f"// Context: {f.read()[-300:]}"
+                  with open(os.path.join("knowledge_base", files[-1]), "r") as c:
+                      memory = f"// Last Task Context: {c.read()[-300:]}\n"
 
           obj = os.getenv("OBJECTIVE")
-          prompt = f"Objective: {obj}\nErrors: {error_ctx}\nMemory: {last_mem}\nTask: Generate Python code. Respond ONLY with code."
+          prompt = f"Objective: {obj}\nErrors: {error_context}\nLast Memory: {memory}\nTask: Generate next Python code. Respond ONLY with raw code."
           
           code = ask_gemini(prompt)
           if code and len(code) > 20:
               with open("current_thought.txt", "w") as f: f.write(code)
           else:
-              sys.exit(0)
+              print("⚠️ Quota/API issue. Hibernating.")
+              sys.exit(0) 
           EOF
           python3 requester.py
 
-      # 3. إرسال الكود للمنفذ (Executor)
-      - name: 3.1 - Dispatching Task
+      # -----------------------------------------------------
+      # 3. إرسال المهمة للمنفذ (الجسر الجيني)
+      # -----------------------------------------------------
+      - name: 3.1 - Dispatch to Executor
         id: execution
         if: success() && hashFiles('current_thought.txt') != ''
         env:
@@ -88,14 +93,14 @@ jobs:
             YML_CODE=$(sed '1d' current_thought.txt)
             SHA=$(gh api /repos/$OWNER/phoenix-executor/contents/.github/workflows/executor.yml --jq '.sha')
             gh api --method PUT /repos/$OWNER/phoenix-executor/contents/.github/workflows/executor.yml \
-              -f message="🧬 Repairing Executor" -f content="$(echo "$YML_CODE" | base64 -w 0)" -f sha="$SHA"
+              -f message="🧬 Genetic Reshaping" -f content="$(echo "$YML_CODE" | base64 -w 0)" -f sha="$SHA"
             echo "dispatch=false" >> $GITHUB_OUTPUT
           else
             echo "payload=$(cat current_thought.txt | base64 -w 0)" >> $GITHUB_OUTPUT
             echo "dispatch=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: 3.2 - Execute Dispatch
+      - name: 3.2 - Dispatch Task
         if: steps.execution.outputs.dispatch == 'true'
         uses: benc-uk/workflow-dispatch@v1
         with:
@@ -104,41 +109,70 @@ jobs:
           token: ${{ secrets.COMMANDER_PAT }}
           inputs: '{"task_payload": "${{ steps.execution.outputs.payload }}"}'
 
-      # 4. الأرشفة وكشف الركود (Stagnation)
-      - name: 4.1 - Archive & Analyze
+      # -----------------------------------------------------
+      # 4. الأرشفة الذكية وتحديث لوحة التحكم (العد الفعلي للذرات)
+      # -----------------------------------------------------
+      - name: 4.1 - Smart Archive & Metrics Update
         id: archive
         if: always()
         run: |
           mkdir -p knowledge_base
-          STAGNATION=0
+          IS_DUPLICATE=false
+          STAGNATION_RATE=0
+          
+          # أرشفة الفكرة الجديدة
           if [ -f current_thought.txt ]; then
-            HASH=$(sha256sum current_thought.txt | awk '{print $1}')
+            THOUGHT_HASH=$(sha256sum current_thought.txt | awk '{print $1}')
             touch thought_fingerprints.log
-            if grep -q "$HASH" thought_fingerprints.log; then
-              echo "⚠️ Duplicate Thought."
+            if grep -q "$THOUGHT_HASH" thought_fingerprints.log; then
+              IS_DUPLICATE=true
             else
               cp current_thought.txt "knowledge_base/task_$(date +%s).py"
-              echo "$HASH" >> thought_fingerprints.log
+              echo "$THOUGHT_HASH" >> thought_fingerprints.log
             fi
-            TOTAL=$(wc -l < thought_fingerprints.log)
+            TOTAL=$(cat thought_fingerprints.log | wc -l)
             UNIQUE=$(sort -u thought_fingerprints.log | wc -l)
-            [ "$TOTAL" -ge 5 ] && STAGNATION=$(( (TOTAL - UNIQUE) * 100 / TOTAL ))
+            [ "$TOTAL" -ge 10 ] && STAGNATION_RATE=$(( (TOTAL - UNIQUE) * 100 / TOTAL ))
           fi
-          echo "rate=$STAGNATION" >> $GITHUB_OUTPUT
+          echo "stagnation_rate=$STAGNATION_RATE" >> $GITHUB_OUTPUT
+
+          # بروتوكول التوثيق: عدّ الذرات الحقيقية
+          TOTAL_ATOMS=$(ls knowledge_base/*.py 2>/dev/null | wc -l || echo "0")
+          ARABIC_ATOMS=$(grep -l "arabic" knowledge_base/*.py 2>/dev/null | wc -l || echo "0")
+
+          # تحديث ملف لوحة التحكم
+          cat << EOF > PHOENIX_STATUS.md
+          # 🛰️ PHOENIX AETURNUM DASHBOARD
+          **Status:** 🟢 Active Learning
+          **Last Sync:** $(date -u)
           
-          git config --global user.name 'Phoenix Architect'
-          git config --global user.email 'architect@phoenix.ai'
-          git add . && git commit -m "Evolution Pulse: Stagnation $STAGNATION%" && git push || echo "No changes"
+          ## 📊 Neural Lobe Metrics
+          - **0_language_lobe:** $TOTAL_ATOMS atoms
+          - **0_arabic_lobe:** $ARABIC_ATOMS atoms
+          - **Stagnation Rate:** $STAGNATION_RATE%
+          
+          *This file is updated every pulse by the Sapiens Architect.*
+          EOF
+          
+          git config --global user.name 'Phoenix Sapiens'
+          git config --global user.email 'sapiens@phoenix.ai'
+          git add .
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "📊 Metric Sync: $TOTAL_ATOMS Atoms | Stagnation $STAGNATION_RATE%" && git push
+          fi
 
-      # 5. النبضة المستمرة (إصلاح الاستدعاء)
-      - name: 5.1 - Eternal Heartbeat
-        if: always() && steps.archive.outputs.rate < 100
-        env:
-          GH_TOKEN: ${{ secrets.COMMANDER_PAT }}
-          OBJ: ${{ github.event.inputs.custom_objective }}
+      # -----------------------------------------------------
+      # 5. النبضة المشروطة أو الإيقاف النهائي
+      # -----------------------------------------------------
+      - name: 5.1 - Conditional Heartbeat
+        if: always() && steps.archive.outputs.stagnation_rate < 100
+        env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
         run: |
-          echo "Triggering next pulse... Stagnation: ${{ steps.archive.outputs.rate }}%"
+          echo "Evolution continues. Current Atoms: $(ls knowledge_base/*.py | wc -l)"
           sleep 600
-          # تم تغيير الاسم هنا ليتطابق مع اسم الملف الفعلي
-          gh workflow run genesis_commander.yml -f custom_objective="$OBJ"
+          gh workflow run "🧠 PHOENIX SAPIENS" -f custom_objective="$OBJ"
 
+      - name: 5.2 - Final Saturation Report
+        if: always() && steps.archive.outputs.stagnation_rate >= 100
+        run: |
+          echo "🏁 EVOLUTION COMPLETE: Absolute saturation reached."
