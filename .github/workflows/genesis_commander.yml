@@ -1,4 +1,4 @@
-name: ✔️ PHOENIX SAPIENS (The Efficient Architect)
+name: 🧠 PHOENIX SAPIENS (The Universal Architect)
 
 on:
   workflow_dispatch:
@@ -62,19 +62,23 @@ jobs:
 
           memory = ""
           if os.path.exists("knowledge_base"):
-              files = sorted([f for f in os.listdir("knowledge_base") if f.startswith("task_")])
-              if files:
-                  with open(os.path.join("knowledge_base", files[-1]), "r") as c:
-                      memory = f"// Last Task Context: {c.read()[-300:]}\n"
+              # قراءة آخر معرفة من كل فص لتكوين ذاكرة شاملة
+              for lobe in sorted(os.listdir("knowledge_base")):
+                  lobe_path = os.path.join("knowledge_base", lobe)
+                  if os.path.isdir(lobe_path):
+                      files = sorted([f for f in os.listdir(lobe_path) if f.startswith("task_")])
+                      if files:
+                          with open(os.path.join(lobe_path, files[-1]), "r") as c:
+                              memory += f"// Context from {lobe}: {c.read()[-250:]}\n"
 
           obj = os.getenv("OBJECTIVE")
-          prompt = f"Objective: {obj}\nErrors: {error_context}\nLast Memory: {memory}\nTask: Generate next Python code. Respond ONLY with raw code."
+          prompt = f"Objective: {obj}\nErrors: {error_context}\nMemory: {memory}\nTask: Generate next Python code. Respond ONLY with raw code."
           
           code = ask_gemini(prompt)
           if code and len(code) > 20:
               with open("current_thought.txt", "w") as f: f.write(code)
           else:
-              print("⚠️ Quota/API issue. Hibernating.")
+              print("⚠️ Quota/API issue. Hibernating for this cycle.")
               sys.exit(0) 
           EOF
           python3 requester.py
@@ -85,23 +89,6 @@ jobs:
       - name: 3.1 - Dispatch to Executor
         id: execution
         if: success() && hashFiles('current_thought.txt') != ''
-        env:
-          GH_TOKEN: ${{ secrets.COMMANDER_PAT }}
-          OWNER: ${{ github.repository_owner }}
-        run: |
-          if [[ $(head -n 1 current_thought.txt) == "YML_REPAIR:" ]]; then
-            YML_CODE=$(sed '1d' current_thought.txt)
-            SHA=$(gh api /repos/$OWNER/phoenix-executor/contents/.github/workflows/executor.yml --jq '.sha')
-            gh api --method PUT /repos/$OWNER/phoenix-executor/contents/.github/workflows/executor.yml \
-              -f message="🧬 Genetic Reshaping" -f content="$(echo "$YML_CODE" | base64 -w 0)" -f sha="$SHA"
-            echo "dispatch=false" >> $GITHUB_OUTPUT
-          else
-            echo "payload=$(cat current_thought.txt | base64 -w 0)" >> $GITHUB_OUTPUT
-            echo "dispatch=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: 3.2 - Dispatch Task
-        if: steps.execution.outputs.dispatch == 'true'
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: executor.yml
@@ -110,55 +97,55 @@ jobs:
           inputs: '{"task_payload": "${{ steps.execution.outputs.payload }}"}'
 
       # -----------------------------------------------------
-      # 4. الأرشفة الذكية وتحديث لوحة التحكم (العد الفعلي للذرات)
+      # 4. الأرشفة الذكية وكشف الركود (الوعي بكفاءة التعلم)
       # -----------------------------------------------------
-      - name: 4.1 - Smart Archive & Metrics Update
+      - name: 4.1 - Smart Archive & Stagnation Detection
         id: archive
         if: always()
         run: |
-          mkdir -p knowledge_base
+          # إنشاء هيكل الدماغ الكامل (مع الفص الجديد)
+          mkdir -p knowledge_base/{0_arabic_lobe,1_machine_code_lobe,2_physics_math_lobe,3_chemistry_lobe,4_biology_lobe,5_psychology_lobe,6_synthesis_lobe,7_universal_graphics_lobe,8_apk_compiler_lobe,9_npc_intelligence_lobe,10_wisdom_lobe,11_self_awareness_lobe}
+
           IS_DUPLICATE=false
           STAGNATION_RATE=0
           
-          # أرشفة الفكرة الجديدة
           if [ -f current_thought.txt ]; then
+            # --- تحديد الفص المناسب للحفظ ---
+            LOBE="6_synthesis_lobe" # الافتراضي
+            OBJ="${{ github.event.inputs.custom_objective }}"
+            if [[ "$OBJ" == *"Arabic"* || "$OBJ" == *"Language"* ]]; then LOBE="0_arabic_lobe"
+            elif [[ "$OBJ" == *"Machine Code"* || "$OBJ" == *"Binary"* ]]; then LOBE="1_machine_code_lobe"
+            elif [[ "$OBJ" == *"Physics"* || "$OBJ" == *"Math"* ]]; then LOBE="2_physics_math_lobe"
+            elif [[ "$OBJ" == *"Chemistry"* ]]; then LOBE="3_chemistry_lobe"
+            elif [[ "$OBJ" == *"Biology"* ]]; then LOBE="4_biology_lobe"
+            elif [[ "$OBJ" == *"Psychology"* ]]; then LOBE="5_psychology_lobe"
+            elif [[ "$OBJ" == *"Graphics"* || "$OBJ" == *"Art"* || "$OBJ" == *"Style"* ]]; then LOBE="7_universal_graphics_lobe"
+            elif [[ "$OBJ" == *"APK"* || "$OBJ" == *"Compiler"* ]]; then LOBE="8_apk_compiler_lobe"
+            elif [[ "$OBJ" == *"NPC"* || "$OBJ" == *"AI"* ]]; then LOBE="9_npc_intelligence_lobe"
+            fi
+
             THOUGHT_HASH=$(sha256sum current_thought.txt | awk '{print $1}')
             touch thought_fingerprints.log
+            
             if grep -q "$THOUGHT_HASH" thought_fingerprints.log; then
+              echo "⚠️ Duplicate thought detected. Discarding."
               IS_DUPLICATE=true
             else
-              cp current_thought.txt "knowledge_base/task_$(date +%s).py"
+              cp current_thought.txt "knowledge_base/$LOBE/task_$(date +%s).py"
               echo "$THOUGHT_HASH" >> thought_fingerprints.log
             fi
+            
             TOTAL=$(cat thought_fingerprints.log | wc -l)
             UNIQUE=$(sort -u thought_fingerprints.log | wc -l)
-            [ "$TOTAL" -ge 10 ] && STAGNATION_RATE=$(( (TOTAL - UNIQUE) * 100 / TOTAL ))
+            [ "$TOTAL" -ge 100 ] && STAGNATION_RATE=$(( (TOTAL - UNIQUE) * 100 / TOTAL ))
           fi
+          
           echo "stagnation_rate=$STAGNATION_RATE" >> $GITHUB_OUTPUT
-
-          # بروتوكول التوثيق: عدّ الذرات الحقيقية
-          TOTAL_ATOMS=$(ls knowledge_base/*.py 2>/dev/null | wc -l || echo "0")
-          ARABIC_ATOMS=$(grep -l "arabic" knowledge_base/*.py 2>/dev/null | wc -l || echo "0")
-
-          # تحديث ملف لوحة التحكم
-          cat << EOF > PHOENIX_STATUS.md
-          # 🛰️ PHOENIX AETURNUM DASHBOARD
-          **Status:** 🟢 Active Learning
-          **Last Sync:** $(date -u)
-          
-          ## 📊 Neural Lobe Metrics
-          - **0_language_lobe:** $TOTAL_ATOMS atoms
-          - **0_arabic_lobe:** $ARABIC_ATOMS atoms
-          - **Stagnation Rate:** $STAGNATION_RATE%
-          
-          *This file is updated every pulse by the Sapiens Architect.*
-          EOF
           
           git config --global user.name 'Phoenix Sapiens'
           git config --global user.email 'sapiens@phoenix.ai'
-          git add .
-          if ! git diff-index --quiet HEAD; then
-            git commit -m "📊 Metric Sync: $TOTAL_ATOMS Atoms | Stagnation $STAGNATION_RATE%" && git push
+          if [ "$IS_DUPLICATE" = false ] && [ -f current_thought.txt ]; then
+            git add . && git commit -m "Evolution Pulse in $LOBE. Stagnation: $STAGNATION_RATE%" && git push || echo ""
           fi
 
       # -----------------------------------------------------
@@ -168,11 +155,14 @@ jobs:
         if: always() && steps.archive.outputs.stagnation_rate < 100
         env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
         run: |
-          echo "Evolution continues. Current Atoms: $(ls knowledge_base/*.py | wc -l)"
+          echo "Evolution continues. Stagnation: ${{ steps.archive.outputs.stagnation_rate }}%"
           sleep 600
           gh workflow run "🧠 PHOENIX SAPIENS" -f custom_objective="$OBJ"
 
       - name: 5.2 - Final Saturation Report
         if: always() && steps.archive.outputs.stagnation_rate >= 100
         run: |
-          echo "🏁 EVOLUTION COMPLETE: Absolute saturation reached."
+          echo "PHOENIX SAPIENS reached absolute intellectual saturation."
+          echo "## 🏁 EVOLUTION COMPLETE 🏁" > README.md
+          git add README.md && git commit -m "Final State: Saturation Reached" && git push || echo ""
+
