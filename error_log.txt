@@ -1,4 +1,0 @@
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 1
-    // Lobe 1_natural_language_processing_lobe Context: print("\n--- Initiating next step: Lobe 2_context_understanding_lobe ---")
-             ^
-SyntaxError: invalid decimal literal
