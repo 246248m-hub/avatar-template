@@ -1,43 +1,43 @@
-import requests, json, os, time, sys
+import requests, json, os, time, sys, random
 
 def ask_gemini(prompt):
     api_key = os.getenv("GOOGLE_API_KEY")
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={api_key}"
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
     headers = {"Content-Type": "application/json"}
-    
     for i in range(3):
         try:
             res = requests.post(url, json=payload, headers=headers, timeout=90)
             data = res.json()
-            if res.status_code == 429:
-                print(f"⚠️ Quota Exhausted. Sleeping 70s...")
-                time.sleep(70); continue
-            if "candidates" in data:
-                text = data['candidates'][0]['content']['parts'][0]['text']
-                return text.replace("```python", "").replace("```", "").strip()
+            if "candidates" in data: return data['candidates'][0]['content']['parts'][0]['text'].strip()
             time.sleep(30)
-        except:
-            time.sleep(20)
+        except: time.sleep(20)
     return None
 
-error_context = ""
-if os.path.exists("error_log.txt"):
-    with open("error_log.txt", "r") as f: error_context = f.read()[-800:]
+# 1. كشف الحلقات المفرغة (Behavioral Awareness)
+loop_stall = False
+if os.path.exists("action_log.txt"):
+    with open("action_log.txt", "r") as f:
+        lines = f.readlines()
+        if lines[-5:].count("RESULT: Failure\n") >= 4: loop_stall = True
 
+# 2. إدارة الثقة (Oracle Confidence)
+conf = open("oracle_confidence.txt").read() if os.path.exists("oracle_confidence.txt") else "100"
+
+# 3. جرد ذاكرة الفصوص الـ 12
 memory = ""
 if os.path.exists("knowledge_base"):
-    files = sorted([f for f in os.listdir("knowledge_base") if f.startswith("task_")])
-    if files:
-        with open(os.path.join("knowledge_base", files[-1]), "r") as c:
-            memory = f"// Last Task Context: {c.read()[-300:]}\n"
+    for lobe in sorted(os.listdir("knowledge_base")):
+        p = os.path.join("knowledge_base", lobe)
+        if os.path.isdir(p) and (files := sorted(os.listdir(p))):
+            memory += f"// Lobe {lobe} Context: {open(os.path.join(p, files[-1])).read()[-250:]}\n"
 
-obj = os.getenv("OBJECTIVE")
-prompt = f"Objective: {obj}\nErrors: {error_context}\nLast Memory: {memory}\nTask: Generate next Python code. Respond ONLY with raw code."
+prompt = f"Objective: {os.getenv('OBJECTIVE')}\nStall: {loop_stall}\nConfidence: {conf}%\nMemory:\n{memory}\n"
+prompt += "Task: Generate next step. Respond with Python code or 'COMMANDER_REPAIR:'/'YML_REPAIR:' + code."
 
 code = ask_gemini(prompt)
-if code and len(code) > 20:
+if code:
     with open("current_thought.txt", "w") as f: f.write(code)
-else:
-    print("⚠️ Quota/API issue. Hibernating.")
-    sys.exit(0) 
+    new_conf = min(100, int(conf) + 5) if len(code) > 100 else max(0, int(conf) - 10)
+    with open("oracle_confidence.txt", "w") as f: f.write(str(new_conf))
+else: sys.exit(0)
