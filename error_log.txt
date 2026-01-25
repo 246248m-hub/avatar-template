@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 90, in <module>
-    extracted_context_1 = context_extractor.extract_context(prompt_1)
-                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 70, in extract_context
-    for key, value in extracted_data.items():
-RuntimeError: dictionary changed size during iteration
