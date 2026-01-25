@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 421, in <module>
+    execute_arabic_apk_generation_process(example_arabic_request)
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 378, in execute_arabic_apk_generation_process
+    apk_structure = generator.generate_apk_structure_from_ir(intermediate_representation)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 124, in generate_apk_structure_from_ir
+    apk_structure["manifest"]["application"]["@android:label"] = intermediate_representation.get("app_name", "MyArabicApp")
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'application'
