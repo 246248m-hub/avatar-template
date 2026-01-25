@@ -15,11 +15,18 @@ jobs:
   genesis_learning_cycle:
     runs-on: ubuntu-latest
     steps:
+      # -----------------------------------------------------
+      # 1. استدعاء الوعي والذاكرة الكاملة
+      # -----------------------------------------------------
       - name: 1.1 - Checkout Phoenix Core
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.COMMANDER_PAT }}
+          fetch-depth: 0
 
+      # -----------------------------------------------------
+      # 2. التفكير العميق (مع بروتوكول الصرامة البرمجية)
+      # -----------------------------------------------------
       - name: 2.1 - AI Generation (Full Sensory Awareness)
         id: gemini_task
         env:
@@ -27,7 +34,7 @@ jobs:
           OBJECTIVE: ${{ github.event.inputs.custom_objective }}
         run: |
           cat << 'EOF' > requester.py
-          import requests, json, os, time, sys, random
+          import requests, json, os, time, sys
 
           def ask_gemini(prompt):
               api_key = os.getenv("GOOGLE_API_KEY")
@@ -58,24 +65,22 @@ jobs:
                   if os.path.isdir(p) and (files := sorted(os.listdir(p))):
                       memory += f"// Lobe {lobe} Last Thought: {open(os.path.join(p, files[-1])).read()[-300:]}\n"
 
-          # برومبت الصرامة البرمجية: منع جمل الـ print الفارغة وإجبار الكود الوظيفي
           prompt = f"""
           Objective: {os.getenv('OBJECTIVE')}
-          Confidence: {conf}% | Loop Stall: {loop_stall}
+          Confidence: {conf}% | Stall: {loop_stall}
           Interlinked Memory:
           {memory}
           
           TASK: Build the next logical FUNCTIONAL Python module.
           CRITICAL RULES:
-          1. NO PLACEHOLDERS. Do not just use 'print' statements.
-          2. WRITES REAL LOGIC: Define functions, classes, and algorithms.
-          3. INTEGRATION: If in APK lobe, write actual build scripts. If in Arabic lobe, write NLP logic.
+          1. NO PLACEHOLDERS. Do not use 'print' statements only.
+          2. WRITES REAL LOGIC: Define functions, classes, and real algorithms.
+          3. INTEGRATION: Focus on building NLP Arabic logic and APK structure.
           4. FORMAT: Respond ONLY with raw Python code. No conversational text.
           """
           
           code = ask_gemini(prompt)
           if code:
-              # تنظيف الكود من علامات المارك داون إذا وجدت
               code = code.replace("```python", "").replace("```", "").strip()
               with open("current_thought.txt", "w") as f: f.write(code)
               new_conf = min(100, int(conf) + 5) if len(code) > 200 else max(0, int(conf) - 15)
@@ -84,6 +89,9 @@ jobs:
           EOF
           python3 requester.py
 
+      # -----------------------------------------------------
+      # 3. التشخيص والشفاء الذاتي والإرسال
+      # -----------------------------------------------------
       - name: 3.1 - Triage (Self-Healing & Dispatch)
         id: triage
         if: success() && hashFiles('current_thought.txt') != ''
@@ -114,35 +122,46 @@ jobs:
           token: ${{ secrets.COMMANDER_PAT }}
           inputs: '{"task_payload": "${{ steps.triage.outputs.payload }}"}'
 
-      - name: 4.1 - Archive & Saturation Awareness
+      # -----------------------------------------------------
+      # 4. الأرشفة الذكية (حل تعارض Git 128)
+      # -----------------------------------------------------
+      - name: 4.1 - Archive & Forced Sync
         id: archive
         if: always()
         run: |
+          git config --global user.name 'Phoenix Supreme'
+          git config --global user.email 'supreme@phoenix.ai'
+
+          # كشف التشبع
           sha256sum current_thought.txt | awk '{print $1}' >> thought_fingerprints.log
           TOTAL=$(wc -l < thought_fingerprints.log); UNIQUE=$(sort -u thought_fingerprints.log | wc -l)
           STAGNATION=$(( (TOTAL - UNIQUE) * 100 / TOTAL ))
           echo "stagnation_rate=$STAGNATION" >> $GITHUB_OUTPUT
 
+          # فرز الفصوص
           CONTENT=$(cat current_thought.txt | tr '[:upper:]' '[:lower:]' || echo "")
           LOBE="6_synthesis_lobe"
           if [[ "$CONTENT" == *"arabic"* || "$CONTENT" == *"language"* ]]; then LOBE="0_arabic_lobe"
           elif [[ "$CONTENT" == *"binary"* || "$CONTENT" == *"machine code"* ]]; then LOBE="1_machine_code_lobe"
-          elif [[ "$CONTENT" == *"math"* || "$CONTENT" == *"physics"* ]]; then LOBE="2_physics_math_lobe"
-          elif [[ "$CONTENT" == *"graphics"* || "$CONTENT" == *"style"* ]]; then LOBE="7_universal_graphics_lobe"
           elif [[ "$CONTENT" == *"apk"* || "$CONTENT" == *"compiler"* ]]; then LOBE="8_apk_compiler_lobe"
-          elif [[ "$CONTENT" == *"ai logic"* || "$CONTENT" == *"npc"* ]]; then LOBE="9_npc_intelligence_lobe"
           elif [[ "$CONTENT" == *"awareness"* || "$CONTENT" == *"consciousness"* ]]; then LOBE="11_self_awareness_lobe"
           fi
           
           mkdir -p "knowledge_base/$LOBE"
           [ -f current_thought.txt ] && cp current_thought.txt "knowledge_base/$LOBE/task_$(date +%s).py"
-          echo "RESULT: $([ -f error_log.txt ] && echo 'Failure' || echo 'Success')" >> action_log.txt
 
-          git config --global user.name 'Phoenix Supreme'
-          git config --global user.email 'supreme@phoenix.ai'
+          # بروتوكول المزامنة الآمنة (حل خطأ 128)
+          git add .
+          git stash || echo "Nothing to stash"
           git pull --rebase origin main
-          git add . && git commit -m "Evolution Step: $LOBE | Saturation: $STAGNATION%" && git push || echo ""
+          git stash pop || echo "Nothing to pop"
+          git add .
+          git commit -m "Evolution: $LOBE | Stagnation: $STAGNATION%" || echo "No changes"
+          git push origin main
 
+      # -----------------------------------------------------
+      # 5. النبضة والتشبع (إشعار جيثب النهائي)
+      # -----------------------------------------------------
       - name: 5.1 - Eternal Heartbeat
         if: always() && steps.archive.outputs.stagnation_rate < 100
         env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
@@ -150,8 +169,10 @@ jobs:
           sleep 600
           gh workflow run Genesis_commander.yml -f custom_objective="$OBJ"
 
-      - name: 5.2 - Final Saturation Notification
+      - name: 5.2 - Final Saturation
         if: always() && steps.archive.outputs.stagnation_rate >= 100
         run: |
           echo "### 🏁 PHOENIX EVOLUTION COMPLETE 🏁" >> $GITHUB_STEP_SUMMARY
+          echo "تم الوصول للتشبع 100%." >> $GITHUB_STEP_SUMMARY
           exit 1
+
