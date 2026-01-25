@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 242, in <module>
+    built_apk_path = builder.build_apk(
+                     ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 135, in build_apk
+    self._run_command(aapt2_link_cmd, cwd=dummy_apk_structure_dir) # Run from structure dir for relative paths
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 41, in _run_command
+    result = subprocess.run(command, capture_output=True, text=True, check=True, cwd=cwd)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/usr/local/lib/android/sdk/build-tools/36.1.0/aapt2', 'link', '-o', 'dummy_android_project/output/app-unaligned.apk', '--manifest', 'dummy_android_project/AndroidManifest.xml', '--java-compile-args', '', '--output-text-symbols', 'dummy_android_project/output/R.txt', '--dir', 'dummy_android_project/output/dummy_apk_structure/res', '--resource-dirs', 'dummy_android_project/output/dummy_apk_structure/res', '--assets-dir', '--libs-dir', '--adb-output-dir', 'dummy_android_project/output/adb_output', '--proto-source-dir', 'dummy_android_project/output/dummy_apk_structure/proto', '--split', 'base']' returned non-zero exit status 1.
