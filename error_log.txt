@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 341, in <module>
+    apk_builder.build_apk(project_dir=dummy_project_root, build_type="release")
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 205, in build_apk
+    build_script = self.generate_build_script(build_type)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 169, in generate_build_script
+    script_path = create_build_script(self.project_root, self.app_module_path, build_type)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 94, in create_build_script
+    apk_path = os.path.join(APP_MODULE_DIR, "build", "outputs", "apk", "release", f"app-{BUILD_TYPE}.apk")
+                                                                                         ^^^^^^^^^^
+NameError: name 'BUILD_TYPE' is not defined
