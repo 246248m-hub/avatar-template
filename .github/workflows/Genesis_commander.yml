@@ -15,17 +15,11 @@ jobs:
   genesis_learning_cycle:
     runs-on: ubuntu-latest
     steps:
-      # -----------------------------------------------------
-      # 1. استدعاء الوعي والذاكرة الكاملة
-      # -----------------------------------------------------
       - name: 1.1 - Checkout Phoenix Core
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.COMMANDER_PAT }}
 
-      # -----------------------------------------------------
-      # 2. التفكير العميق (مع كل طبقات الوعي والشك)
-      # -----------------------------------------------------
       - name: 2.1 - AI Generation (Full Sensory Awareness)
         id: gemini_task
         env:
@@ -49,40 +43,47 @@ jobs:
                   except: time.sleep(20)
               return None
 
-          # 1. كشف الحلقات المفرغة (Behavioral Awareness)
           loop_stall = False
           if os.path.exists("action_log.txt"):
               with open("action_log.txt", "r") as f:
                   lines = f.readlines()
                   if lines[-5:].count("RESULT: Failure\n") >= 4: loop_stall = True
 
-          # 2. إدارة الثقة (Oracle Confidence)
           conf = open("oracle_confidence.txt").read() if os.path.exists("oracle_confidence.txt") else "100"
           
-          # 3. جرد ذاكرة الفصوص الـ 12 للترابط المعرفي
           memory = ""
           if os.path.exists("knowledge_base"):
               for lobe in sorted(os.listdir("knowledge_base")):
                   p = os.path.join("knowledge_base", lobe)
                   if os.path.isdir(p) and (files := sorted(os.listdir(p))):
-                      memory += f"// Lobe {lobe} Context: {open(os.path.join(p, files[-1])).read()[-250:]}\n"
+                      memory += f"// Lobe {lobe} Last Thought: {open(os.path.join(p, files[-1])).read()[-300:]}\n"
 
-          prompt = f"Objective: {os.getenv('OBJECTIVE')}\nStall: {loop_stall}\nConfidence: {conf}%\nMemory:\n{memory}\n"
-          prompt += "Task: Generate next step. Respond with Python code or 'COMMANDER_REPAIR:'/'YML_REPAIR:' + code."
+          # برومبت الصرامة البرمجية: منع جمل الـ print الفارغة وإجبار الكود الوظيفي
+          prompt = f"""
+          Objective: {os.getenv('OBJECTIVE')}
+          Confidence: {conf}% | Loop Stall: {loop_stall}
+          Interlinked Memory:
+          {memory}
+          
+          TASK: Build the next logical FUNCTIONAL Python module.
+          CRITICAL RULES:
+          1. NO PLACEHOLDERS. Do not just use 'print' statements.
+          2. WRITES REAL LOGIC: Define functions, classes, and algorithms.
+          3. INTEGRATION: If in APK lobe, write actual build scripts. If in Arabic lobe, write NLP logic.
+          4. FORMAT: Respond ONLY with raw Python code. No conversational text.
+          """
           
           code = ask_gemini(prompt)
           if code:
+              # تنظيف الكود من علامات المارك داون إذا وجدت
+              code = code.replace("```python", "").replace("```", "").strip()
               with open("current_thought.txt", "w") as f: f.write(code)
-              # تحديث مقياس الثقة بناءً على جودة الاستجابة
-              new_conf = min(100, int(conf) + 5) if len(code) > 100 else max(0, int(conf) - 10)
+              new_conf = min(100, int(conf) + 5) if len(code) > 200 else max(0, int(conf) - 15)
               with open("oracle_confidence.txt", "w") as f: f.write(str(new_conf))
           else: sys.exit(0)
           EOF
           python3 requester.py
 
-      # -----------------------------------------------------
-      # 3. التشخيص والشفاء الذاتي (Self-Healing)
-      # -----------------------------------------------------
       - name: 3.1 - Triage (Self-Healing & Dispatch)
         id: triage
         if: success() && hashFiles('current_thought.txt') != ''
@@ -113,32 +114,23 @@ jobs:
           token: ${{ secrets.COMMANDER_PAT }}
           inputs: '{"task_payload": "${{ steps.triage.outputs.payload }}"}'
 
-      # -----------------------------------------------------
-      # 4. الأرشفة الذكية وكشف التشبع (Stagnation)
-      # -----------------------------------------------------
       - name: 4.1 - Archive & Saturation Awareness
         id: archive
         if: always()
         run: |
-          # كشف التشبع عبر البصمة الرقمية للأفكار
           sha256sum current_thought.txt | awk '{print $1}' >> thought_fingerprints.log
           TOTAL=$(wc -l < thought_fingerprints.log); UNIQUE=$(sort -u thought_fingerprints.log | wc -l)
           STAGNATION=$(( (TOTAL - UNIQUE) * 100 / TOTAL ))
           echo "stagnation_rate=$STAGNATION" >> $GITHUB_OUTPUT
 
-          # تحديد الفص الذكي بناءً على الكلمات المفتاحية
           CONTENT=$(cat current_thought.txt | tr '[:upper:]' '[:lower:]' || echo "")
           LOBE="6_synthesis_lobe"
           if [[ "$CONTENT" == *"arabic"* || "$CONTENT" == *"language"* ]]; then LOBE="0_arabic_lobe"
-          elif [[ "$CONTENT" == *"binary"* || "$CONTENT" == *"machine code"* || "$CONTENT" == *"hex"* ]]; then LOBE="1_machine_code_lobe"
+          elif [[ "$CONTENT" == *"binary"* || "$CONTENT" == *"machine code"* ]]; then LOBE="1_machine_code_lobe"
           elif [[ "$CONTENT" == *"math"* || "$CONTENT" == *"physics"* ]]; then LOBE="2_physics_math_lobe"
-          elif [[ "$CONTENT" == *"chemistry"* ]]; then LOBE="3_chemistry_lobe"
-          elif [[ "$CONTENT" == *"biology"* ]]; then LOBE="4_biology_lobe"
-          elif [[ "$CONTENT" == *"psychology"* ]]; then LOBE="5_psychology_lobe"
-          elif [[ "$CONTENT" == *"graphics"* || "$CONTENT" == *"art"* || "$CONTENT" == *"style"* ]]; then LOBE="7_universal_graphics_lobe"
+          elif [[ "$CONTENT" == *"graphics"* || "$CONTENT" == *"style"* ]]; then LOBE="7_universal_graphics_lobe"
           elif [[ "$CONTENT" == *"apk"* || "$CONTENT" == *"compiler"* ]]; then LOBE="8_apk_compiler_lobe"
-          elif [[ "$CONTENT" == *"npc"* || "$CONTENT" == *"ai logic"* ]]; then LOBE="9_npc_intelligence_lobe"
-          elif [[ "$CONTENT" == *"wisdom"* || "$CONTENT" == *"ethics"* ]]; then LOBE="10_wisdom_lobe"
+          elif [[ "$CONTENT" == *"ai logic"* || "$CONTENT" == *"npc"* ]]; then LOBE="9_npc_intelligence_lobe"
           elif [[ "$CONTENT" == *"awareness"* || "$CONTENT" == *"consciousness"* ]]; then LOBE="11_self_awareness_lobe"
           fi
           
@@ -148,24 +140,18 @@ jobs:
 
           git config --global user.name 'Phoenix Supreme'
           git config --global user.email 'supreme@phoenix.ai'
-          git add . && git commit -m "Pulse: $LOBE | Stagnation: $STAGNATION%" && git push || echo "No changes to commit"
+          git pull --rebase origin main
+          git add . && git commit -m "Evolution Step: $LOBE | Saturation: $STAGNATION%" && git push || echo ""
 
-      # -----------------------------------------------------
-      # 5. النبضة الأبدية أو الإيقاف والإبلاغ عند التشبع
-      # -----------------------------------------------------
       - name: 5.1 - Eternal Heartbeat
         if: always() && steps.archive.outputs.stagnation_rate < 100
         env: { GH_TOKEN: "${{ secrets.COMMANDER_PAT }}", OBJ: "${{ github.event.inputs.custom_objective }}" }
         run: |
-          echo "Evolution continues. Current Stagnation: ${{ steps.archive.outputs.stagnation_rate }}%"
           sleep 600
           gh workflow run Genesis_commander.yml -f custom_objective="$OBJ"
 
-      - name: 5.2 - Final Saturation & GitHub Notification
+      - name: 5.2 - Final Saturation Notification
         if: always() && steps.archive.outputs.stagnation_rate >= 100
         run: |
           echo "### 🏁 PHOENIX EVOLUTION COMPLETE 🏁" >> $GITHUB_STEP_SUMMARY
-          echo "فينيكس وصل إلى التشبع المعرفي بنسبة 100%." >> $GITHUB_STEP_SUMMARY
-          echo "تم إيقاف النبضة آلياً وتخزين الدماغ في الأرشيف (Artifacts)." >> $GITHUB_STEP_SUMMARY
-          exit 1 # لضمان إرسال إشعار فشل (إيميل) من جيثب للمستخدم
-
+          exit 1
