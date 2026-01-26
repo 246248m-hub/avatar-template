@@ -1,32 +1,12 @@
-2026-01-26 08:05:36,452 - INFO - 
---- Testing with prompt 1: 'أريد إنشاء تطبيق جديد باسم 'حاسبة بسيطة'.' ---
-2026-01-26 08:05:36,452 - INFO - --- Executing Lobe 0_arabic_lobe ---
-2026-01-26 08:05:36,452 - INFO - Preprocessing Arabic text: 'أريد إنشاء تطبيق جديد باسم 'حاسبة بسيطة'....'
-2026-01-26 08:05:36,453 - INFO - Preprocessed text: 'أريد إنشاء تطبيق جديد باسم حاسبة بسيطة...'
-2026-01-26 08:05:36,453 - INFO - Extracting intent and entities from: 'أريد إنشاء تطبيق جديد باسم حاسبة بسيطة...'
-2026-01-26 08:05:36,453 - INFO - Extracted Intent: 'create_app', Entities: {'app_name': 'جديد'}
-2026-01-26 08:05:36,453 - INFO - --- Lobe 0_arabic_lobe Execution Complete ---
-2026-01-26 08:05:36,453 - INFO - 
---- Testing with prompt 2: 'اعرض لي قائمة المستخدمين.' ---
-2026-01-26 08:05:36,453 - INFO - --- Executing Lobe 0_arabic_lobe ---
-2026-01-26 08:05:36,453 - INFO - Preprocessing Arabic text: 'اعرض لي قائمة المستخدمين....'
-2026-01-26 08:05:36,453 - INFO - Preprocessed text: 'اعرض لي قائمة المستخدمين...'
-2026-01-26 08:05:36,453 - INFO - Extracting intent and entities from: 'اعرض لي قائمة المستخدمين...'
-2026-01-26 08:05:36,453 - INFO - Extracted Intent: 'display_list', Entities: {'list_item': 'لي'}
-2026-01-26 08:05:36,453 - INFO - --- Lobe 0_arabic_lobe Execution Complete ---
-2026-01-26 08:05:36,453 - INFO - 
---- Testing with prompt 3: 'صنع تطبيق صغير لتدوين الملاحظات.' ---
-2026-01-26 08:05:36,453 - INFO - --- Executing Lobe 0_arabic_lobe ---
-2026-01-26 08:05:36,453 - INFO - Preprocessing Arabic text: 'صنع تطبيق صغير لتدوين الملاحظات....'
-2026-01-26 08:05:36,453 - INFO - Preprocessed text: 'صنع تطبيق صغير لتدوين الملاحظات...'
-2026-01-26 08:05:36,453 - INFO - Extracting intent and entities from: 'صنع تطبيق صغير لتدوين الملاحظات...'
-2026-01-26 08:05:36,453 - INFO - Extracted Intent: 'create_app', Entities: {'app_name': 'صغير'}
-2026-01-26 08:05:36,453 - INFO - --- Lobe 0_arabic_lobe Execution Complete ---
-2026-01-26 08:05:36,453 - INFO - 
---- Testing with prompt 4: 'ما هي خطوات تحميل التطبيق؟' ---
-2026-01-26 08:05:36,453 - INFO - --- Executing Lobe 0_arabic_lobe ---
-2026-01-26 08:05:36,453 - INFO - Preprocessing Arabic text: 'ما هي خطوات تحميل التطبيق؟...'
-2026-01-26 08:05:36,453 - INFO - Preprocessed text: 'ما هي خطوات تحميل التطبيق؟...'
-2026-01-26 08:05:36,453 - INFO - Extracting intent and entities from: 'ما هي خطوات تحميل التطبيق؟...'
-2026-01-26 08:05:36,453 - INFO - Extracted Intent: 'unknown', Entities: {}
-2026-01-26 08:05:36,453 - INFO - --- Lobe 0_arabic_lobe Execution Complete ---
+2026-01-26 08:10:45,158 - INFO - Received Arabic NLP prompt: 'أريد إنشاء تطبيق باسم 'مسجل الملاحظات' بميزات تدوين الملاحظات، التذكيرات، والمزامنة.'
+2026-01-26 08:10:45,158 - INFO - Loading Arabic NLP model...
+2026-01-26 08:10:45,158 - INFO - Mock processing Arabic text: 'أريد إنشاء تطبيق باسم 'مسجل الملاحظات' بميزات تدوين الملاحظات، التذكيرات، والمزامنة.'
+2026-01-26 08:10:45,158 - INFO - NLP Result for prompt 'أريد إنشاء تطبيق باسم 'مسجل الملاحظات' بميزات تدوين الملاحظات، التذكيرات، والمزامنة.': {'intent': 'create_apk', 'entities': {'app_name': 'MyDefaultApp', 'features': ['تد']}}
+2026-01-26 08:10:45,158 - INFO - Received Arabic NLP prompt: 'قم ببناء تطبيق جديد. اسمه هو 'مدير المهام'.'
+2026-01-26 08:10:45,158 - INFO - Loading Arabic NLP model...
+2026-01-26 08:10:45,158 - INFO - Mock processing Arabic text: 'قم ببناء تطبيق جديد. اسمه هو 'مدير المهام'.'
+2026-01-26 08:10:45,158 - INFO - NLP Result for prompt 'قم ببناء تطبيق جديد. اسمه هو 'مدير المهام'.': {'intent': 'create_apk', 'entities': {'app_name': 'MyDefaultApp', 'features': []}}
+2026-01-26 08:10:45,158 - INFO - Received Arabic NLP prompt: 'إنشاء تطبيق بسيط.'
+2026-01-26 08:10:45,158 - INFO - Loading Arabic NLP model...
+2026-01-26 08:10:45,158 - INFO - Mock processing Arabic text: 'إنشاء تطبيق بسيط.'
+2026-01-26 08:10:45,158 - INFO - NLP Result for prompt 'إنشاء تطبيق بسيط.': {'intent': 'create_apk', 'entities': {'app_name': 'MyDefaultApp', 'features': []}}
