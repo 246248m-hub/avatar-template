@@ -1,22 +1,22 @@
-2026-01-26 11:23:39,398 - INFO - ProjectManagementLobe initialized with base directory: project_artifacts
-2026-01-26 11:23:39,398 - INFO - 
+2026-01-26 11:29:49,211 - INFO - ProjectManagementLobe initialized with base directory: project_artifacts
+2026-01-26 11:29:49,211 - INFO - 
 --- Executing Lobe 0: Language Lobe ---
-2026-01-26 11:23:39,398 - INFO - Processing natural language: 'اكتب لي تطبيق بسيط للتحية'
-2026-01-26 11:23:39,398 - INFO - Parsing Arabic text: 'اكتب لي تطبيق بسيط للتحية'
-2026-01-26 11:23:39,398 - INFO - 
+2026-01-26 11:29:49,211 - INFO - Processing natural language: 'اكتب لي تطبيق بسيط للتحية'
+2026-01-26 11:29:49,211 - INFO - Parsing Arabic text: 'اكتب لي تطبيق بسيط للتحية'
+2026-01-26 11:29:49,211 - INFO - 
 --- Executing Lobe 7: Project Management Lobe ---
-2026-01-26 11:23:39,398 - INFO - Created new project environment at: project_artifacts/greeting_app
-2026-01-26 11:23:39,398 - INFO - 
+2026-01-26 11:29:49,211 - INFO - Created new project environment at: project_artifacts/greeting_app
+2026-01-26 11:29:49,211 - INFO - 
 --- Executing Lobe 4 & 8: Synthesis Lobe ---
-2026-01-26 11:23:39,398 - INFO - Synthesizing APK from intermediate representation.
-2026-01-26 11:23:39,398 - INFO - Generating Java code for: {'intent': 'greeting', 'entities': {'name': 'user'}}
-2026-01-26 11:23:39,398 - INFO - Compiling APK from: project_artifacts/greeting_app/generated_java_project
-2026-01-26 11:23:39,399 - INFO - Stored generated APK at: project_artifacts/greeting_app/compiled_apks/generated_java_project.apk
-2026-01-26 11:23:39,399 - INFO - 
+2026-01-26 11:29:49,211 - INFO - Synthesizing APK from intermediate representation.
+2026-01-26 11:29:49,211 - INFO - Generating Java code for: {'intent': 'greeting', 'entities': {'name': 'user'}}
+2026-01-26 11:29:49,211 - INFO - Compiling APK from: project_artifacts/greeting_app/generated_java_project
+2026-01-26 11:29:49,212 - INFO - Stored generated APK at: project_artifacts/greeting_app/compiled_apks/generated_java_project.apk
+2026-01-26 11:29:49,212 - INFO - 
 --- Initiating cleanup ---
-2026-01-26 11:23:39,399 - INFO - ArabicNLP cleanup complete.
-2026-01-26 11:23:39,399 - INFO - CodeGenerator cleanup complete.
-2026-01-26 11:23:39,399 - INFO - APKCompiler cleanup complete.
-2026-01-26 11:23:39,399 - INFO - Initiating cleanup of project artifacts directory: project_artifacts
-2026-01-26 11:23:39,399 - INFO - Successfully removed project artifacts directory: project_artifacts
-2026-01-26 11:23:39,399 - INFO - ProjectManagementLobe cleanup complete.
+2026-01-26 11:29:49,212 - INFO - ArabicNLP cleanup complete.
+2026-01-26 11:29:49,212 - INFO - CodeGenerator cleanup complete.
+2026-01-26 11:29:49,212 - INFO - APKCompiler cleanup complete.
+2026-01-26 11:29:49,212 - INFO - Initiating cleanup of project artifacts directory: project_artifacts
+2026-01-26 11:29:49,212 - INFO - Successfully removed project artifacts directory: project_artifacts
+2026-01-26 11:29:49,212 - INFO - ProjectManagementLobe cleanup complete.
