@@ -1,6 +1,22 @@
-2026-01-26 11:23:27,026 - INFO - --- Simulating Lobe 8 Execution ---
-Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 192, in <module>
-    os.makedirs(os.path.join(app_dir, "src", "main"))
-  File "<frozen os>", line 225, in makedirs
-FileExistsError: [Errno 17] File exists: 'dummy_android_template/app/src/main'
+2026-01-26 11:23:39,398 - INFO - ProjectManagementLobe initialized with base directory: project_artifacts
+2026-01-26 11:23:39,398 - INFO - 
+--- Executing Lobe 0: Language Lobe ---
+2026-01-26 11:23:39,398 - INFO - Processing natural language: 'اكتب لي تطبيق بسيط للتحية'
+2026-01-26 11:23:39,398 - INFO - Parsing Arabic text: 'اكتب لي تطبيق بسيط للتحية'
+2026-01-26 11:23:39,398 - INFO - 
+--- Executing Lobe 7: Project Management Lobe ---
+2026-01-26 11:23:39,398 - INFO - Created new project environment at: project_artifacts/greeting_app
+2026-01-26 11:23:39,398 - INFO - 
+--- Executing Lobe 4 & 8: Synthesis Lobe ---
+2026-01-26 11:23:39,398 - INFO - Synthesizing APK from intermediate representation.
+2026-01-26 11:23:39,398 - INFO - Generating Java code for: {'intent': 'greeting', 'entities': {'name': 'user'}}
+2026-01-26 11:23:39,398 - INFO - Compiling APK from: project_artifacts/greeting_app/generated_java_project
+2026-01-26 11:23:39,399 - INFO - Stored generated APK at: project_artifacts/greeting_app/compiled_apks/generated_java_project.apk
+2026-01-26 11:23:39,399 - INFO - 
+--- Initiating cleanup ---
+2026-01-26 11:23:39,399 - INFO - ArabicNLP cleanup complete.
+2026-01-26 11:23:39,399 - INFO - CodeGenerator cleanup complete.
+2026-01-26 11:23:39,399 - INFO - APKCompiler cleanup complete.
+2026-01-26 11:23:39,399 - INFO - Initiating cleanup of project artifacts directory: project_artifacts
+2026-01-26 11:23:39,399 - INFO - Successfully removed project artifacts directory: project_artifacts
+2026-01-26 11:23:39,399 - INFO - ProjectManagementLobe cleanup complete.
