@@ -1,70 +1,13 @@
-2026-01-26 08:37:13,942 - INFO - --- Initiating Arabic Android Module Build ---
-2026-01-26 08:37:13,942 - INFO - Processing NL input for project details: 'Create an Android app with package name com.example.arabicdemo. Basic setup.'
-2026-01-26 08:37:13,942 - INFO - Extracted details: {'package_name': 'com.example.arabic_generated_app', 'app_title': 'My Arabic App'}
-2026-01-26 08:37:13,942 - INFO - Creating project structure for package: com.example.arabic_generated_app
-2026-01-26 08:37:13,942 - INFO - Generating AndroidManifest.xml content for package: com.example.arabic_generated_app, title: My Arabic App
-2026-01-26 08:37:13,942 - INFO - Created temp_android_project/app/src/main/AndroidManifest.xml
-2026-01-26 08:37:13,942 - INFO - Generating activity code for MainActivity in package com.example.arabic_generated_app
-2026-01-26 08:37:13,943 - INFO - Created temp_android_project/app/src/main/java/com/example/arabic_generated_app/MainActivity.java
-2026-01-26 08:37:13,943 - INFO - Generating layout for activity: MainActivity
-2026-01-26 08:37:13,943 - INFO - Created temp_android_project/app/src/main/res/layout/activity_mainactivity.xml
-2026-01-26 08:37:13,943 - INFO - Generating strings.xml with app title: My Arabic App
-2026-01-26 08:37:13,943 - INFO - Created temp_android_project/app/src/main/res/values/strings.xml
-2026-01-26 08:37:13,943 - INFO - Created app/build.gradle
-2026-01-26 08:37:13,943 - INFO - Created project/build.gradle
-2026-01-26 08:37:13,943 - INFO - Created settings.gradle
-2026-01-26 08:37:13,943 - INFO - Created gradlew script.
-2026-01-26 08:37:13,943 - INFO - Created gradlew.bat.
-2026-01-26 08:37:13,944 - INFO - Created gradle-wrapper.properties.
-2026-01-26 08:37:13,944 - INFO - --- Project structure created. Attempting to build APK ---
-2026-01-26 08:37:13,944 - INFO - Starting Gradle task 'assembleDebug' for project in temp_android_project
-2026-01-26 08:37:13,944 - ERROR - Gradle wrapper not found at temp_android_project/gradlew. Ensure it's generated correctly.
-2026-01-26 08:37:13,944 - ERROR - APK build failed. Build output:
-Gradle wrapper not found at temp_android_project/gradlew.
-2026-01-26 08:37:13,944 - INFO - --- Initiating Arabic Android Module Build ---
-2026-01-26 08:37:13,944 - INFO - Processing NL input for project details: 'Generate an Android app with package name com.arabic.story. The app title should be 'My Arabic Stories'. Display the text 'مرحباً بالعالم' in the main activity. Add a button to the layout.'
-2026-01-26 08:37:13,944 - INFO - Extracted details: {'package_name': 'com.example.arabic_generated_app', 'app_title': 'My Arabic App'}
-2026-01-26 08:37:13,944 - INFO - Creating project structure for package: com.example.arabic_generated_app
-2026-01-26 08:37:13,944 - INFO - Generating AndroidManifest.xml content for package: com.example.arabic_generated_app, title: My Arabic App
-2026-01-26 08:37:13,944 - INFO - Created temp_android_project_stories/app/src/main/AndroidManifest.xml
-2026-01-26 08:37:13,945 - INFO - Generating activity code for MainActivity in package com.example.arabic_generated_app
-2026-01-26 08:37:13,945 - INFO - Created temp_android_project_stories/app/src/main/java/com/example/arabic_generated_app/MainActivity.java
-2026-01-26 08:37:13,945 - INFO - Generating layout for activity: MainActivity
-2026-01-26 08:37:13,945 - INFO - Added a button to the layout.
-2026-01-26 08:37:13,945 - INFO - Created temp_android_project_stories/app/src/main/res/layout/activity_mainactivity.xml
-2026-01-26 08:37:13,945 - INFO - Generating strings.xml with app title: My Arabic App
-2026-01-26 08:37:13,945 - INFO - Created temp_android_project_stories/app/src/main/res/values/strings.xml
-2026-01-26 08:37:13,945 - INFO - Created app/build.gradle
-2026-01-26 08:37:13,945 - INFO - Created project/build.gradle
-2026-01-26 08:37:13,945 - INFO - Created settings.gradle
-2026-01-26 08:37:13,945 - INFO - Created gradlew script.
-2026-01-26 08:37:13,945 - INFO - Created gradlew.bat.
-2026-01-26 08:37:13,946 - INFO - Created gradle-wrapper.properties.
-2026-01-26 08:37:13,946 - INFO - --- Project structure created. Attempting to build APK ---
-2026-01-26 08:37:13,946 - INFO - Starting Gradle task 'assembleDebug' for project in temp_android_project_stories
-2026-01-26 08:37:13,946 - ERROR - Gradle wrapper not found at temp_android_project_stories/gradlew. Ensure it's generated correctly.
-2026-01-26 08:37:13,946 - ERROR - APK build failed. Build output:
-Gradle wrapper not found at temp_android_project_stories/gradlew.
-2026-01-26 08:37:13,946 - INFO - --- Initiating Arabic Android Module Build ---
-2026-01-26 08:37:13,946 - INFO - Processing NL input for project details: 'Build an Android application. Use package name com.uae.dubai.metro. The application should be titled 'Dubai Metro Guide'.'
-2026-01-26 08:37:13,946 - INFO - Extracted details: {'package_name': 'com.example.arabic_generated_app', 'app_title': 'My Arabic App'}
-2026-01-26 08:37:13,946 - INFO - Creating project structure for package: com.example.arabic_generated_app
-2026-01-26 08:37:13,946 - INFO - Generating AndroidManifest.xml content for package: com.example.arabic_generated_app, title: My Arabic App
-2026-01-26 08:37:13,946 - INFO - Created temp_android_project_dubai/app/src/main/AndroidManifest.xml
-2026-01-26 08:37:13,946 - INFO - Generating activity code for MainActivity in package com.example.arabic_generated_app
-2026-01-26 08:37:13,946 - INFO - Created temp_android_project_dubai/app/src/main/java/com/example/arabic_generated_app/MainActivity.java
-2026-01-26 08:37:13,947 - INFO - Generating layout for activity: MainActivity
-2026-01-26 08:37:13,947 - INFO - Created temp_android_project_dubai/app/src/main/res/layout/activity_mainactivity.xml
-2026-01-26 08:37:13,947 - INFO - Generating strings.xml with app title: My Arabic App
-2026-01-26 08:37:13,947 - INFO - Created temp_android_project_dubai/app/src/main/res/values/strings.xml
-2026-01-26 08:37:13,947 - INFO - Created app/build.gradle
-2026-01-26 08:37:13,947 - INFO - Created project/build.gradle
-2026-01-26 08:37:13,947 - INFO - Created settings.gradle
-2026-01-26 08:37:13,947 - INFO - Created gradlew script.
-2026-01-26 08:37:13,947 - INFO - Created gradlew.bat.
-2026-01-26 08:37:13,947 - INFO - Created gradle-wrapper.properties.
-2026-01-26 08:37:13,947 - INFO - --- Project structure created. Attempting to build APK ---
-2026-01-26 08:37:13,947 - INFO - Starting Gradle task 'assembleDebug' for project in temp_android_project_dubai
-2026-01-26 08:37:13,948 - ERROR - Gradle wrapper not found at temp_android_project_dubai/gradlew. Ensure it's generated correctly.
-2026-01-26 08:37:13,948 - ERROR - APK build failed. Build output:
-Gradle wrapper not found at temp_android_project_dubai/gradlew.
+2026-01-26 08:42:05,632 - INFO - --- Arabic NLP Integration Module Demo ---
+2026-01-26 08:42:05,632 - INFO - Analyzing Arabic text for intent: 'أريد إنشاء تطبيق جديد اسمه 'تطبيق دبي' مع شاشة تسجيل دخول.'
+2026-01-26 08:42:05,632 - INFO - Extracted intent data: {'project_name': None, 'features': ['login_screen'], 'ui_elements': [], 'arabic_text_content': ''}
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 356, in <module>
+    project_path_1 = generate_android_project_structure(project_name_1)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 23, in generate_android_project_structure
+    project_path = os.path.join(ARABIC_PROJECT_ROOT, project_name)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen posixpath>", line 90, in join
+  File "<frozen genericpath>", line 164, in _check_arg_types
+TypeError: join() argument must be str, bytes, or os.PathLike object, not 'NoneType'
