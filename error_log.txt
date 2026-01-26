@@ -1,34 +1,19 @@
-2026-01-26 07:55:22,786 - INFO - --- Lobe 5: Arabic NLP Processor Module Demo Started ---
-2026-01-26 07:55:22,787 - INFO - Ensured necessary directories exist.
-2026-01-26 07:55:22,787 - INFO - Initializing Lobe 5: Arabic NLP Processor.
-2026-01-26 07:55:22,787 - INFO - Loading Arabic NLP model...
-2026-01-26 07:55:22,787 - INFO - Arabic NLP model loaded.
-2026-01-26 07:55:22,787 - INFO - 
---- Processing Arabic Prompt 1 ---
-2026-01-26 07:55:22,787 - INFO - Starting Lobe 5 processing for Arabic text: 'إنشاء زر يحمل النص 'اضغط هنا' ويظهر رسالة 'مرحباً ...'
-2026-01-26 07:55:22,787 - INFO - Preprocessing Arabic text: 'إنشاء زر يحمل النص 'اضغط هنا' ويظهر رسالة 'مرحباً ...'
-2026-01-26 07:55:22,787 - INFO - Arabic text preprocessing complete.
-2026-01-26 07:55:22,787 - INFO - Analyzing Arabic text semantics...
-2026-01-26 07:55:22,787 - INFO - Arabic text semantic analysis complete.
-2026-01-26 07:55:22,787 - INFO - Extracting code intent from Arabic analysis results...
-2026-01-26 07:55:22,787 - INFO - Code intent extraction complete.
-2026-01-26 07:55:22,787 - INFO - Lobe 5 processing finished.
-2026-01-26 07:55:22,787 - INFO - 
---- Processing Arabic Prompt 2 ---
-2026-01-26 07:55:22,787 - INFO - Starting Lobe 5 processing for Arabic text: 'أضف حقل إدخال للنص بعنوان 'اسم المستخدم'....'
-2026-01-26 07:55:22,787 - INFO - Preprocessing Arabic text: 'أضف حقل إدخال للنص بعنوان 'اسم المستخدم'....'
-2026-01-26 07:55:22,787 - INFO - Arabic text preprocessing complete.
-2026-01-26 07:55:22,787 - INFO - Analyzing Arabic text semantics...
-2026-01-26 07:55:22,787 - INFO - Arabic text semantic analysis complete.
-2026-01-26 07:55:22,787 - INFO - Extracting code intent from Arabic analysis results...
-2026-01-26 07:55:22,787 - INFO - Code intent extraction complete.
-2026-01-26 07:55:22,787 - INFO - Lobe 5 processing finished.
-2026-01-26 07:55:22,787 - INFO - 
---- Simulating passing output to Lobe 4_code_generation_lobe ---
-2026-01-26 07:55:22,787 - INFO - Cleaning up dummy files from previous runs...
-2026-01-26 07:55:22,787 - INFO - Cleaning up demo knowledge base directory: knowledge_base
-2026-01-26 07:55:22,787 - INFO - Demo APK output directory: apk_output (content is generated, not removed)
-2026-01-26 07:55:22,787 - INFO - Cleaning up Java project directory: java_project_for_apk
-2026-01-26 07:55:22,787 - INFO - Cleaning up local repository directory: local_repo
-2026-01-26 07:55:22,787 - INFO - Dummy file cleanup complete.
-2026-01-26 07:55:22,787 - INFO - --- Lobe 5: Arabic NLP Processor Module Demo Finished ---
+2026-01-26 08:00:30,521 - INFO - --- Starting Lobe 5: Arabic NLP Processor Module Demo ---
+2026-01-26 08:00:30,522 - INFO - Created dummy knowledge base directory: dummy_kb
+2026-01-26 08:00:30,522 - INFO - Loading simplified Arabic grammar rules.
+2026-01-26 08:00:30,522 - INFO - Loading Arabic intent patterns.
+2026-01-26 08:00:30,523 - INFO - Parsing Arabic text: 'أريد إنشاء تطبيق بسيط'
+2026-01-26 08:00:30,523 - INFO - Identified intent: 'create_app' with entities: {'app_name': 'بسيط'}
+2026-01-26 08:00:30,623 - INFO - Parsing Arabic text: 'بناء برنامج اسمه MyFirstApp'
+2026-01-26 08:00:30,623 - INFO - Identified intent: 'create_app' with entities: {'app_name': 'اسمه'}
+2026-01-26 08:00:30,723 - INFO - Parsing Arabic text: 'إنشاء واجهة مستخدم جديدة'
+2026-01-26 08:00:30,724 - INFO - Identified intent: 'create_ui_element' with entities: {'element_type': 'واجهة'}
+2026-01-26 08:00:30,824 - INFO - Parsing Arabic text: 'إضافة زر إلى الشاشة'
+2026-01-26 08:00:30,824 - WARNING - Could not determine intent for text: 'إضافة زر إلى الشاشة'
+2026-01-26 08:00:30,924 - INFO - Parsing Arabic text: 'ما هو هذا التطبيق؟'
+2026-01-26 08:00:30,924 - WARNING - Could not determine intent for text: 'ما هو هذا التطبيق؟'
+2026-01-26 08:00:31,024 - INFO - Parsing Arabic text: 'تعديل زر الاتصال في التطبيق'
+2026-01-26 08:00:31,024 - WARNING - Could not determine intent for text: 'تعديل زر الاتصال في التطبيق'
+2026-01-26 08:00:31,124 - INFO - Parsing Arabic text: 'غير لون الخلفية'
+2026-01-26 08:00:31,125 - WARNING - Could not determine intent for text: 'غير لون الخلفية'
+2026-01-26 08:00:31,225 - INFO - Removed dummy knowledge base directory: dummy_kb
