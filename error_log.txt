@@ -1,14 +1,38 @@
-2026-01-26 08:15:54,538 - INFO - ArabicCodeGenerator initialized with project dir: dummy_java_project
-2026-01-26 08:15:54,538 - INFO - Knowledge base dir: knowledge_base
-2026-01-26 08:15:54,539 - INFO - Created dummy AndroidManifest.xml at dummy_java_project/app/src/main/AndroidManifest.xml
-2026-01-26 08:15:54,539 - INFO - Created dummy app/build.gradle at dummy_java_project/app/build.gradle
-2026-01-26 08:15:54,539 - INFO - Created dummy gradlew script at dummy_java_project/gradlew
-2026-01-26 08:15:54,539 - INFO - Generating Activity 'MainActivity' with logic: 'This activity should initialize a text view and display 'مرحباً بالعالم!''
-2026-01-26 08:15:54,539 - INFO - Generated Java Activity: dummy_java_project/app/src/main/java/com/example/arabicapp/MainActivity.java
-2026-01-26 08:15:54,539 - INFO - Generating Fragment 'ArabicFragment' with logic: 'This fragment should initialize a text view and display 'جزء العربية''
-2026-01-26 08:15:54,539 - INFO - Generated Kotlin Fragment: dummy_java_project/app/src/main/java/com/example/arabicapp/ArabicFragment.kt
-2026-01-26 08:15:54,539 - INFO - Generating Layout 'MainActivity' with logic: 'This layout should contain a text view displaying 'تصميم الواجهة' and a button to 'ابدأ العملية''
-2026-01-26 08:15:54,539 - INFO - Generated Layout XML: dummy_java_project/app/src/main/res/layout/activity_mainactivity.xml
-2026-01-26 08:15:54,539 - INFO - Integrating component 'dummy_java_project/app/src/main/java/com/example/arabicapp/MainActivity.java' into 'SomeEntryActivity'.
-2026-01-26 08:15:54,539 - INFO - Cleaning up dummy project directory: dummy_java_project
-2026-01-26 08:15:54,541 - INFO - Successfully removed directory: dummy_java_project
+INFO:root:Initializing Arabic Parser Module in: arabic_parser_module
+INFO:root:Ensured directory exists: arabic_parser_module
+INFO:root:Ensured subdirectories exist: arabic_parser_module/grammar, arabic_parser_module/templates
+INFO:root:Created dummy grammar file: arabic_parser_module/grammar/dummy_grammar.gr
+INFO:root:Created dummy template file: arabic_parser_module/templates/dummy_template.txt
+INFO:root:Arabic Parser Module initialization complete.
+INFO:root:Parsing Arabic input: 'أريد إنشاء تطبيق باسم 'MyAwesomeApp' بلغة الجافا.'
+INFO:root:Using knowledge base at: knowledge_base/arabic_kb.json
+INFO:root:Parsed output: {'raw_input': "أريد إنشاء تطبيق باسم 'MyAwesomeApp' بلغة الجافا.", 'recognized_intent': 'create_app', 'extracted_parameters': {}, 'errors': []}
+INFO:root:Generating Arabic text from parsed data.
+INFO:root:Using templates from: arabic_parser_module/templates
+INFO:root:Generated text: 'سيتم إنشاء تطبيق باسم 'تطبيق' يدعم 'اللغة غير محددة' مع خيارات إضافية غير محددة.'
+INFO:root:Parsing Arabic input: 'قم بإنشاء تطبيق جديد.'
+INFO:root:Using knowledge base at: knowledge_base/arabic_kb.json
+INFO:root:Parsed output: {'raw_input': 'قم بإنشاء تطبيق جديد.', 'recognized_intent': 'create_app', 'extracted_parameters': {}, 'errors': []}
+INFO:root:Generating Arabic text from parsed data.
+INFO:root:Using templates from: arabic_parser_module/templates
+INFO:root:Generated text: 'سيتم إنشاء تطبيق باسم 'تطبيق' يدعم 'اللغة غير محددة' مع خيارات إضافية غير محددة.'
+INFO:root:Parsing Arabic input: 'تعديل التطبيق الحالي.'
+INFO:root:Using knowledge base at: knowledge_base/arabic_kb.json
+INFO:root:Parsed output: {'raw_input': 'تعديل التطبيق الحالي.', 'recognized_intent': 'unknown', 'extracted_parameters': {}, 'errors': ['Could not recognize the intent.']}
+INFO:root:Generating Arabic text from parsed data.
+INFO:root:Using templates from: arabic_parser_module/templates
+INFO:root:Generated text: 'تم استلام طلب غير معروف. ملاحظات: Could not recognize the intent..'
+INFO:root:Parsing Arabic input: 'ما هي وظيفة هذا الكود؟'
+INFO:root:Using knowledge base at: knowledge_base/arabic_kb.json
+INFO:root:Parsed output: {'raw_input': 'ما هي وظيفة هذا الكود؟', 'recognized_intent': 'unknown', 'extracted_parameters': {}, 'errors': ['Could not recognize the intent.']}
+INFO:root:Generating Arabic text from parsed data.
+INFO:root:Using templates from: arabic_parser_module/templates
+INFO:root:Generated text: 'تم استلام طلب غير معروف. ملاحظات: Could not recognize the intent..'
+INFO:root:Parsing Arabic input: 'إنشاء تطبيق بلغة بايثون مع خيارات للتخصيص.'
+INFO:root:Using knowledge base at: knowledge_base/arabic_kb.json
+INFO:root:Parsed output: {'raw_input': 'إنشاء تطبيق بلغة بايثون مع خيارات للتخصيص.', 'recognized_intent': 'create_app', 'extracted_parameters': {'additional_options': 'للتخصيص.'}, 'errors': []}
+INFO:root:Generating Arabic text from parsed data.
+INFO:root:Using templates from: arabic_parser_module/templates
+INFO:root:Generated text: 'سيتم إنشاء تطبيق باسم 'تطبيق' يدعم 'اللغة غير محددة' مع للتخصيص..'
+INFO:root:Removed directory: arabic_parser_module
+INFO:root:Removed directory: knowledge_base
