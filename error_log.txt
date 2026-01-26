@@ -1,79 +1,70 @@
-/home/runner/work/phoenix-executor/phoenix-executor/task.py:270: SyntaxWarning: invalid escape sequence '\/'
-  f.write("distributionBase=GRADLE_USER_HOME\ndistributionUrl=https\x3a\/\/services.gradle.org\/distributions\/gradle-7.5-bin.zip\ndistributionPath=wrapper\/dists\nzipStorePath=wrapper\/dists\n")
-2026-01-26 08:36:58,051 - INFO - --- Lobe 7_apk_builder_lobe: Received instruction ---
-2026-01-26 08:36:58,051 - INFO - Natural language description: 'Create an Android app that displays 'Hello from Arabic NLP!''
-2026-01-26 08:36:58,051 - WARNING - Natural language description not understood for complex simulation. Using default template.
-2026-01-26 08:36:58,051 - INFO - Calling create_apk_from_code with simulated Java code...
-2026-01-26 08:36:58,051 - INFO - Setting up Android project structure at: generated_java_project
-2026-01-26 08:36:58,052 - INFO - Android project structure created at generated_java_project
-2026-01-26 08:36:58,052 - INFO - Wrote Java code to: generated_java_project/app/src/main/java/com/example/defaultapp/MainActivity.java
-2026-01-26 08:36:58,052 - INFO - Attempting to build the APK...
-2026-01-26 08:36:58,052 - INFO - Attempting to build APK for project at: generated_java_project
-2026-01-26 08:36:58,052 - INFO - Executing command: ./gradlew assembleDebug in generated_java_project
-2026-01-26 08:36:58,054 - ERROR - APK build failed with return code 127.
-2026-01-26 08:36:58,054 - ERROR - Gradle stdout:
-
-2026-01-26 08:36:58,054 - ERROR - Gradle stderr:
-./gradlew: line 2: /home/runner/work/phoenix-executor/phoenix-executor/generated_java_project/gradle/wrapper/gradle-wrapper.jar: No such file or directory
-
-2026-01-26 08:36:58,054 - ERROR - APK build failed.
-2026-01-26 08:36:58,054 - ERROR - Failed to generate APK.
-2026-01-26 08:36:58,054 - INFO - --- Lobe 7_apk_builder_lobe: Received instruction ---
-2026-01-26 08:36:58,054 - INFO - Natural language description: 'I need an app that can calculate the sum of 5 and 7 and show the result.'
-2026-01-26 08:36:58,054 - WARNING - Natural language description not understood for complex simulation. Using default template.
-2026-01-26 08:36:58,054 - INFO - Calling create_apk_from_code with simulated Java code...
-2026-01-26 08:36:58,055 - INFO - Cleaned up generated project directory: generated_java_project
-2026-01-26 08:36:58,055 - INFO - Setting up Android project structure at: generated_java_project
-2026-01-26 08:36:58,056 - INFO - Android project structure created at generated_java_project
-2026-01-26 08:36:58,056 - INFO - Wrote Java code to: generated_java_project/app/src/main/java/com/example/defaultapp/MainActivity.java
-2026-01-26 08:36:58,056 - INFO - Attempting to build the APK...
-2026-01-26 08:36:58,056 - INFO - Attempting to build APK for project at: generated_java_project
-2026-01-26 08:36:58,056 - INFO - Executing command: ./gradlew assembleDebug in generated_java_project
-2026-01-26 08:36:58,058 - ERROR - APK build failed with return code 127.
-2026-01-26 08:36:58,058 - ERROR - Gradle stdout:
-
-2026-01-26 08:36:58,058 - ERROR - Gradle stderr:
-./gradlew: line 2: /home/runner/work/phoenix-executor/phoenix-executor/generated_java_project/gradle/wrapper/gradle-wrapper.jar: No such file or directory
-
-2026-01-26 08:36:58,058 - ERROR - APK build failed.
-2026-01-26 08:36:58,058 - ERROR - Failed to generate APK.
-2026-01-26 08:36:58,058 - INFO - --- Lobe 7_apk_builder_lobe: Received instruction ---
-2026-01-26 08:36:58,058 - INFO - Natural language description: 'Generate an app that shows an Arabic greeting: السلام عليكم!'
-2026-01-26 08:36:58,058 - INFO - Simulated generation of 'Arabic Greeting' app code.
-2026-01-26 08:36:58,058 - INFO - Calling create_apk_from_code with simulated Java code...
-2026-01-26 08:36:58,059 - INFO - Cleaned up generated project directory: generated_java_project
-2026-01-26 08:36:58,059 - INFO - Setting up Android project structure at: generated_java_project
-2026-01-26 08:36:58,060 - INFO - Android project structure created at generated_java_project
-2026-01-26 08:36:58,060 - INFO - Wrote Java code to: generated_java_project/app/src/main/java/com/example/arabicapp/MainActivity.java
-2026-01-26 08:36:58,060 - INFO - Attempting to build the APK...
-2026-01-26 08:36:58,060 - INFO - Attempting to build APK for project at: generated_java_project
-2026-01-26 08:36:58,060 - INFO - Executing command: ./gradlew assembleDebug in generated_java_project
-2026-01-26 08:36:58,061 - ERROR - APK build failed with return code 127.
-2026-01-26 08:36:58,062 - ERROR - Gradle stdout:
-
-2026-01-26 08:36:58,062 - ERROR - Gradle stderr:
-./gradlew: line 2: /home/runner/work/phoenix-executor/phoenix-executor/generated_java_project/gradle/wrapper/gradle-wrapper.jar: No such file or directory
-
-2026-01-26 08:36:58,062 - ERROR - APK build failed.
-2026-01-26 08:36:58,062 - ERROR - Failed to generate APK.
-2026-01-26 08:36:58,062 - INFO - --- Lobe 7_apk_builder_lobe: Received instruction ---
-2026-01-26 08:36:58,062 - INFO - Natural language description: 'This is a test instruction that should not be matched.'
-2026-01-26 08:36:58,062 - WARNING - Natural language description not understood for complex simulation. Using default template.
-2026-01-26 08:36:58,062 - INFO - Calling create_apk_from_code with simulated Java code...
-2026-01-26 08:36:58,063 - INFO - Cleaned up generated project directory: generated_java_project
-2026-01-26 08:36:58,063 - INFO - Setting up Android project structure at: generated_java_project
-2026-01-26 08:36:58,064 - INFO - Android project structure created at generated_java_project
-2026-01-26 08:36:58,064 - INFO - Wrote Java code to: generated_java_project/app/src/main/java/com/example/defaultapp/MainActivity.java
-2026-01-26 08:36:58,064 - INFO - Attempting to build the APK...
-2026-01-26 08:36:58,064 - INFO - Attempting to build APK for project at: generated_java_project
-2026-01-26 08:36:58,064 - INFO - Executing command: ./gradlew assembleDebug in generated_java_project
-2026-01-26 08:36:58,065 - ERROR - APK build failed with return code 127.
-2026-01-26 08:36:58,065 - ERROR - Gradle stdout:
-
-2026-01-26 08:36:58,065 - ERROR - Gradle stderr:
-./gradlew: line 2: /home/runner/work/phoenix-executor/phoenix-executor/generated_java_project/gradle/wrapper/gradle-wrapper.jar: No such file or directory
-
-2026-01-26 08:36:58,065 - ERROR - APK build failed.
-2026-01-26 08:36:58,065 - ERROR - Failed to generate APK.
-2026-01-26 08:36:58,065 - INFO - --- Cleaning up APK builder resources ---
-2026-01-26 08:36:58,066 - INFO - Cleaned up generated project directory: generated_java_project
+2026-01-26 08:37:13,942 - INFO - --- Initiating Arabic Android Module Build ---
+2026-01-26 08:37:13,942 - INFO - Processing NL input for project details: 'Create an Android app with package name com.example.arabicdemo. Basic setup.'
+2026-01-26 08:37:13,942 - INFO - Extracted details: {'package_name': 'com.example.arabic_generated_app', 'app_title': 'My Arabic App'}
+2026-01-26 08:37:13,942 - INFO - Creating project structure for package: com.example.arabic_generated_app
+2026-01-26 08:37:13,942 - INFO - Generating AndroidManifest.xml content for package: com.example.arabic_generated_app, title: My Arabic App
+2026-01-26 08:37:13,942 - INFO - Created temp_android_project/app/src/main/AndroidManifest.xml
+2026-01-26 08:37:13,942 - INFO - Generating activity code for MainActivity in package com.example.arabic_generated_app
+2026-01-26 08:37:13,943 - INFO - Created temp_android_project/app/src/main/java/com/example/arabic_generated_app/MainActivity.java
+2026-01-26 08:37:13,943 - INFO - Generating layout for activity: MainActivity
+2026-01-26 08:37:13,943 - INFO - Created temp_android_project/app/src/main/res/layout/activity_mainactivity.xml
+2026-01-26 08:37:13,943 - INFO - Generating strings.xml with app title: My Arabic App
+2026-01-26 08:37:13,943 - INFO - Created temp_android_project/app/src/main/res/values/strings.xml
+2026-01-26 08:37:13,943 - INFO - Created app/build.gradle
+2026-01-26 08:37:13,943 - INFO - Created project/build.gradle
+2026-01-26 08:37:13,943 - INFO - Created settings.gradle
+2026-01-26 08:37:13,943 - INFO - Created gradlew script.
+2026-01-26 08:37:13,943 - INFO - Created gradlew.bat.
+2026-01-26 08:37:13,944 - INFO - Created gradle-wrapper.properties.
+2026-01-26 08:37:13,944 - INFO - --- Project structure created. Attempting to build APK ---
+2026-01-26 08:37:13,944 - INFO - Starting Gradle task 'assembleDebug' for project in temp_android_project
+2026-01-26 08:37:13,944 - ERROR - Gradle wrapper not found at temp_android_project/gradlew. Ensure it's generated correctly.
+2026-01-26 08:37:13,944 - ERROR - APK build failed. Build output:
+Gradle wrapper not found at temp_android_project/gradlew.
+2026-01-26 08:37:13,944 - INFO - --- Initiating Arabic Android Module Build ---
+2026-01-26 08:37:13,944 - INFO - Processing NL input for project details: 'Generate an Android app with package name com.arabic.story. The app title should be 'My Arabic Stories'. Display the text 'مرحباً بالعالم' in the main activity. Add a button to the layout.'
+2026-01-26 08:37:13,944 - INFO - Extracted details: {'package_name': 'com.example.arabic_generated_app', 'app_title': 'My Arabic App'}
+2026-01-26 08:37:13,944 - INFO - Creating project structure for package: com.example.arabic_generated_app
+2026-01-26 08:37:13,944 - INFO - Generating AndroidManifest.xml content for package: com.example.arabic_generated_app, title: My Arabic App
+2026-01-26 08:37:13,944 - INFO - Created temp_android_project_stories/app/src/main/AndroidManifest.xml
+2026-01-26 08:37:13,945 - INFO - Generating activity code for MainActivity in package com.example.arabic_generated_app
+2026-01-26 08:37:13,945 - INFO - Created temp_android_project_stories/app/src/main/java/com/example/arabic_generated_app/MainActivity.java
+2026-01-26 08:37:13,945 - INFO - Generating layout for activity: MainActivity
+2026-01-26 08:37:13,945 - INFO - Added a button to the layout.
+2026-01-26 08:37:13,945 - INFO - Created temp_android_project_stories/app/src/main/res/layout/activity_mainactivity.xml
+2026-01-26 08:37:13,945 - INFO - Generating strings.xml with app title: My Arabic App
+2026-01-26 08:37:13,945 - INFO - Created temp_android_project_stories/app/src/main/res/values/strings.xml
+2026-01-26 08:37:13,945 - INFO - Created app/build.gradle
+2026-01-26 08:37:13,945 - INFO - Created project/build.gradle
+2026-01-26 08:37:13,945 - INFO - Created settings.gradle
+2026-01-26 08:37:13,945 - INFO - Created gradlew script.
+2026-01-26 08:37:13,945 - INFO - Created gradlew.bat.
+2026-01-26 08:37:13,946 - INFO - Created gradle-wrapper.properties.
+2026-01-26 08:37:13,946 - INFO - --- Project structure created. Attempting to build APK ---
+2026-01-26 08:37:13,946 - INFO - Starting Gradle task 'assembleDebug' for project in temp_android_project_stories
+2026-01-26 08:37:13,946 - ERROR - Gradle wrapper not found at temp_android_project_stories/gradlew. Ensure it's generated correctly.
+2026-01-26 08:37:13,946 - ERROR - APK build failed. Build output:
+Gradle wrapper not found at temp_android_project_stories/gradlew.
+2026-01-26 08:37:13,946 - INFO - --- Initiating Arabic Android Module Build ---
+2026-01-26 08:37:13,946 - INFO - Processing NL input for project details: 'Build an Android application. Use package name com.uae.dubai.metro. The application should be titled 'Dubai Metro Guide'.'
+2026-01-26 08:37:13,946 - INFO - Extracted details: {'package_name': 'com.example.arabic_generated_app', 'app_title': 'My Arabic App'}
+2026-01-26 08:37:13,946 - INFO - Creating project structure for package: com.example.arabic_generated_app
+2026-01-26 08:37:13,946 - INFO - Generating AndroidManifest.xml content for package: com.example.arabic_generated_app, title: My Arabic App
+2026-01-26 08:37:13,946 - INFO - Created temp_android_project_dubai/app/src/main/AndroidManifest.xml
+2026-01-26 08:37:13,946 - INFO - Generating activity code for MainActivity in package com.example.arabic_generated_app
+2026-01-26 08:37:13,946 - INFO - Created temp_android_project_dubai/app/src/main/java/com/example/arabic_generated_app/MainActivity.java
+2026-01-26 08:37:13,947 - INFO - Generating layout for activity: MainActivity
+2026-01-26 08:37:13,947 - INFO - Created temp_android_project_dubai/app/src/main/res/layout/activity_mainactivity.xml
+2026-01-26 08:37:13,947 - INFO - Generating strings.xml with app title: My Arabic App
+2026-01-26 08:37:13,947 - INFO - Created temp_android_project_dubai/app/src/main/res/values/strings.xml
+2026-01-26 08:37:13,947 - INFO - Created app/build.gradle
+2026-01-26 08:37:13,947 - INFO - Created project/build.gradle
+2026-01-26 08:37:13,947 - INFO - Created settings.gradle
+2026-01-26 08:37:13,947 - INFO - Created gradlew script.
+2026-01-26 08:37:13,947 - INFO - Created gradlew.bat.
+2026-01-26 08:37:13,947 - INFO - Created gradle-wrapper.properties.
+2026-01-26 08:37:13,947 - INFO - --- Project structure created. Attempting to build APK ---
+2026-01-26 08:37:13,947 - INFO - Starting Gradle task 'assembleDebug' for project in temp_android_project_dubai
+2026-01-26 08:37:13,948 - ERROR - Gradle wrapper not found at temp_android_project_dubai/gradlew. Ensure it's generated correctly.
+2026-01-26 08:37:13,948 - ERROR - APK build failed. Build output:
+Gradle wrapper not found at temp_android_project_dubai/gradlew.
