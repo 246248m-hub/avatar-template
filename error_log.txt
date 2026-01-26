@@ -1,29 +1,18 @@
-2026-01-26 09:04:11,599 - INFO - UnifiedMind initializing...
-2026-01-26 09:04:11,599 - INFO - ArabicLanguageProcessor initialized.
-2026-01-26 09:04:11,599 - INFO - CodeGenerator initialized with template dir: project_templates/android
-2026-01-26 09:04:11,599 - INFO - UnifiedMind initialized.
-2026-01-26 09:04:11,599 - INFO - 
---- Demonstrating Arabic App Creation ---
-2026-01-26 09:04:11,599 - INFO - Initiating APK generation from prompt: 'أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp''
-2026-01-26 09:04:11,599 - INFO - Processing prompt: 'أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp'' in language: 'arabic'
-2026-01-26 09:04:11,599 - INFO - Parsing Arabic text: 'أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp'...'
-2026-01-26 09:04:11,599 - INFO - Parsed Arabic data: {'original_text': "أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp'", 'tokens': ['أنشئ', 'لي', 'تطبيقاً', 'جديداً', 'باسم', "'MyAwesomeApp'"], 'intent': 'unknown', 'entities': {}}
-2026-01-26 09:04:11,599 - INFO - Generating Arabic text from structured data: {'original_text': "أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp'", 'tokens': ['أنشئ', 'لي', 'تطبيقاً', 'جديداً', 'باسم', "'MyAwesomeApp'"], 'intent': 'unknown', 'entities': {}}
-2026-01-26 09:04:11,599 - INFO - Generated Arabic text: 'تم فهم طلبك.'
-2026-01-26 09:04:11,599 - INFO - 
---- Demonstrating Generic Arabic Request ---
-2026-01-26 09:04:11,599 - INFO - Processing prompt: 'كيف حال الطقس اليوم؟' in language: 'arabic'
-2026-01-26 09:04:11,599 - INFO - Parsing Arabic text: 'كيف حال الطقس اليوم؟...'
-2026-01-26 09:04:11,599 - INFO - Parsed Arabic data: {'original_text': 'كيف حال الطقس اليوم؟', 'tokens': ['كيف', 'حال', 'الطقس', 'اليوم؟'], 'intent': 'unknown', 'entities': {}}
-2026-01-26 09:04:11,599 - INFO - Generating Arabic text from structured data: {'original_text': 'كيف حال الطقس اليوم؟', 'tokens': ['كيف', 'حال', 'الطقس', 'اليوم؟'], 'intent': 'unknown', 'entities': {}}
-2026-01-26 09:04:11,599 - INFO - Generated Arabic text: 'تم فهم طلبك.'
-2026-01-26 09:04:11,599 - INFO - 
---- Demonstrating Complex Arabic Request (Mocked) ---
-2026-01-26 09:04:11,599 - INFO - Initiating APK generation from prompt: 'أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker' مع تتبع للخطوات والسعرات الحرارية.'
-2026-01-26 09:04:11,599 - INFO - Processing prompt: 'أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker' مع تتبع للخطوات والسعرات الحرارية.' in language: 'arabic'
-2026-01-26 09:04:11,599 - INFO - Parsing Arabic text: 'أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker'...'
-2026-01-26 09:04:11,599 - INFO - Parsed Arabic data: {'original_text': "أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker' مع تتبع للخطوات والسعرات الحرارية.", 'tokens': ['أريد', 'إنشاء', 'تطبيق', 'مراقبة', 'للصحة', 'باسم', "'HealthTracker'", 'مع', 'تتبع', 'للخطوات', 'والسعرات', 'الحرارية.'], 'intent': 'unknown', 'entities': {}}
-2026-01-26 09:04:11,599 - INFO - Generating Arabic text from structured data: {'original_text': "أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker' مع تتبع للخطوات والسعرات الحرارية.", 'tokens': ['أريد', 'إنشاء', 'تطبيق', 'مراقبة', 'للصحة', 'باسم', "'HealthTracker'", 'مع', 'تتبع', 'للخطوات', 'والسعرات', 'الحرارية.'], 'intent': 'unknown', 'entities': {}}
-2026-01-26 09:04:11,599 - INFO - Generated Arabic text: 'تم فهم طلبك.'
-2026-01-26 09:04:11,599 - INFO - 
---- UnifiedMind Demonstration Finished ---
+2026-01-26 09:04:44,504 - INFO - Parsing Arabic text: 'إنشاء تطبيق جديد'
+2026-01-26 09:04:44,504 - INFO - Parsed data: {'original_text': 'إنشاء تطبيق جديد', 'tokens': [{'word': 'إنشاء', 'lemma': 'إنشاء', 'pos': 'VERB'}, {'word': 'تطبيق', 'lemma': 'تطبيق', 'pos': 'NOUN'}, {'word': 'جديد', 'lemma': 'جديد', 'pos': 'NOUN'}], 'entities': [], 'intent': 'create_app', 'structure': None}
+2026-01-26 09:04:44,504 - INFO - Generating structured output from parsed data.
+2026-01-26 09:04:44,504 - INFO - Generated structured output: {'status': 'success', 'message': 'Structured output generated successfully.', 'data': {'intent': 'create_app', 'entities': [], 'parsed_tokens': [{'word': 'إنشاء', 'lemma': 'إنشاء', 'pos': 'VERB'}, {'word': 'تطبيق', 'lemma': 'تطبيق', 'pos': 'NOUN'}, {'word': 'جديد', 'lemma': 'جديد', 'pos': 'NOUN'}]}}
+2026-01-26 09:04:44,504 - INFO - Generating APK description from structured output.
+2026-01-26 09:04:44,504 - INFO - Generated APK description: {'status': 'success', 'message': 'APK description generated.', 'apk_spec': {'name': 'MyNewApp', 'version': '1.0', 'features': [], 'dependencies': []}}
+2026-01-26 09:04:44,504 - INFO - Parsing Arabic text: 'قم ببناء تطبيق باسم 'MyAwesomeApp' في القاهرة'
+2026-01-26 09:04:44,504 - INFO - Parsed data: {'original_text': "قم ببناء تطبيق باسم 'MyAwesomeApp' في القاهرة", 'tokens': [{'word': 'قم', 'lemma': 'قم', 'pos': 'NOUN'}, {'word': 'ببناء', 'lemma': 'ببناء', 'pos': 'NOUN'}, {'word': 'تطبيق', 'lemma': 'تطبيق', 'pos': 'NOUN'}, {'word': 'باسم', 'lemma': 'باسم', 'pos': 'ADP'}, {'word': "'MyAwesomeApp'", 'lemma': "'MyAwesomeApp'", 'pos': 'NOUN'}, {'word': 'في', 'lemma': 'في', 'pos': 'ADP'}, {'word': 'القاهرة', 'lemma': 'القاهرة', 'pos': 'PROPN'}], 'entities': [{'text': 'القاهرة', 'type': 'LOCATION'}], 'intent': 'unknown', 'structure': None}
+2026-01-26 09:04:44,504 - INFO - Generating structured output from parsed data.
+2026-01-26 09:04:44,504 - INFO - Generated structured output: {'status': 'success', 'message': 'Structured output generated successfully.', 'data': {'intent': 'unknown', 'entities': [{'text': 'القاهرة', 'type': 'LOCATION'}], 'parsed_tokens': [{'word': 'قم', 'lemma': 'قم', 'pos': 'NOUN'}, {'word': 'ببناء', 'lemma': 'ببناء', 'pos': 'NOUN'}, {'word': 'تطبيق', 'lemma': 'تطبيق', 'pos': 'NOUN'}, {'word': 'باسم', 'lemma': 'باسم', 'pos': 'ADP'}, {'word': "'MyAwesomeApp'", 'lemma': "'MyAwesomeApp'", 'pos': 'NOUN'}, {'word': 'في', 'lemma': 'في', 'pos': 'ADP'}, {'word': 'القاهرة', 'lemma': 'القاهرة', 'pos': 'PROPN'}]}}
+2026-01-26 09:04:44,504 - INFO - Generating APK description from structured output.
+2026-01-26 09:04:44,504 - INFO - Generated APK description: {'status': 'success', 'message': 'APK description generated.', 'apk_spec': {'name': 'GeneratedApp', 'version': '1.0', 'features': [], 'dependencies': []}}
+2026-01-26 09:04:44,504 - INFO - Parsing Arabic text: 'أريد تطبيقاً به ميزة تسجيل الدخول'
+2026-01-26 09:04:44,504 - INFO - Parsed data: {'original_text': 'أريد تطبيقاً به ميزة تسجيل الدخول', 'tokens': [{'word': 'أريد', 'lemma': 'أريد', 'pos': 'NOUN'}, {'word': 'تطبيقاً', 'lemma': 'تطبيقاً', 'pos': 'NOUN'}, {'word': 'به', 'lemma': 'به', 'pos': 'NOUN'}, {'word': 'ميزة', 'lemma': 'ميزة', 'pos': 'NOUN'}, {'word': 'تسجيل', 'lemma': 'تسجيل', 'pos': 'NOUN'}, {'word': 'الدخول', 'lemma': 'الدخول', 'pos': 'NOUN'}], 'entities': [], 'intent': 'unknown', 'structure': None}
+2026-01-26 09:04:44,504 - INFO - Generating structured output from parsed data.
+2026-01-26 09:04:44,504 - INFO - Generated structured output: {'status': 'success', 'message': 'Structured output generated successfully.', 'data': {'intent': 'unknown', 'entities': [], 'parsed_tokens': [{'word': 'أريد', 'lemma': 'أريد', 'pos': 'NOUN'}, {'word': 'تطبيقاً', 'lemma': 'تطبيقاً', 'pos': 'NOUN'}, {'word': 'به', 'lemma': 'به', 'pos': 'NOUN'}, {'word': 'ميزة', 'lemma': 'ميزة', 'pos': 'NOUN'}, {'word': 'تسجيل', 'lemma': 'تسجيل', 'pos': 'NOUN'}, {'word': 'الدخول', 'lemma': 'الدخول', 'pos': 'NOUN'}]}}
+2026-01-26 09:04:44,504 - INFO - Generating APK description from structured output.
+2026-01-26 09:04:44,504 - INFO - Generated APK description: {'status': 'success', 'message': 'APK description generated.', 'apk_spec': {'name': 'GeneratedApp', 'version': '1.0', 'features': [], 'dependencies': []}}
