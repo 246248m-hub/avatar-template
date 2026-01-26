@@ -1,23 +1,23 @@
-2026-01-26 04:09:15,249 - INFO - Processing Arabic instruction: '
+2026-01-26 04:09:46,373 - INFO - Processing Arabic instruction: '
     أريد إنشاء تطبيق أندرويد باسم com.example.mya...'
-2026-01-26 04:09:15,249 - WARNING - Could not identify package name from instruction. Using a default.
-2026-01-26 04:09:15,249 - INFO - Identified app name: My Awesome App
-2026-01-26 04:09:15,250 - INFO - Generated basic AndroidManifest.xml for package: com.example.generatedapp
-2026-01-26 04:09:15,250 - INFO - Created Android project structure at: ./generated_android_projects/my_awesome_app
-2026-01-26 04:09:15,250 - INFO - Created project structure at: ./generated_android_projects/my_awesome_app
-2026-01-26 04:09:15,250 - INFO - Extracted Java code snippet (length: 0).
-2026-01-26 04:09:15,250 - INFO - Extracted Arabic description (length: 0).
-2026-01-26 04:09:15,250 - INFO - Finished processing Arabic instruction.
-2026-01-26 04:09:15,251 - INFO - Processing Arabic instruction: '
+2026-01-26 04:09:46,373 - WARNING - Could not identify package name from instruction. Using a default.
+2026-01-26 04:09:46,373 - INFO - Identified app name: My Awesome App
+2026-01-26 04:09:46,374 - INFO - Generated basic AndroidManifest.xml for package: com.example.generatedapp
+2026-01-26 04:09:46,374 - INFO - Created Android project structure at: ./generated_android_projects/my_awesome_app
+2026-01-26 04:09:46,374 - INFO - Created project structure at: ./generated_android_projects/my_awesome_app
+2026-01-26 04:09:46,374 - INFO - Extracted Java code snippet (length: 0).
+2026-01-26 04:09:46,374 - INFO - Extracted Arabic description (length: 0).
+2026-01-26 04:09:46,374 - INFO - Finished processing Arabic instruction.
+2026-01-26 04:09:46,374 - INFO - Processing Arabic instruction: '
     قم بتعديل التطبيق com.example.myapp.
     أضف ...'
-2026-01-26 04:09:15,251 - WARNING - Could not identify package name from instruction. Using a default.
-2026-01-26 04:09:15,251 - INFO - Generated basic AndroidManifest.xml for package: com.example.generatedapp
-2026-01-26 04:09:15,251 - INFO - Created Android project structure at: ./generated_android_projects/generatedapp
-2026-01-26 04:09:15,251 - INFO - Created project structure at: ./generated_android_projects/generatedapp
-2026-01-26 04:09:15,251 - INFO - Extracted Java code snippet (length: 0).
-2026-01-26 04:09:15,251 - INFO - Extracted Arabic description (length: 0).
-2026-01-26 04:09:15,251 - INFO - Finished processing Arabic instruction.
-2026-01-26 04:09:15,254 - INFO - Successfully cleaned up project directory: ./generated_android_projects/generatedapp
-2026-01-26 04:09:15,255 - INFO - Cleaned up root directory: ./generated_android_projects
-2026-01-26 04:09:15,255 - INFO - Cleaned up root directory: ./dummy_knowledge_base
+2026-01-26 04:09:46,374 - WARNING - Could not identify package name from instruction. Using a default.
+2026-01-26 04:09:46,375 - INFO - Generated basic AndroidManifest.xml for package: com.example.generatedapp
+2026-01-26 04:09:46,375 - INFO - Created Android project structure at: ./generated_android_projects/generatedapp
+2026-01-26 04:09:46,375 - INFO - Created project structure at: ./generated_android_projects/generatedapp
+2026-01-26 04:09:46,375 - INFO - Extracted Java code snippet (length: 0).
+2026-01-26 04:09:46,375 - INFO - Extracted Arabic description (length: 0).
+2026-01-26 04:09:46,375 - INFO - Finished processing Arabic instruction.
+2026-01-26 04:09:46,378 - INFO - Successfully cleaned up project directory: ./generated_android_projects/generatedapp
+2026-01-26 04:09:46,378 - INFO - Cleaned up root directory: ./generated_android_projects
+2026-01-26 04:09:46,378 - INFO - Cleaned up root directory: ./dummy_knowledge_base
