@@ -1,19 +1,25 @@
-2026-01-26 08:00:30,521 - INFO - --- Starting Lobe 5: Arabic NLP Processor Module Demo ---
-2026-01-26 08:00:30,522 - INFO - Created dummy knowledge base directory: dummy_kb
-2026-01-26 08:00:30,522 - INFO - Loading simplified Arabic grammar rules.
-2026-01-26 08:00:30,522 - INFO - Loading Arabic intent patterns.
-2026-01-26 08:00:30,523 - INFO - Parsing Arabic text: 'أريد إنشاء تطبيق بسيط'
-2026-01-26 08:00:30,523 - INFO - Identified intent: 'create_app' with entities: {'app_name': 'بسيط'}
-2026-01-26 08:00:30,623 - INFO - Parsing Arabic text: 'بناء برنامج اسمه MyFirstApp'
-2026-01-26 08:00:30,623 - INFO - Identified intent: 'create_app' with entities: {'app_name': 'اسمه'}
-2026-01-26 08:00:30,723 - INFO - Parsing Arabic text: 'إنشاء واجهة مستخدم جديدة'
-2026-01-26 08:00:30,724 - INFO - Identified intent: 'create_ui_element' with entities: {'element_type': 'واجهة'}
-2026-01-26 08:00:30,824 - INFO - Parsing Arabic text: 'إضافة زر إلى الشاشة'
-2026-01-26 08:00:30,824 - WARNING - Could not determine intent for text: 'إضافة زر إلى الشاشة'
-2026-01-26 08:00:30,924 - INFO - Parsing Arabic text: 'ما هو هذا التطبيق؟'
-2026-01-26 08:00:30,924 - WARNING - Could not determine intent for text: 'ما هو هذا التطبيق؟'
-2026-01-26 08:00:31,024 - INFO - Parsing Arabic text: 'تعديل زر الاتصال في التطبيق'
-2026-01-26 08:00:31,024 - WARNING - Could not determine intent for text: 'تعديل زر الاتصال في التطبيق'
-2026-01-26 08:00:31,124 - INFO - Parsing Arabic text: 'غير لون الخلفية'
-2026-01-26 08:00:31,125 - WARNING - Could not determine intent for text: 'غير لون الخلفية'
-2026-01-26 08:00:31,225 - INFO - Removed dummy knowledge base directory: dummy_kb
+2026-01-26 08:00:53,304 - INFO - --- Initiating Arabic NLP Processor Lobe Demo ---
+2026-01-26 08:00:53,305 - INFO - Initializing ArabicTextProcessor.
+2026-01-26 08:00:53,305 - INFO - Loading Arabic grammar rules from ./knowledge_base/arabic_grammar.json
+2026-01-26 08:00:53,305 - INFO - Loading Arabic semantic mappings from ./knowledge_base/arabic_semantics.json
+2026-01-26 08:00:53,305 - INFO - Parsing Arabic prompt: 'أنشئ تطبيقاً جديداً'
+2026-01-26 08:00:53,305 - INFO - Parsed data: {'intent': 'create_app', 'entities': {}, 'raw_text': 'أنشئ تطبيقاً جديداً'}
+2026-01-26 08:00:53,305 - INFO - Generating abstract code representation.
+2026-01-26 08:00:53,305 - INFO - Abstract code representation: {'operations': [{'type': 'CREATE_APP', 'name': 'MyArabicApp'}]}
+2026-01-26 08:00:53,305 - INFO - Prompt 1: 'أنشئ تطبيقاً جديداً' -> Abstract Code: {'operations': [{'type': 'CREATE_APP', 'name': 'MyArabicApp'}]}
+2026-01-26 08:00:53,305 - INFO - Parsing Arabic prompt: 'أضف زر للمربع باسم 'ابدأ' باللون الأزرق'
+2026-01-26 08:00:53,305 - INFO - Parsed data: {'intent': 'add_button', 'entities': {'button_color': 'blue'}, 'raw_text': "أضف زر للمربع باسم 'ابدأ' باللون الأزرق"}
+2026-01-26 08:00:53,305 - INFO - Generating abstract code representation.
+2026-01-26 08:00:53,305 - INFO - Abstract code representation: {'operations': [{'type': 'ADD_BUTTON', 'color': 'blue'}]}
+2026-01-26 08:00:53,305 - INFO - Prompt 2: 'أضف زر للمربع باسم 'ابدأ' باللون الأزرق' -> Abstract Code: {'operations': [{'type': 'ADD_BUTTON', 'color': 'blue'}]}
+2026-01-26 08:00:53,305 - INFO - Parsing Arabic prompt: 'اجعل النص على الزر 'التالي' باللون الأحمر'
+2026-01-26 08:00:53,305 - INFO - Parsed data: {'intent': 'set_text', 'entities': {}, 'raw_text': "اجعل النص على الزر 'التالي' باللون الأحمر"}
+2026-01-26 08:00:53,305 - INFO - Generating abstract code representation.
+2026-01-26 08:00:53,305 - INFO - Abstract code representation: {'operations': []}
+2026-01-26 08:00:53,305 - INFO - Prompt 3: 'اجعل النص على الزر 'التالي' باللون الأحمر' -> Abstract Code: {'operations': []}
+2026-01-26 08:00:53,305 - INFO - Parsing Arabic prompt: 'عند النقر على الزر، أظهر رسالة 'تم الضغط''
+2026-01-26 08:00:53,305 - INFO - Parsed data: {'intent': 'on_click_event', 'entities': {}, 'raw_text': "عند النقر على الزر، أظهر رسالة 'تم الضغط'"}
+2026-01-26 08:00:53,305 - INFO - Generating abstract code representation.
+2026-01-26 08:00:53,305 - INFO - Abstract code representation: {'operations': []}
+2026-01-26 08:00:53,305 - INFO - Prompt 4: 'عند النقر على الزر، أظهر رسالة 'تم الضغط'' -> Abstract Code: {'operations': []}
+2026-01-26 08:00:53,305 - INFO - --- Arabic NLP Processor Lobe Demo Finished ---
