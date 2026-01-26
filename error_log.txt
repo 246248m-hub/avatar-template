@@ -1,14 +1,10 @@
-2026-01-26 08:47:21,275 - INFO - Processing prompt: 'Build an Android app named 'Simple Calculator' to display the sum of two numbers.'
-2026-01-26 08:47:21,275 - INFO - Simulating Arabic text to representation for: 'Build an Android app named 'Simple Calculator' to ...'
-2026-01-26 08:47:21,275 - INFO - Generated representation: {'original_text': "Build an Android app named 'Simple Calculator' to display the sum of two numbers.", 'tokens': ['Build', 'an', 'Android', 'app', 'named', "'Simple", "Calculator'", 'to', 'display', 'the', 'sum', 'of', 'two', 'numbers.'], 'entities': [], 'intent': 'unknown', 'parameters': {}, 'structural_elements': []}
-2026-01-26 08:47:21,275 - ERROR - Could not determine app name from the prompt.
-2026-01-26 08:47:21,275 - INFO - Processing prompt: 'Create an app called 'Note Taker' for jotting down ideas.'
-2026-01-26 08:47:21,275 - INFO - Simulating Arabic text to representation for: 'Create an app called 'Note Taker' for jotting down...'
-2026-01-26 08:47:21,275 - INFO - Generated representation: {'original_text': "Create an app called 'Note Taker' for jotting down ideas.", 'tokens': ['Create', 'an', 'app', 'called', "'Note", "Taker'", 'for', 'jotting', 'down', 'ideas.'], 'entities': [], 'intent': 'unknown', 'parameters': {}, 'structural_elements': []}
-2026-01-26 08:47:21,275 - ERROR - Could not determine app name from the prompt.
-2026-01-26 08:47:21,275 - INFO - Processing prompt: 'Develop a simple 'To-Do List' app.'
-2026-01-26 08:47:21,275 - INFO - Simulating Arabic text to representation for: 'Develop a simple 'To-Do List' app....'
-2026-01-26 08:47:21,275 - INFO - Generated representation: {'original_text': "Develop a simple 'To-Do List' app.", 'tokens': ['Develop', 'a', 'simple', "'To-Do", "List'", 'app.'], 'entities': [], 'intent': 'unknown', 'parameters': {}, 'structural_elements': []}
-2026-01-26 08:47:21,275 - ERROR - Could not determine app name from the prompt.
-2026-01-26 08:47:21,275 - INFO - Cleaning up generated APKs directory: generated_apks
-2026-01-26 08:47:21,275 - INFO - Removed generated APKs directory.
+2026-01-26 08:47:22,974 - INFO - --- Initiating Lobe 7_project_initializer_lobe ---
+2026-01-26 08:47:22,975 - INFO - --- Setting up Android project for APK generation: MyGeneratedApp ---
+2026-01-26 08:47:22,975 - INFO - Creating Android project structure in: temp_android_project
+2026-01-26 08:47:22,975 - INFO - Android project structure created.
+2026-01-26 08:47:22,975 - INFO - Created dummy AndroidManifest.xml for package: com.example.mygeneratedapp
+2026-01-26 08:47:22,975 - INFO - Created dummy app/build.gradle.
+2026-01-26 08:47:22,975 - INFO - Created dummy gradlew script.
+2026-01-26 08:47:22,975 - INFO - Created dummy MainActivity.java in temp_android_project/app/src/main/java/com/example/mygeneratedapp
+2026-01-26 08:47:22,975 - INFO - Android project setup complete for MyGeneratedApp.
+2026-01-26 08:47:22,976 - INFO - Removed directory: temp_android_project
