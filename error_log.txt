@@ -1,12 +1,21 @@
-2026-01-26 08:10:45,158 - INFO - Received Arabic NLP prompt: 'أريد إنشاء تطبيق باسم 'مسجل الملاحظات' بميزات تدوين الملاحظات، التذكيرات، والمزامنة.'
-2026-01-26 08:10:45,158 - INFO - Loading Arabic NLP model...
-2026-01-26 08:10:45,158 - INFO - Mock processing Arabic text: 'أريد إنشاء تطبيق باسم 'مسجل الملاحظات' بميزات تدوين الملاحظات، التذكيرات، والمزامنة.'
-2026-01-26 08:10:45,158 - INFO - NLP Result for prompt 'أريد إنشاء تطبيق باسم 'مسجل الملاحظات' بميزات تدوين الملاحظات، التذكيرات، والمزامنة.': {'intent': 'create_apk', 'entities': {'app_name': 'MyDefaultApp', 'features': ['تد']}}
-2026-01-26 08:10:45,158 - INFO - Received Arabic NLP prompt: 'قم ببناء تطبيق جديد. اسمه هو 'مدير المهام'.'
-2026-01-26 08:10:45,158 - INFO - Loading Arabic NLP model...
-2026-01-26 08:10:45,158 - INFO - Mock processing Arabic text: 'قم ببناء تطبيق جديد. اسمه هو 'مدير المهام'.'
-2026-01-26 08:10:45,158 - INFO - NLP Result for prompt 'قم ببناء تطبيق جديد. اسمه هو 'مدير المهام'.': {'intent': 'create_apk', 'entities': {'app_name': 'MyDefaultApp', 'features': []}}
-2026-01-26 08:10:45,158 - INFO - Received Arabic NLP prompt: 'إنشاء تطبيق بسيط.'
-2026-01-26 08:10:45,158 - INFO - Loading Arabic NLP model...
-2026-01-26 08:10:45,158 - INFO - Mock processing Arabic text: 'إنشاء تطبيق بسيط.'
-2026-01-26 08:10:45,158 - INFO - NLP Result for prompt 'إنشاء تطبيق بسيط.': {'intent': 'create_apk', 'entities': {'app_name': 'MyDefaultApp', 'features': []}}
+2026-01-26 08:11:19,853 - INFO - Lobe 2 (Arabic Parser) initialized.
+2026-01-26 08:11:19,853 - INFO - Lobe 1 (Arabic NLP Integration) initialized.
+2026-01-26 08:11:19,853 - INFO - Initiating Lobe 1 processing for prompt: 'أريد إنشاء تطبيق أندرويد. اسم التطبيق هو 'تطبيقي ا...'
+2026-01-26 08:11:19,853 - INFO - Parsing Arabic prompt: 'أريد إنشاء تطبيق أندرويد. اسم التطبيق هو 'تطبيقي ا...'
+2026-01-26 08:11:19,853 - INFO - Extracted package name: com.example.myarabicapp.
+2026-01-26 08:11:19,853 - INFO - Extracted permissions: ['android.permission.INTERNET']
+2026-01-26 08:11:19,853 - INFO - Extracted main activity: HomePage
+2026-01-26 08:11:19,853 - INFO - Extracted Button: text='اضغط هنا', id='btn_click_me'
+2026-01-26 08:11:19,853 - INFO - Extracted TextView: text='أهلاً بالعالم', id='txt_welcome'
+2026-01-26 08:11:19,853 - INFO - Extracted version code: 5
+2026-01-26 08:11:19,854 - INFO - Extracted version name: 1.2.
+2026-01-26 08:11:19,854 - INFO - Arabic prompt parsing completed.
+2026-01-26 08:11:19,854 - INFO - Lobe 1 processing complete. Structured configuration generated.
+2026-01-26 08:11:19,854 - INFO - Setting up Android project structure...
+2026-01-26 08:11:19,854 - INFO - Created directory: temp_java_project
+2026-01-26 08:11:19,854 - INFO - Created directory: temp_java_project/app/src/main/java/com/example/myarabicapp/
+2026-01-26 08:11:19,854 - INFO - Created directory: temp_java_project/app/src/main/res/values
+2026-01-26 08:11:19,854 - INFO - Created directory: temp_java_project/gradle/wrapper
+2026-01-26 08:11:19,854 - ERROR - Template file not found: templates/AndroidManifest.xml.template
+2026-01-26 08:11:19,854 - ERROR - An error occurred during Lobe 1 demo: [Errno 2] No such file or directory: 'templates/AndroidManifest.xml.template'
+2026-01-26 08:11:19,857 - INFO - Removed directory: temp_java_project
