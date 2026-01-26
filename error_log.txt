@@ -1,18 +1,6 @@
-2026-01-26 10:03:11,299 - INFO - Parsing Arabic text: 'إنشاء تطبيق جديد'
-2026-01-26 10:03:11,299 - INFO - Parsed data: {'original_text': 'إنشاء تطبيق جديد', 'tokens': [{'word': 'إنشاء', 'lemma': 'إنشاء', 'pos': 'VERB'}, {'word': 'تطبيق', 'lemma': 'تطبيق', 'pos': 'NOUN'}, {'word': 'جديد', 'lemma': 'جديد', 'pos': 'NOUN'}], 'entities': [], 'intent': 'create_app', 'structure': None}
-2026-01-26 10:03:11,299 - INFO - Generating structured output from parsed data.
-2026-01-26 10:03:11,299 - INFO - Generated structured output: {'status': 'success', 'message': 'Structured output generated successfully.', 'data': {'intent': 'create_app', 'entities': [], 'parsed_tokens': [{'word': 'إنشاء', 'lemma': 'إنشاء', 'pos': 'VERB'}, {'word': 'تطبيق', 'lemma': 'تطبيق', 'pos': 'NOUN'}, {'word': 'جديد', 'lemma': 'جديد', 'pos': 'NOUN'}]}}
-2026-01-26 10:03:11,299 - INFO - Generating APK description from structured output.
-2026-01-26 10:03:11,300 - INFO - Generated APK description: {'status': 'success', 'message': 'APK description generated.', 'apk_spec': {'name': 'MyNewApp', 'version': '1.0', 'features': [], 'dependencies': []}}
-2026-01-26 10:03:11,300 - INFO - Parsing Arabic text: 'قم ببناء تطبيق باسم 'MyAwesomeApp' في القاهرة'
-2026-01-26 10:03:11,300 - INFO - Parsed data: {'original_text': "قم ببناء تطبيق باسم 'MyAwesomeApp' في القاهرة", 'tokens': [{'word': 'قم', 'lemma': 'قم', 'pos': 'NOUN'}, {'word': 'ببناء', 'lemma': 'ببناء', 'pos': 'NOUN'}, {'word': 'تطبيق', 'lemma': 'تطبيق', 'pos': 'NOUN'}, {'word': 'باسم', 'lemma': 'باسم', 'pos': 'ADP'}, {'word': "'MyAwesomeApp'", 'lemma': "'MyAwesomeApp'", 'pos': 'NOUN'}, {'word': 'في', 'lemma': 'في', 'pos': 'ADP'}, {'word': 'القاهرة', 'lemma': 'القاهرة', 'pos': 'PROPN'}], 'entities': [{'text': 'القاهرة', 'type': 'LOCATION'}], 'intent': 'unknown', 'structure': None}
-2026-01-26 10:03:11,300 - INFO - Generating structured output from parsed data.
-2026-01-26 10:03:11,300 - INFO - Generated structured output: {'status': 'success', 'message': 'Structured output generated successfully.', 'data': {'intent': 'unknown', 'entities': [{'text': 'القاهرة', 'type': 'LOCATION'}], 'parsed_tokens': [{'word': 'قم', 'lemma': 'قم', 'pos': 'NOUN'}, {'word': 'ببناء', 'lemma': 'ببناء', 'pos': 'NOUN'}, {'word': 'تطبيق', 'lemma': 'تطبيق', 'pos': 'NOUN'}, {'word': 'باسم', 'lemma': 'باسم', 'pos': 'ADP'}, {'word': "'MyAwesomeApp'", 'lemma': "'MyAwesomeApp'", 'pos': 'NOUN'}, {'word': 'في', 'lemma': 'في', 'pos': 'ADP'}, {'word': 'القاهرة', 'lemma': 'القاهرة', 'pos': 'PROPN'}]}}
-2026-01-26 10:03:11,300 - INFO - Generating APK description from structured output.
-2026-01-26 10:03:11,300 - INFO - Generated APK description: {'status': 'success', 'message': 'APK description generated.', 'apk_spec': {'name': 'GeneratedApp', 'version': '1.0', 'features': [], 'dependencies': []}}
-2026-01-26 10:03:11,300 - INFO - Parsing Arabic text: 'أريد تطبيقاً به ميزة تسجيل الدخول'
-2026-01-26 10:03:11,300 - INFO - Parsed data: {'original_text': 'أريد تطبيقاً به ميزة تسجيل الدخول', 'tokens': [{'word': 'أريد', 'lemma': 'أريد', 'pos': 'NOUN'}, {'word': 'تطبيقاً', 'lemma': 'تطبيقاً', 'pos': 'NOUN'}, {'word': 'به', 'lemma': 'به', 'pos': 'NOUN'}, {'word': 'ميزة', 'lemma': 'ميزة', 'pos': 'NOUN'}, {'word': 'تسجيل', 'lemma': 'تسجيل', 'pos': 'NOUN'}, {'word': 'الدخول', 'lemma': 'الدخول', 'pos': 'NOUN'}], 'entities': [], 'intent': 'unknown', 'structure': None}
-2026-01-26 10:03:11,300 - INFO - Generating structured output from parsed data.
-2026-01-26 10:03:11,300 - INFO - Generated structured output: {'status': 'success', 'message': 'Structured output generated successfully.', 'data': {'intent': 'unknown', 'entities': [], 'parsed_tokens': [{'word': 'أريد', 'lemma': 'أريد', 'pos': 'NOUN'}, {'word': 'تطبيقاً', 'lemma': 'تطبيقاً', 'pos': 'NOUN'}, {'word': 'به', 'lemma': 'به', 'pos': 'NOUN'}, {'word': 'ميزة', 'lemma': 'ميزة', 'pos': 'NOUN'}, {'word': 'تسجيل', 'lemma': 'تسجيل', 'pos': 'NOUN'}, {'word': 'الدخول', 'lemma': 'الدخول', 'pos': 'NOUN'}]}}
-2026-01-26 10:03:11,300 - INFO - Generating APK description from structured output.
-2026-01-26 10:03:11,300 - INFO - Generated APK description: {'status': 'success', 'message': 'APK description generated.', 'apk_spec': {'name': 'GeneratedApp', 'version': '1.0', 'features': [], 'dependencies': []}}
+2026-01-26 10:07:57,879 - INFO - --- Simulating Lobe 8 Execution ---
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 192, in <module>
+    os.makedirs(os.path.join(app_dir, "src", "main"))
+  File "<frozen os>", line 225, in makedirs
+FileExistsError: [Errno 17] File exists: 'dummy_android_template/app/src/main'
