@@ -1,18 +1,40 @@
-2026-01-26 09:57:54,083 - INFO - Parsing Arabic text: 'إنشاء تطبيق جديد'
-2026-01-26 09:57:54,083 - INFO - Parsed data: {'original_text': 'إنشاء تطبيق جديد', 'tokens': [{'word': 'إنشاء', 'lemma': 'إنشاء', 'pos': 'VERB'}, {'word': 'تطبيق', 'lemma': 'تطبيق', 'pos': 'NOUN'}, {'word': 'جديد', 'lemma': 'جديد', 'pos': 'NOUN'}], 'entities': [], 'intent': 'create_app', 'structure': None}
-2026-01-26 09:57:54,083 - INFO - Generating structured output from parsed data.
-2026-01-26 09:57:54,083 - INFO - Generated structured output: {'status': 'success', 'message': 'Structured output generated successfully.', 'data': {'intent': 'create_app', 'entities': [], 'parsed_tokens': [{'word': 'إنشاء', 'lemma': 'إنشاء', 'pos': 'VERB'}, {'word': 'تطبيق', 'lemma': 'تطبيق', 'pos': 'NOUN'}, {'word': 'جديد', 'lemma': 'جديد', 'pos': 'NOUN'}]}}
-2026-01-26 09:57:54,083 - INFO - Generating APK description from structured output.
-2026-01-26 09:57:54,083 - INFO - Generated APK description: {'status': 'success', 'message': 'APK description generated.', 'apk_spec': {'name': 'MyNewApp', 'version': '1.0', 'features': [], 'dependencies': []}}
-2026-01-26 09:57:54,084 - INFO - Parsing Arabic text: 'قم ببناء تطبيق باسم 'MyAwesomeApp' في القاهرة'
-2026-01-26 09:57:54,084 - INFO - Parsed data: {'original_text': "قم ببناء تطبيق باسم 'MyAwesomeApp' في القاهرة", 'tokens': [{'word': 'قم', 'lemma': 'قم', 'pos': 'NOUN'}, {'word': 'ببناء', 'lemma': 'ببناء', 'pos': 'NOUN'}, {'word': 'تطبيق', 'lemma': 'تطبيق', 'pos': 'NOUN'}, {'word': 'باسم', 'lemma': 'باسم', 'pos': 'ADP'}, {'word': "'MyAwesomeApp'", 'lemma': "'MyAwesomeApp'", 'pos': 'NOUN'}, {'word': 'في', 'lemma': 'في', 'pos': 'ADP'}, {'word': 'القاهرة', 'lemma': 'القاهرة', 'pos': 'PROPN'}], 'entities': [{'text': 'القاهرة', 'type': 'LOCATION'}], 'intent': 'unknown', 'structure': None}
-2026-01-26 09:57:54,084 - INFO - Generating structured output from parsed data.
-2026-01-26 09:57:54,084 - INFO - Generated structured output: {'status': 'success', 'message': 'Structured output generated successfully.', 'data': {'intent': 'unknown', 'entities': [{'text': 'القاهرة', 'type': 'LOCATION'}], 'parsed_tokens': [{'word': 'قم', 'lemma': 'قم', 'pos': 'NOUN'}, {'word': 'ببناء', 'lemma': 'ببناء', 'pos': 'NOUN'}, {'word': 'تطبيق', 'lemma': 'تطبيق', 'pos': 'NOUN'}, {'word': 'باسم', 'lemma': 'باسم', 'pos': 'ADP'}, {'word': "'MyAwesomeApp'", 'lemma': "'MyAwesomeApp'", 'pos': 'NOUN'}, {'word': 'في', 'lemma': 'في', 'pos': 'ADP'}, {'word': 'القاهرة', 'lemma': 'القاهرة', 'pos': 'PROPN'}]}}
-2026-01-26 09:57:54,084 - INFO - Generating APK description from structured output.
-2026-01-26 09:57:54,084 - INFO - Generated APK description: {'status': 'success', 'message': 'APK description generated.', 'apk_spec': {'name': 'GeneratedApp', 'version': '1.0', 'features': [], 'dependencies': []}}
-2026-01-26 09:57:54,084 - INFO - Parsing Arabic text: 'أريد تطبيقاً به ميزة تسجيل الدخول'
-2026-01-26 09:57:54,084 - INFO - Parsed data: {'original_text': 'أريد تطبيقاً به ميزة تسجيل الدخول', 'tokens': [{'word': 'أريد', 'lemma': 'أريد', 'pos': 'NOUN'}, {'word': 'تطبيقاً', 'lemma': 'تطبيقاً', 'pos': 'NOUN'}, {'word': 'به', 'lemma': 'به', 'pos': 'NOUN'}, {'word': 'ميزة', 'lemma': 'ميزة', 'pos': 'NOUN'}, {'word': 'تسجيل', 'lemma': 'تسجيل', 'pos': 'NOUN'}, {'word': 'الدخول', 'lemma': 'الدخول', 'pos': 'NOUN'}], 'entities': [], 'intent': 'unknown', 'structure': None}
-2026-01-26 09:57:54,084 - INFO - Generating structured output from parsed data.
-2026-01-26 09:57:54,084 - INFO - Generated structured output: {'status': 'success', 'message': 'Structured output generated successfully.', 'data': {'intent': 'unknown', 'entities': [], 'parsed_tokens': [{'word': 'أريد', 'lemma': 'أريد', 'pos': 'NOUN'}, {'word': 'تطبيقاً', 'lemma': 'تطبيقاً', 'pos': 'NOUN'}, {'word': 'به', 'lemma': 'به', 'pos': 'NOUN'}, {'word': 'ميزة', 'lemma': 'ميزة', 'pos': 'NOUN'}, {'word': 'تسجيل', 'lemma': 'تسجيل', 'pos': 'NOUN'}, {'word': 'الدخول', 'lemma': 'الدخول', 'pos': 'NOUN'}]}}
-2026-01-26 09:57:54,084 - INFO - Generating APK description from structured output.
-2026-01-26 09:57:54,084 - INFO - Generated APK description: {'status': 'success', 'message': 'APK description generated.', 'apk_spec': {'name': 'GeneratedApp', 'version': '1.0', 'features': [], 'dependencies': []}}
+/home/runner/work/phoenix-executor/phoenix-executor/task.py:280: SyntaxWarning: invalid escape sequence '\g'
+  gradlew_bat_content = """@echo off
+2026-01-26 10:01:45,373 - INFO - Ensured directory: arabic_nlp_module/knowledge_base
+2026-01-26 10:01:45,373 - INFO - Created dummy lexicon file: arabic_nlp_module/lexicon.txt
+2026-01-26 10:01:45,373 - INFO - Created dummy grammar rules file: arabic_nlp_module/grammar_rules.txt
+2026-01-26 10:01:45,373 - INFO - Code generation output directory initialized: java_apk_project
+2026-01-26 10:01:45,373 - INFO - Setting up dummy Android project structure in: java_apk_project
+2026-01-26 10:01:45,374 - INFO - Created dummy AndroidManifest.xml
+2026-01-26 10:01:45,374 - INFO - Created dummy activity_main.xml
+2026-01-26 10:01:45,374 - INFO - Created dummy app/build.gradle
+2026-01-26 10:01:45,374 - INFO - Created dummy top-level build.gradle
+2026-01-26 10:01:45,374 - INFO - Created dummy gradlew script
+2026-01-26 10:01:45,374 - INFO - Created dummy gradlew.bat script
+2026-01-26 10:01:45,374 - INFO - 
+--- Step 1: Parsing Arabic prompt: 'أريد إنشاء تطبيق لعرض رسالة ترحيب بسيطة' ---
+2026-01-26 10:01:45,374 - INFO - Parsing Arabic text: 'أريد إنشاء تطبيق لعرض رسالة ترحيب بسيطة'
+2026-01-26 10:01:45,374 - INFO - Simulated parsed data: {'original_text': 'أريد إنشاء تطبيق لعرض رسالة ترحيب بسيطة', 'tokens': ['أريد', 'إنشاء', 'تطبيق', 'لعرض', 'رسالة', 'ترحيب', 'بسيطة'], 'meaning': "Simulated meaning of 'أريد إنشاء تطبيق لعرض رسالة ترحيب بسيطة'", 'intent': "Simulated intent for 'text'", 'entities': ['entity1', 'entity2']}
+2026-01-26 10:01:45,374 - INFO - 
+--- Step 2: Generating Java code from parsed structure ---
+2026-01-26 10:01:45,374 - INFO - Simulating Java code generation for project 'WelcomeApp' based on: {'original_text': 'أريد إنشاء تطبيق لعرض رسالة ترحيب بسيطة', 'tokens': ['أريد', 'إنشاء', 'تطبيق', 'لعرض', 'رسالة', 'ترحيب', 'بسيطة'], 'meaning': "Simulated meaning of 'أريد إنشاء تطبيق لعرض رسالة ترحيب بسيطة'", 'intent': "Simulated intent for 'text'", 'entities': ['entity1', 'entity2']}
+2026-01-26 10:01:45,374 - INFO - Simulated Java code generated at: java_apk_project/welcomeapp/MainActivity.java
+2026-01-26 10:01:45,374 - INFO - 
+--- Step 3: Compiling APK ---
+2026-01-26 10:01:45,374 - INFO - Simulating APK compilation for project: WelcomeApp
+2026-01-26 10:01:45,374 - INFO - Simulated APK generated at: java_apk_project/app/build/outputs/apk/debug/welcomeapp-debug.apk
+2026-01-26 10:01:45,375 - INFO - 
+--- Grand Objective Achieved (Simulated): APK generated at java_apk_project/app/build/outputs/apk/debug/welcomeapp-debug.apk ---
+2026-01-26 10:01:45,375 - INFO - 
+--- Initiating cleanup ---
+2026-01-26 10:01:45,375 - INFO - --- Cleaning up dummy Arabic NLP module files ---
+2026-01-26 10:01:45,375 - INFO - Cleaned up: arabic_nlp_module/lexicon.txt
+2026-01-26 10:01:45,375 - INFO - Cleaned up: arabic_nlp_module/grammar_rules.txt
+2026-01-26 10:01:45,375 - INFO - Cleaned up directory: arabic_nlp_module/knowledge_base
+2026-01-26 10:01:45,375 - INFO - Dummy Arabic NLP module files cleaned up.
+2026-01-26 10:01:45,375 - INFO - --- Cleaning up dummy APK compilation module files ---
+2026-01-26 10:01:45,375 - INFO - Cleaned up dummy gradlew.
+2026-01-26 10:01:45,375 - INFO - Cleaned up dummy gradlew.bat.
+2026-01-26 10:01:45,375 - INFO - Cleaned up dummy build directory.
+2026-01-26 10:01:45,376 - INFO - Cleaned up dummy project root: java_apk_project
+2026-01-26 10:01:45,376 - INFO - Dummy APK compilation module files cleaned up.
