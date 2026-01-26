@@ -1,29 +1,29 @@
-2026-01-26 08:52:30,261 - INFO - UnifiedMind initializing...
-2026-01-26 08:52:30,262 - INFO - ArabicLanguageProcessor initialized.
-2026-01-26 08:52:30,262 - INFO - CodeGenerator initialized with template dir: project_templates/android
-2026-01-26 08:52:30,262 - INFO - UnifiedMind initialized.
-2026-01-26 08:52:30,262 - INFO - 
+2026-01-26 08:54:24,404 - INFO - UnifiedMind initializing...
+2026-01-26 08:54:24,404 - INFO - ArabicLanguageProcessor initialized.
+2026-01-26 08:54:24,405 - INFO - CodeGenerator initialized with template dir: project_templates/android
+2026-01-26 08:54:24,405 - INFO - UnifiedMind initialized.
+2026-01-26 08:54:24,405 - INFO - 
 --- Demonstrating Arabic App Creation ---
-2026-01-26 08:52:30,262 - INFO - Initiating APK generation from prompt: 'أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp''
-2026-01-26 08:52:30,262 - INFO - Processing prompt: 'أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp'' in language: 'arabic'
-2026-01-26 08:52:30,262 - INFO - Parsing Arabic text: 'أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp'...'
-2026-01-26 08:52:30,262 - INFO - Parsed Arabic data: {'original_text': "أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp'", 'tokens': ['أنشئ', 'لي', 'تطبيقاً', 'جديداً', 'باسم', "'MyAwesomeApp'"], 'intent': 'unknown', 'entities': {}}
-2026-01-26 08:52:30,262 - INFO - Generating Arabic text from structured data: {'original_text': "أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp'", 'tokens': ['أنشئ', 'لي', 'تطبيقاً', 'جديداً', 'باسم', "'MyAwesomeApp'"], 'intent': 'unknown', 'entities': {}}
-2026-01-26 08:52:30,262 - INFO - Generated Arabic text: 'تم فهم طلبك.'
-2026-01-26 08:52:30,262 - INFO - 
+2026-01-26 08:54:24,405 - INFO - Initiating APK generation from prompt: 'أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp''
+2026-01-26 08:54:24,405 - INFO - Processing prompt: 'أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp'' in language: 'arabic'
+2026-01-26 08:54:24,405 - INFO - Parsing Arabic text: 'أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp'...'
+2026-01-26 08:54:24,405 - INFO - Parsed Arabic data: {'original_text': "أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp'", 'tokens': ['أنشئ', 'لي', 'تطبيقاً', 'جديداً', 'باسم', "'MyAwesomeApp'"], 'intent': 'unknown', 'entities': {}}
+2026-01-26 08:54:24,405 - INFO - Generating Arabic text from structured data: {'original_text': "أنشئ لي تطبيقاً جديداً باسم 'MyAwesomeApp'", 'tokens': ['أنشئ', 'لي', 'تطبيقاً', 'جديداً', 'باسم', "'MyAwesomeApp'"], 'intent': 'unknown', 'entities': {}}
+2026-01-26 08:54:24,405 - INFO - Generated Arabic text: 'تم فهم طلبك.'
+2026-01-26 08:54:24,405 - INFO - 
 --- Demonstrating Generic Arabic Request ---
-2026-01-26 08:52:30,262 - INFO - Processing prompt: 'كيف حال الطقس اليوم؟' in language: 'arabic'
-2026-01-26 08:52:30,262 - INFO - Parsing Arabic text: 'كيف حال الطقس اليوم؟...'
-2026-01-26 08:52:30,262 - INFO - Parsed Arabic data: {'original_text': 'كيف حال الطقس اليوم؟', 'tokens': ['كيف', 'حال', 'الطقس', 'اليوم؟'], 'intent': 'unknown', 'entities': {}}
-2026-01-26 08:52:30,262 - INFO - Generating Arabic text from structured data: {'original_text': 'كيف حال الطقس اليوم؟', 'tokens': ['كيف', 'حال', 'الطقس', 'اليوم؟'], 'intent': 'unknown', 'entities': {}}
-2026-01-26 08:52:30,262 - INFO - Generated Arabic text: 'تم فهم طلبك.'
-2026-01-26 08:52:30,262 - INFO - 
+2026-01-26 08:54:24,405 - INFO - Processing prompt: 'كيف حال الطقس اليوم؟' in language: 'arabic'
+2026-01-26 08:54:24,405 - INFO - Parsing Arabic text: 'كيف حال الطقس اليوم؟...'
+2026-01-26 08:54:24,405 - INFO - Parsed Arabic data: {'original_text': 'كيف حال الطقس اليوم؟', 'tokens': ['كيف', 'حال', 'الطقس', 'اليوم؟'], 'intent': 'unknown', 'entities': {}}
+2026-01-26 08:54:24,405 - INFO - Generating Arabic text from structured data: {'original_text': 'كيف حال الطقس اليوم؟', 'tokens': ['كيف', 'حال', 'الطقس', 'اليوم؟'], 'intent': 'unknown', 'entities': {}}
+2026-01-26 08:54:24,405 - INFO - Generated Arabic text: 'تم فهم طلبك.'
+2026-01-26 08:54:24,405 - INFO - 
 --- Demonstrating Complex Arabic Request (Mocked) ---
-2026-01-26 08:52:30,262 - INFO - Initiating APK generation from prompt: 'أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker' مع تتبع للخطوات والسعرات الحرارية.'
-2026-01-26 08:52:30,262 - INFO - Processing prompt: 'أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker' مع تتبع للخطوات والسعرات الحرارية.' in language: 'arabic'
-2026-01-26 08:52:30,262 - INFO - Parsing Arabic text: 'أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker'...'
-2026-01-26 08:52:30,262 - INFO - Parsed Arabic data: {'original_text': "أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker' مع تتبع للخطوات والسعرات الحرارية.", 'tokens': ['أريد', 'إنشاء', 'تطبيق', 'مراقبة', 'للصحة', 'باسم', "'HealthTracker'", 'مع', 'تتبع', 'للخطوات', 'والسعرات', 'الحرارية.'], 'intent': 'unknown', 'entities': {}}
-2026-01-26 08:52:30,262 - INFO - Generating Arabic text from structured data: {'original_text': "أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker' مع تتبع للخطوات والسعرات الحرارية.", 'tokens': ['أريد', 'إنشاء', 'تطبيق', 'مراقبة', 'للصحة', 'باسم', "'HealthTracker'", 'مع', 'تتبع', 'للخطوات', 'والسعرات', 'الحرارية.'], 'intent': 'unknown', 'entities': {}}
-2026-01-26 08:52:30,262 - INFO - Generated Arabic text: 'تم فهم طلبك.'
-2026-01-26 08:52:30,262 - INFO - 
+2026-01-26 08:54:24,405 - INFO - Initiating APK generation from prompt: 'أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker' مع تتبع للخطوات والسعرات الحرارية.'
+2026-01-26 08:54:24,405 - INFO - Processing prompt: 'أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker' مع تتبع للخطوات والسعرات الحرارية.' in language: 'arabic'
+2026-01-26 08:54:24,405 - INFO - Parsing Arabic text: 'أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker'...'
+2026-01-26 08:54:24,405 - INFO - Parsed Arabic data: {'original_text': "أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker' مع تتبع للخطوات والسعرات الحرارية.", 'tokens': ['أريد', 'إنشاء', 'تطبيق', 'مراقبة', 'للصحة', 'باسم', "'HealthTracker'", 'مع', 'تتبع', 'للخطوات', 'والسعرات', 'الحرارية.'], 'intent': 'unknown', 'entities': {}}
+2026-01-26 08:54:24,405 - INFO - Generating Arabic text from structured data: {'original_text': "أريد إنشاء تطبيق مراقبة للصحة باسم 'HealthTracker' مع تتبع للخطوات والسعرات الحرارية.", 'tokens': ['أريد', 'إنشاء', 'تطبيق', 'مراقبة', 'للصحة', 'باسم', "'HealthTracker'", 'مع', 'تتبع', 'للخطوات', 'والسعرات', 'الحرارية.'], 'intent': 'unknown', 'entities': {}}
+2026-01-26 08:54:24,405 - INFO - Generated Arabic text: 'تم فهم طلبك.'
+2026-01-26 08:54:24,405 - INFO - 
 --- UnifiedMind Demonstration Finished ---
