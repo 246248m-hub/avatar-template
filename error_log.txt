@@ -1,22 +1,22 @@
-2026-01-26 02:59:38,423 - INFO - --- Starting Lobe 2_arabic_nlp_and_project_builder ---
-2026-01-26 02:59:38,423 - INFO - Received Arabic request: 'قم بإنشاء تطبيق اسمه 'الهاتف الذكي''
-2026-01-26 02:59:38,423 - INFO - Parsing Arabic intent for: 'قم بإنشاء تطبيق اسمه 'الهاتف الذكي''
-2026-01-26 02:59:38,423 - WARNING - Unknown intent detected: 'unknown'. No action taken.
-2026-01-26 02:59:38,423 - INFO - --- Lobe 2_arabic_nlp_and_project_builder Finished (no action) ---
-2026-01-26 02:59:38,423 - INFO - --- Starting Lobe 2_arabic_nlp_and_project_builder ---
-2026-01-26 02:59:38,423 - INFO - Received Arabic request: 'أضف زرًا بنص 'اضغط هنا' إلى الشاشة الرئيسية'
-2026-01-26 02:59:38,423 - INFO - Parsing Arabic intent for: 'أضف زرًا بنص 'اضغط هنا' إلى الشاشة الرئيسية'
-2026-01-26 02:59:38,424 - WARNING - Unknown intent detected: 'unknown'. No action taken.
-2026-01-26 02:59:38,424 - INFO - --- Lobe 2_arabic_nlp_and_project_builder Finished (no action) ---
-2026-01-26 02:59:38,424 - INFO - --- Starting Lobe 2_arabic_nlp_and_project_builder ---
-2026-01-26 02:59:38,424 - INFO - Received Arabic request: 'أنشئ تطبيقاً جديداً اسمه 'المترجم الفوري''
-2026-01-26 02:59:38,424 - INFO - Parsing Arabic intent for: 'أنشئ تطبيقاً جديداً اسمه 'المترجم الفوري''
-2026-01-26 02:59:38,424 - WARNING - Unknown intent detected: 'unknown'. No action taken.
-2026-01-26 02:59:38,424 - INFO - --- Lobe 2_arabic_nlp_and_project_builder Finished (no action) ---
-2026-01-26 02:59:38,424 - INFO - --- Starting Lobe 2_arabic_nlp_and_project_builder ---
-2026-01-26 02:59:38,424 - INFO - Received Arabic request: 'ما هو الطقس اليوم؟'
-2026-01-26 02:59:38,424 - INFO - Parsing Arabic intent for: 'ما هو الطقس اليوم؟'
-2026-01-26 02:59:38,424 - WARNING - Unknown intent detected: 'unknown'. No action taken.
-2026-01-26 02:59:38,424 - INFO - --- Lobe 2_arabic_nlp_and_project_builder Finished (no action) ---
-2026-01-26 02:59:38,424 - WARNING - Project path does not exist or is invalid: None
-2026-01-26 02:59:38,424 - WARNING - Project path does not exist or is invalid: None
+2026-01-26 03:03:36,813 - INFO - --- Starting Lobe 2_arabic_nlp_and_project_builder ---
+2026-01-26 03:03:36,813 - INFO - Received Arabic request: 'قم بإنشاء تطبيق اسمه 'الهاتف الذكي''
+2026-01-26 03:03:36,813 - INFO - Parsing Arabic intent for: 'قم بإنشاء تطبيق اسمه 'الهاتف الذكي''
+2026-01-26 03:03:36,813 - WARNING - Unknown intent detected: 'unknown'. No action taken.
+2026-01-26 03:03:36,813 - INFO - --- Lobe 2_arabic_nlp_and_project_builder Finished (no action) ---
+2026-01-26 03:03:36,813 - INFO - --- Starting Lobe 2_arabic_nlp_and_project_builder ---
+2026-01-26 03:03:36,813 - INFO - Received Arabic request: 'أضف زرًا بنص 'اضغط هنا' إلى الشاشة الرئيسية'
+2026-01-26 03:03:36,813 - INFO - Parsing Arabic intent for: 'أضف زرًا بنص 'اضغط هنا' إلى الشاشة الرئيسية'
+2026-01-26 03:03:36,814 - WARNING - Unknown intent detected: 'unknown'. No action taken.
+2026-01-26 03:03:36,814 - INFO - --- Lobe 2_arabic_nlp_and_project_builder Finished (no action) ---
+2026-01-26 03:03:36,814 - INFO - --- Starting Lobe 2_arabic_nlp_and_project_builder ---
+2026-01-26 03:03:36,814 - INFO - Received Arabic request: 'أنشئ تطبيقاً جديداً اسمه 'المترجم الفوري''
+2026-01-26 03:03:36,814 - INFO - Parsing Arabic intent for: 'أنشئ تطبيقاً جديداً اسمه 'المترجم الفوري''
+2026-01-26 03:03:36,814 - WARNING - Unknown intent detected: 'unknown'. No action taken.
+2026-01-26 03:03:36,814 - INFO - --- Lobe 2_arabic_nlp_and_project_builder Finished (no action) ---
+2026-01-26 03:03:36,814 - INFO - --- Starting Lobe 2_arabic_nlp_and_project_builder ---
+2026-01-26 03:03:36,814 - INFO - Received Arabic request: 'ما هو الطقس اليوم؟'
+2026-01-26 03:03:36,814 - INFO - Parsing Arabic intent for: 'ما هو الطقس اليوم؟'
+2026-01-26 03:03:36,814 - WARNING - Unknown intent detected: 'unknown'. No action taken.
+2026-01-26 03:03:36,814 - INFO - --- Lobe 2_arabic_nlp_and_project_builder Finished (no action) ---
+2026-01-26 03:03:36,814 - WARNING - Project path does not exist or is invalid: None
+2026-01-26 03:03:36,814 - WARNING - Project path does not exist or is invalid: None
