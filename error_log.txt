@@ -1,14 +1,48 @@
-2026-01-26 08:21:44,454 - INFO - Created Java project directory: dummy_android_project
-2026-01-26 08:21:44,455 - INFO - Created APK output directory: generated_apks
-2026-01-26 08:21:44,455 - INFO - ApkInstructionProcessor initialized with project dir: dummy_android_project, output dir: generated_apks
-2026-01-26 08:21:44,455 - INFO - Received 2 APK instruction sets.
-Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 371, in <module>
-    processor.handle_instructions(sample_instructions)
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 332, in handle_instructions
-    structured_commands = self.parse_apk_instructions(instructions)
-                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 72, in parse_apk_instructions
-    version_code = int(version_code_match.group(1)) if versionCode_match else 1
-                                                       ^^^^^^^^^^^^^^^^^
-NameError: name 'versionCode_match' is not defined. Did you mean: 'version_code_match'?
+2026-01-26 08:26:18,567 - INFO - 
+--- Initiating Lobe 1: Arabic NLP Module ---
+2026-01-26 08:26:18,567 - INFO - --- Lobe 1_arabic_nlp_lobe (Placeholder) ---
+2026-01-26 08:26:18,567 - INFO - --- Arabic NLP Module Ready ---
+2026-01-26 08:26:18,567 - INFO - Parsing Arabic request: 'قم بإنشاء نشاط جديد اسمه الشاشة الرئيسية'
+2026-01-26 08:26:18,567 - INFO - Parsed intent: {'intent': 'create_activity', 'activity_name': 'الشاشة الرئيسية', 'language': 'arabic'}
+2026-01-26 08:26:18,567 - INFO - Generating code snippet for intent: create_activity
+2026-01-26 08:26:18,567 - INFO - Generated Java code for activity: الشاشة الرئيسية
+2026-01-26 08:26:18,567 - INFO - Generated snippet for request 1: 
+
+package com.example.myarabicapp;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.content.Intent; // Import Intent
+
+public class الشاشة الرئيسية extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_الشاشة الرئيسية); // Assuming layout file exists
+    }
+}
+            
+2026-01-26 08:26:18,568 - INFO - Parsing Arabic request: 'غير اسم التطبيق إلى تطبيق عربي رائع'
+2026-01-26 08:26:18,568 - INFO - Parsed intent: {'intent': 'unknown'}
+2026-01-26 08:26:18,568 - INFO - Generating code snippet for intent: unknown
+2026-01-26 08:26:18,568 - WARNING - Unsupported intent for code generation.
+2026-01-26 08:26:18,568 - INFO - Generated action for request 2: 
+// Unsupported intent
+2026-01-26 08:26:18,568 - INFO - Initializing dummy Android project structure...
+2026-01-26 08:26:18,568 - INFO - Created directory: /home/runner/work/phoenix-executor/phoenix-executor/dummy_android_project
+2026-01-26 08:26:18,568 - INFO - Created directory: /home/runner/work/phoenix-executor/phoenix-executor/dummy_android_project/app
+2026-01-26 08:26:18,568 - INFO - Created directory: /home/runner/work/phoenix-executor/phoenix-executor/dummy_android_project/app/src/main/java/com/example/myarabicapp
+2026-01-26 08:26:18,568 - INFO - Created directory: /home/runner/work/phoenix-executor/phoenix-executor/dummy_android_project/app/src/main/res/layout
+2026-01-26 08:26:18,568 - INFO - Created directory: /home/runner/work/phoenix-executor/phoenix-executor/dummy_android_project/app/src/main/res/values
+2026-01-26 08:26:18,568 - INFO - Created dummy build.gradle file.
+2026-01-26 08:26:18,568 - INFO - Created dummy settings.gradle file.
+2026-01-26 08:26:18,568 - INFO - Created dummy AndroidManifest.xml file.
+2026-01-26 08:26:18,569 - INFO - Created dummy activity_main.xml file.
+2026-01-26 08:26:18,569 - INFO - Created dummy strings.xml file.
+2026-01-26 08:26:18,569 - INFO - Created dummy MainActivity.java file.
+2026-01-26 08:26:18,569 - INFO - Created dummy gradlew script.
+2026-01-26 08:26:18,569 - INFO - Created dummy gradlew.bat script.
+2026-01-26 08:26:18,569 - INFO - Dummy Android project structure initialized.
+2026-01-26 08:26:18,569 - INFO - Dummy Android project structure prepared for subsequent steps.
+2026-01-26 08:26:18,569 - INFO - 
+--- Arabic NLP Module Demo Finished ---
