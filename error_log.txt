@@ -1,34 +1,34 @@
-2026-01-26 07:31:13,125 - INFO - --- Lobe 5: Arabic NLP Processor Module Demo Started ---
-2026-01-26 07:31:13,125 - INFO - Ensured necessary directories exist.
-2026-01-26 07:31:13,125 - INFO - Initializing Lobe 5: Arabic NLP Processor.
-2026-01-26 07:31:13,126 - INFO - Loading Arabic NLP model...
-2026-01-26 07:31:13,126 - INFO - Arabic NLP model loaded.
-2026-01-26 07:31:13,126 - INFO - 
+2026-01-26 07:31:53,407 - INFO - --- Lobe 5: Arabic NLP Processor Module Demo Started ---
+2026-01-26 07:31:53,407 - INFO - Ensured necessary directories exist.
+2026-01-26 07:31:53,408 - INFO - Initializing Lobe 5: Arabic NLP Processor.
+2026-01-26 07:31:53,408 - INFO - Loading Arabic NLP model...
+2026-01-26 07:31:53,408 - INFO - Arabic NLP model loaded.
+2026-01-26 07:31:53,408 - INFO - 
 --- Processing Arabic Prompt 1 ---
-2026-01-26 07:31:13,126 - INFO - Starting Lobe 5 processing for Arabic text: 'إنشاء زر يحمل النص 'اضغط هنا' ويظهر رسالة 'مرحباً ...'
-2026-01-26 07:31:13,126 - INFO - Preprocessing Arabic text: 'إنشاء زر يحمل النص 'اضغط هنا' ويظهر رسالة 'مرحباً ...'
-2026-01-26 07:31:13,126 - INFO - Arabic text preprocessing complete.
-2026-01-26 07:31:13,126 - INFO - Analyzing Arabic text semantics...
-2026-01-26 07:31:13,126 - INFO - Arabic text semantic analysis complete.
-2026-01-26 07:31:13,126 - INFO - Extracting code intent from Arabic analysis results...
-2026-01-26 07:31:13,126 - INFO - Code intent extraction complete.
-2026-01-26 07:31:13,126 - INFO - Lobe 5 processing finished.
-2026-01-26 07:31:13,126 - INFO - 
+2026-01-26 07:31:53,408 - INFO - Starting Lobe 5 processing for Arabic text: 'إنشاء زر يحمل النص 'اضغط هنا' ويظهر رسالة 'مرحباً ...'
+2026-01-26 07:31:53,408 - INFO - Preprocessing Arabic text: 'إنشاء زر يحمل النص 'اضغط هنا' ويظهر رسالة 'مرحباً ...'
+2026-01-26 07:31:53,408 - INFO - Arabic text preprocessing complete.
+2026-01-26 07:31:53,408 - INFO - Analyzing Arabic text semantics...
+2026-01-26 07:31:53,408 - INFO - Arabic text semantic analysis complete.
+2026-01-26 07:31:53,408 - INFO - Extracting code intent from Arabic analysis results...
+2026-01-26 07:31:53,408 - INFO - Code intent extraction complete.
+2026-01-26 07:31:53,408 - INFO - Lobe 5 processing finished.
+2026-01-26 07:31:53,408 - INFO - 
 --- Processing Arabic Prompt 2 ---
-2026-01-26 07:31:13,126 - INFO - Starting Lobe 5 processing for Arabic text: 'أضف حقل إدخال للنص بعنوان 'اسم المستخدم'....'
-2026-01-26 07:31:13,126 - INFO - Preprocessing Arabic text: 'أضف حقل إدخال للنص بعنوان 'اسم المستخدم'....'
-2026-01-26 07:31:13,126 - INFO - Arabic text preprocessing complete.
-2026-01-26 07:31:13,126 - INFO - Analyzing Arabic text semantics...
-2026-01-26 07:31:13,126 - INFO - Arabic text semantic analysis complete.
-2026-01-26 07:31:13,126 - INFO - Extracting code intent from Arabic analysis results...
-2026-01-26 07:31:13,126 - INFO - Code intent extraction complete.
-2026-01-26 07:31:13,126 - INFO - Lobe 5 processing finished.
-2026-01-26 07:31:13,126 - INFO - 
+2026-01-26 07:31:53,408 - INFO - Starting Lobe 5 processing for Arabic text: 'أضف حقل إدخال للنص بعنوان 'اسم المستخدم'....'
+2026-01-26 07:31:53,408 - INFO - Preprocessing Arabic text: 'أضف حقل إدخال للنص بعنوان 'اسم المستخدم'....'
+2026-01-26 07:31:53,408 - INFO - Arabic text preprocessing complete.
+2026-01-26 07:31:53,408 - INFO - Analyzing Arabic text semantics...
+2026-01-26 07:31:53,408 - INFO - Arabic text semantic analysis complete.
+2026-01-26 07:31:53,408 - INFO - Extracting code intent from Arabic analysis results...
+2026-01-26 07:31:53,408 - INFO - Code intent extraction complete.
+2026-01-26 07:31:53,408 - INFO - Lobe 5 processing finished.
+2026-01-26 07:31:53,408 - INFO - 
 --- Simulating passing output to Lobe 4_code_generation_lobe ---
-2026-01-26 07:31:13,126 - INFO - Cleaning up dummy files from previous runs...
-2026-01-26 07:31:13,126 - INFO - Cleaning up demo knowledge base directory: knowledge_base
-2026-01-26 07:31:13,126 - INFO - Demo APK output directory: apk_output (content is generated, not removed)
-2026-01-26 07:31:13,126 - INFO - Cleaning up Java project directory: java_project_for_apk
-2026-01-26 07:31:13,126 - INFO - Cleaning up local repository directory: local_repo
-2026-01-26 07:31:13,126 - INFO - Dummy file cleanup complete.
-2026-01-26 07:31:13,126 - INFO - --- Lobe 5: Arabic NLP Processor Module Demo Finished ---
+2026-01-26 07:31:53,408 - INFO - Cleaning up dummy files from previous runs...
+2026-01-26 07:31:53,408 - INFO - Cleaning up demo knowledge base directory: knowledge_base
+2026-01-26 07:31:53,408 - INFO - Demo APK output directory: apk_output (content is generated, not removed)
+2026-01-26 07:31:53,408 - INFO - Cleaning up Java project directory: java_project_for_apk
+2026-01-26 07:31:53,408 - INFO - Cleaning up local repository directory: local_repo
+2026-01-26 07:31:53,408 - INFO - Dummy file cleanup complete.
+2026-01-26 07:31:53,408 - INFO - --- Lobe 5: Arabic NLP Processor Module Demo Finished ---
