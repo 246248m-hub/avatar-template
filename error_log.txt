@@ -1,23 +1,18 @@
-2026-01-26 08:31:33,886 - INFO - --- Initiating Lobe 8_apk_compiler_lobe: Build Arabic APK Module ---
-2026-01-26 08:31:33,886 - INFO - Step 1: Parsing Arabic input...
-2026-01-26 08:31:33,886 - INFO - Processing Arabic text: Create an Android application named 'تطبيقي الأول'...
-2026-01-26 08:31:33,886 - INFO - Step 2: Creating Android project structure...
-2026-01-26 08:31:33,886 - INFO - Creating Android project structure in: generated_android_project
-2026-01-26 08:31:33,886 - INFO - Created generated_android_project/app/src/main/AndroidManifest.xml
-2026-01-26 08:31:33,887 - INFO - Created generated_android_project/app/src/main/res/values/strings.xml
-2026-01-26 08:31:33,887 - INFO - Step 3: Configuring Gradle files...
-2026-01-26 08:31:33,887 - INFO - Configuring Gradle files...
-2026-01-26 08:31:33,887 - INFO - Created gradlew scripts.
-2026-01-26 08:31:33,887 - INFO - Created generated_android_project/gradle.properties
-2026-01-26 08:31:33,887 - INFO - Created generated_android_project/build.gradle
-2026-01-26 08:31:33,887 - INFO - Adding permissions to AndroidManifest.xml: ['INTERNET']
-Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 451, in <module>
-    result = build_arabic_apk_module(arabic_prompt)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 419, in build_arabic_apk_module
-    configure_gradle_files(JAVA_PROJECT_DIR, app_name, package_name, dependencies, permissions)
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 222, in configure_gradle_files
-    manifest_lines = manifest_content.splitlines()
-                     ^^^^^^^^^^^^^^^^
-NameError: name 'manifest_content' is not defined. Did you mean: 'manifest_lines'?
+2026-01-26 08:32:10,950 - INFO - --- Setting up APK Project Environment ---
+2026-01-26 08:32:10,950 - INFO - Created project directory structure at: ./temp_java_project
+2026-01-26 08:32:10,950 - INFO - Created AndroidManifest.xml at: ./temp_java_project/app/src/main/AndroidManifest.xml
+2026-01-26 08:32:10,950 - INFO - Created MainActivity.java at: ./temp_java_project/app/src/main/java/com/example/generatedapp/MainActivity.java
+2026-01-26 08:32:10,951 - INFO - Created activity_main.xml at: ./temp_java_project/app/src/main/res/layout/activity_main.xml
+2026-01-26 08:32:10,951 - INFO - Created themes.xml at: ./temp_java_project/app/src/main/res/values/themes.xml
+2026-01-26 08:32:10,951 - INFO - Created colors.xml at: ./temp_java_project/app/src/main/res/values/colors.xml
+2026-01-26 08:32:10,951 - INFO - Created dummy gradlew script at: ./temp_java_project/gradlew
+2026-01-26 08:32:10,951 - INFO - Created app/build.gradle at: ./temp_java_project/app/build.gradle
+2026-01-26 08:32:10,951 - INFO - Created top-level build.gradle at: ./temp_java_project/build.gradle
+2026-01-26 08:32:10,951 - INFO - Created settings.gradle at: ./temp_java_project/settings.gradle
+2026-01-26 08:32:10,951 - INFO - APK project environment setup complete.
+2026-01-26 08:32:10,951 - INFO - --- Initiating APK Build Process ---
+2026-01-26 08:32:10,951 - INFO - Created APK output directory: ./apks
+2026-01-26 08:32:10,951 - INFO - Executing command: ./temp_java_project/gradlew assembleDebug in directory: ./temp_java_project
+2026-01-26 08:32:10,951 - ERROR - Gradle wrapper not found or is not executable: ./temp_java_project/gradlew
+2026-01-26 08:32:10,952 - INFO - Returned to original directory.
+2026-01-26 08:32:10,952 - INFO - Cleaned up dummy gradlew.
