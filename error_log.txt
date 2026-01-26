@@ -1,12 +1,12 @@
-2026-01-26 02:24:34,240 - INFO - --- Running Lobe 10_apk_builder_lobe demo ---
-2026-01-26 02:24:34,240 - WARNING - Creating dummy gradlew for demo at: /home/runner/work/phoenix-executor/phoenix-executor/android_project/gradlew
-2026-01-26 02:24:34,241 - INFO - --- Initiating APK compilation process ---
-2026-01-26 02:24:34,241 - INFO - Running Gradle command: assembleDebug
-2026-01-26 02:24:34,242 - INFO - Gradle build output:
+2026-01-26 02:29:09,137 - INFO - --- Running Lobe 10_apk_builder_lobe demo ---
+2026-01-26 02:29:09,137 - WARNING - Creating dummy gradlew for demo at: /home/runner/work/phoenix-executor/phoenix-executor/android_project/gradlew
+2026-01-26 02:29:09,137 - INFO - --- Initiating APK compilation process ---
+2026-01-26 02:29:09,137 - INFO - Running Gradle command: assembleDebug
+2026-01-26 02:29:09,139 - INFO - Gradle build output:
 Simulating Gradle build...
 
-2026-01-26 02:24:34,242 - INFO - APK compilation successful.
-2026-01-26 02:24:34,242 - WARNING - No APK files found in: /home/runner/work/phoenix-executor/phoenix-executor/android_project/app/build/outputs/apk/debug
-2026-01-26 02:24:34,242 - ERROR - APK compilation reported success, but no APK file was found.
-2026-01-26 02:24:34,243 - INFO - Cleaned up dummy gradlew.
-2026-01-26 02:24:34,245 - INFO - Cleaned up dummy build directory.
+2026-01-26 02:29:09,139 - INFO - APK compilation successful.
+2026-01-26 02:29:09,139 - WARNING - No APK files found in: /home/runner/work/phoenix-executor/phoenix-executor/android_project/app/build/outputs/apk/debug
+2026-01-26 02:29:09,139 - ERROR - APK compilation reported success, but no APK file was found.
+2026-01-26 02:29:09,139 - INFO - Cleaned up dummy gradlew.
+2026-01-26 02:29:09,141 - INFO - Cleaned up dummy build directory.
