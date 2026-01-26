@@ -1,38 +1,5 @@
-INFO:root:Initializing Arabic Parser Module in: arabic_parser_module
-INFO:root:Ensured directory exists: arabic_parser_module
-INFO:root:Ensured subdirectories exist: arabic_parser_module/grammar, arabic_parser_module/templates
-INFO:root:Created dummy grammar file: arabic_parser_module/grammar/dummy_grammar.gr
-INFO:root:Created dummy template file: arabic_parser_module/templates/dummy_template.txt
-INFO:root:Arabic Parser Module initialization complete.
-INFO:root:Parsing Arabic input: 'أريد إنشاء تطبيق باسم 'MyAwesomeApp' بلغة الجافا.'
-INFO:root:Using knowledge base at: knowledge_base/arabic_kb.json
-INFO:root:Parsed output: {'raw_input': "أريد إنشاء تطبيق باسم 'MyAwesomeApp' بلغة الجافا.", 'recognized_intent': 'create_app', 'extracted_parameters': {}, 'errors': []}
-INFO:root:Generating Arabic text from parsed data.
-INFO:root:Using templates from: arabic_parser_module/templates
-INFO:root:Generated text: 'سيتم إنشاء تطبيق باسم 'تطبيق' يدعم 'اللغة غير محددة' مع خيارات إضافية غير محددة.'
-INFO:root:Parsing Arabic input: 'قم بإنشاء تطبيق جديد.'
-INFO:root:Using knowledge base at: knowledge_base/arabic_kb.json
-INFO:root:Parsed output: {'raw_input': 'قم بإنشاء تطبيق جديد.', 'recognized_intent': 'create_app', 'extracted_parameters': {}, 'errors': []}
-INFO:root:Generating Arabic text from parsed data.
-INFO:root:Using templates from: arabic_parser_module/templates
-INFO:root:Generated text: 'سيتم إنشاء تطبيق باسم 'تطبيق' يدعم 'اللغة غير محددة' مع خيارات إضافية غير محددة.'
-INFO:root:Parsing Arabic input: 'تعديل التطبيق الحالي.'
-INFO:root:Using knowledge base at: knowledge_base/arabic_kb.json
-INFO:root:Parsed output: {'raw_input': 'تعديل التطبيق الحالي.', 'recognized_intent': 'unknown', 'extracted_parameters': {}, 'errors': ['Could not recognize the intent.']}
-INFO:root:Generating Arabic text from parsed data.
-INFO:root:Using templates from: arabic_parser_module/templates
-INFO:root:Generated text: 'تم استلام طلب غير معروف. ملاحظات: Could not recognize the intent..'
-INFO:root:Parsing Arabic input: 'ما هي وظيفة هذا الكود؟'
-INFO:root:Using knowledge base at: knowledge_base/arabic_kb.json
-INFO:root:Parsed output: {'raw_input': 'ما هي وظيفة هذا الكود؟', 'recognized_intent': 'unknown', 'extracted_parameters': {}, 'errors': ['Could not recognize the intent.']}
-INFO:root:Generating Arabic text from parsed data.
-INFO:root:Using templates from: arabic_parser_module/templates
-INFO:root:Generated text: 'تم استلام طلب غير معروف. ملاحظات: Could not recognize the intent..'
-INFO:root:Parsing Arabic input: 'إنشاء تطبيق بلغة بايثون مع خيارات للتخصيص.'
-INFO:root:Using knowledge base at: knowledge_base/arabic_kb.json
-INFO:root:Parsed output: {'raw_input': 'إنشاء تطبيق بلغة بايثون مع خيارات للتخصيص.', 'recognized_intent': 'create_app', 'extracted_parameters': {'additional_options': 'للتخصيص.'}, 'errors': []}
-INFO:root:Generating Arabic text from parsed data.
-INFO:root:Using templates from: arabic_parser_module/templates
-INFO:root:Generated text: 'سيتم إنشاء تطبيق باسم 'تطبيق' يدعم 'اللغة غير محددة' مع للتخصيص..'
-INFO:root:Removed directory: arabic_parser_module
-INFO:root:Removed directory: knowledge_base
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 11, in <module>
+    logging.basicConfig(level=logging.INFO, filename=LOG_FILE,
+                                                     ^^^^^^^^
+NameError: name 'LOG_FILE' is not defined
