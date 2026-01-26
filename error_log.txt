@@ -1,12 +1,22 @@
-2026-01-26 02:40:51,323 - INFO - --- Running Lobe 10_apk_builder_lobe demo ---
-2026-01-26 02:40:51,323 - WARNING - Creating dummy gradlew for demo at: /home/runner/work/phoenix-executor/phoenix-executor/android_project/gradlew
-2026-01-26 02:40:51,323 - INFO - --- Initiating APK compilation process ---
-2026-01-26 02:40:51,323 - INFO - Running Gradle command: assembleDebug
-2026-01-26 02:40:51,325 - INFO - Gradle build output:
-Simulating Gradle build...
-
-2026-01-26 02:40:51,325 - INFO - APK compilation successful.
-2026-01-26 02:40:51,325 - WARNING - No APK files found in: /home/runner/work/phoenix-executor/phoenix-executor/android_project/app/build/outputs/apk/debug
-2026-01-26 02:40:51,325 - ERROR - APK compilation reported success, but no APK file was found.
-2026-01-26 02:40:51,325 - INFO - Cleaned up dummy gradlew.
-2026-01-26 02:40:51,327 - INFO - Cleaned up dummy build directory.
+2026-01-26 02:47:32,578 - INFO - --- Starting Lobe 2_arabic_nlp_and_project_builder ---
+2026-01-26 02:47:32,578 - INFO - Received Arabic request: 'قم بإنشاء تطبيق اسمه 'الهاتف الذكي''
+2026-01-26 02:47:32,578 - INFO - Parsing Arabic intent for: 'قم بإنشاء تطبيق اسمه 'الهاتف الذكي''
+2026-01-26 02:47:32,578 - WARNING - Unknown intent detected: 'unknown'. No action taken.
+2026-01-26 02:47:32,578 - INFO - --- Lobe 2_arabic_nlp_and_project_builder Finished (no action) ---
+2026-01-26 02:47:32,578 - INFO - --- Starting Lobe 2_arabic_nlp_and_project_builder ---
+2026-01-26 02:47:32,578 - INFO - Received Arabic request: 'أضف زرًا بنص 'اضغط هنا' إلى الشاشة الرئيسية'
+2026-01-26 02:47:32,578 - INFO - Parsing Arabic intent for: 'أضف زرًا بنص 'اضغط هنا' إلى الشاشة الرئيسية'
+2026-01-26 02:47:32,578 - WARNING - Unknown intent detected: 'unknown'. No action taken.
+2026-01-26 02:47:32,578 - INFO - --- Lobe 2_arabic_nlp_and_project_builder Finished (no action) ---
+2026-01-26 02:47:32,578 - INFO - --- Starting Lobe 2_arabic_nlp_and_project_builder ---
+2026-01-26 02:47:32,578 - INFO - Received Arabic request: 'أنشئ تطبيقاً جديداً اسمه 'المترجم الفوري''
+2026-01-26 02:47:32,578 - INFO - Parsing Arabic intent for: 'أنشئ تطبيقاً جديداً اسمه 'المترجم الفوري''
+2026-01-26 02:47:32,578 - WARNING - Unknown intent detected: 'unknown'. No action taken.
+2026-01-26 02:47:32,578 - INFO - --- Lobe 2_arabic_nlp_and_project_builder Finished (no action) ---
+2026-01-26 02:47:32,578 - INFO - --- Starting Lobe 2_arabic_nlp_and_project_builder ---
+2026-01-26 02:47:32,578 - INFO - Received Arabic request: 'ما هو الطقس اليوم؟'
+2026-01-26 02:47:32,578 - INFO - Parsing Arabic intent for: 'ما هو الطقس اليوم؟'
+2026-01-26 02:47:32,578 - WARNING - Unknown intent detected: 'unknown'. No action taken.
+2026-01-26 02:47:32,578 - INFO - --- Lobe 2_arabic_nlp_and_project_builder Finished (no action) ---
+2026-01-26 02:47:32,578 - WARNING - Project path does not exist or is invalid: None
+2026-01-26 02:47:32,578 - WARNING - Project path does not exist or is invalid: None
