@@ -1,40 +1,6 @@
-/home/runner/work/phoenix-executor/phoenix-executor/task.py:280: SyntaxWarning: invalid escape sequence '\g'
-  gradlew_bat_content = """@echo off
-2026-01-26 10:09:34,805 - INFO - Ensured directory: arabic_nlp_module/knowledge_base
-2026-01-26 10:09:34,805 - INFO - Created dummy lexicon file: arabic_nlp_module/lexicon.txt
-2026-01-26 10:09:34,805 - INFO - Created dummy grammar rules file: arabic_nlp_module/grammar_rules.txt
-2026-01-26 10:09:34,805 - INFO - Code generation output directory initialized: java_apk_project
-2026-01-26 10:09:34,805 - INFO - Setting up dummy Android project structure in: java_apk_project
-2026-01-26 10:09:34,806 - INFO - Created dummy AndroidManifest.xml
-2026-01-26 10:09:34,806 - INFO - Created dummy activity_main.xml
-2026-01-26 10:09:34,806 - INFO - Created dummy app/build.gradle
-2026-01-26 10:09:34,806 - INFO - Created dummy top-level build.gradle
-2026-01-26 10:09:34,806 - INFO - Created dummy gradlew script
-2026-01-26 10:09:34,806 - INFO - Created dummy gradlew.bat script
-2026-01-26 10:09:34,806 - INFO - 
---- Step 1: Parsing Arabic prompt: 'أريد إنشاء تطبيق لعرض رسالة ترحيب بسيطة' ---
-2026-01-26 10:09:34,806 - INFO - Parsing Arabic text: 'أريد إنشاء تطبيق لعرض رسالة ترحيب بسيطة'
-2026-01-26 10:09:34,806 - INFO - Simulated parsed data: {'original_text': 'أريد إنشاء تطبيق لعرض رسالة ترحيب بسيطة', 'tokens': ['أريد', 'إنشاء', 'تطبيق', 'لعرض', 'رسالة', 'ترحيب', 'بسيطة'], 'meaning': "Simulated meaning of 'أريد إنشاء تطبيق لعرض رسالة ترحيب بسيطة'", 'intent': "Simulated intent for 'text'", 'entities': ['entity1', 'entity2']}
-2026-01-26 10:09:34,806 - INFO - 
---- Step 2: Generating Java code from parsed structure ---
-2026-01-26 10:09:34,806 - INFO - Simulating Java code generation for project 'WelcomeApp' based on: {'original_text': 'أريد إنشاء تطبيق لعرض رسالة ترحيب بسيطة', 'tokens': ['أريد', 'إنشاء', 'تطبيق', 'لعرض', 'رسالة', 'ترحيب', 'بسيطة'], 'meaning': "Simulated meaning of 'أريد إنشاء تطبيق لعرض رسالة ترحيب بسيطة'", 'intent': "Simulated intent for 'text'", 'entities': ['entity1', 'entity2']}
-2026-01-26 10:09:34,806 - INFO - Simulated Java code generated at: java_apk_project/welcomeapp/MainActivity.java
-2026-01-26 10:09:34,806 - INFO - 
---- Step 3: Compiling APK ---
-2026-01-26 10:09:34,806 - INFO - Simulating APK compilation for project: WelcomeApp
-2026-01-26 10:09:34,806 - INFO - Simulated APK generated at: java_apk_project/app/build/outputs/apk/debug/welcomeapp-debug.apk
-2026-01-26 10:09:34,807 - INFO - 
---- Grand Objective Achieved (Simulated): APK generated at java_apk_project/app/build/outputs/apk/debug/welcomeapp-debug.apk ---
-2026-01-26 10:09:34,807 - INFO - 
---- Initiating cleanup ---
-2026-01-26 10:09:34,807 - INFO - --- Cleaning up dummy Arabic NLP module files ---
-2026-01-26 10:09:34,807 - INFO - Cleaned up: arabic_nlp_module/lexicon.txt
-2026-01-26 10:09:34,807 - INFO - Cleaned up: arabic_nlp_module/grammar_rules.txt
-2026-01-26 10:09:34,807 - INFO - Cleaned up directory: arabic_nlp_module/knowledge_base
-2026-01-26 10:09:34,807 - INFO - Dummy Arabic NLP module files cleaned up.
-2026-01-26 10:09:34,807 - INFO - --- Cleaning up dummy APK compilation module files ---
-2026-01-26 10:09:34,807 - INFO - Cleaned up dummy gradlew.
-2026-01-26 10:09:34,807 - INFO - Cleaned up dummy gradlew.bat.
-2026-01-26 10:09:34,807 - INFO - Cleaned up dummy build directory.
-2026-01-26 10:09:34,808 - INFO - Cleaned up dummy project root: java_apk_project
-2026-01-26 10:09:34,808 - INFO - Dummy APK compilation module files cleaned up.
+2026-01-26 10:13:16,995 - INFO - --- Simulating Lobe 8 Execution ---
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 192, in <module>
+    os.makedirs(os.path.join(app_dir, "src", "main"))
+  File "<frozen os>", line 225, in makedirs
+FileExistsError: [Errno 17] File exists: 'dummy_android_template/app/src/main'
