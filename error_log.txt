@@ -1,4 +1,4 @@
-2026-01-26 10:38:13,878 - INFO - --- Simulating Lobe 8 Execution ---
+2026-01-26 10:43:02,714 - INFO - --- Simulating Lobe 8 Execution ---
 Traceback (most recent call last):
   File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 192, in <module>
     os.makedirs(os.path.join(app_dir, "src", "main"))
