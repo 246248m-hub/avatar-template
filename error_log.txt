@@ -1,15 +1,2 @@
-Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 467, in <module>
-    generated_apk = compiler.build_apk_from_natural_language(arabic_description_prompt)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 419, in build_apk_from_natural_language
-    final_apk_path = self._compile_apk(extracted_info)
-                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 321, in _compile_apk
-    self._run_command(aapt_command, cwd=JAVA_PROJECT_DIR)
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 177, in _run_command
-    result = subprocess.run(command, cwd=cwd, capture_output=capture_output, text=text, check=True)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/subprocess.py", line 571, in run
-    raise CalledProcessError(retcode, process.args,
-subprocess.CalledProcessError: Command '['/usr/local/lib/android/sdk/build-tools/36.1.0/aapt', 'package', '-f', '-m', '-J', 'temp_android_project/app/build/generated/source/r/debug', '-M', 'temp_android_project/app/src/main/AndroidManifest.xml', '-S', 'temp_android_project/app/src/main/res', '-I', '/usr/local/lib/android/sdk/platforms/android-30/android.jar', '-F', 'apks/com.example.myapp-unaligned.apk']' returned non-zero exit status 1.
+/home/runner/work/phoenix-executor/phoenix-executor/task.py:93: SyntaxWarning: invalid escape sequence '\:'
+  properties_content = """
