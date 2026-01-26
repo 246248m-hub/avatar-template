@@ -1,21 +1,14 @@
-2026-01-26 08:11:19,853 - INFO - Lobe 2 (Arabic Parser) initialized.
-2026-01-26 08:11:19,853 - INFO - Lobe 1 (Arabic NLP Integration) initialized.
-2026-01-26 08:11:19,853 - INFO - Initiating Lobe 1 processing for prompt: 'أريد إنشاء تطبيق أندرويد. اسم التطبيق هو 'تطبيقي ا...'
-2026-01-26 08:11:19,853 - INFO - Parsing Arabic prompt: 'أريد إنشاء تطبيق أندرويد. اسم التطبيق هو 'تطبيقي ا...'
-2026-01-26 08:11:19,853 - INFO - Extracted package name: com.example.myarabicapp.
-2026-01-26 08:11:19,853 - INFO - Extracted permissions: ['android.permission.INTERNET']
-2026-01-26 08:11:19,853 - INFO - Extracted main activity: HomePage
-2026-01-26 08:11:19,853 - INFO - Extracted Button: text='اضغط هنا', id='btn_click_me'
-2026-01-26 08:11:19,853 - INFO - Extracted TextView: text='أهلاً بالعالم', id='txt_welcome'
-2026-01-26 08:11:19,853 - INFO - Extracted version code: 5
-2026-01-26 08:11:19,854 - INFO - Extracted version name: 1.2.
-2026-01-26 08:11:19,854 - INFO - Arabic prompt parsing completed.
-2026-01-26 08:11:19,854 - INFO - Lobe 1 processing complete. Structured configuration generated.
-2026-01-26 08:11:19,854 - INFO - Setting up Android project structure...
-2026-01-26 08:11:19,854 - INFO - Created directory: temp_java_project
-2026-01-26 08:11:19,854 - INFO - Created directory: temp_java_project/app/src/main/java/com/example/myarabicapp/
-2026-01-26 08:11:19,854 - INFO - Created directory: temp_java_project/app/src/main/res/values
-2026-01-26 08:11:19,854 - INFO - Created directory: temp_java_project/gradle/wrapper
-2026-01-26 08:11:19,854 - ERROR - Template file not found: templates/AndroidManifest.xml.template
-2026-01-26 08:11:19,854 - ERROR - An error occurred during Lobe 1 demo: [Errno 2] No such file or directory: 'templates/AndroidManifest.xml.template'
-2026-01-26 08:11:19,857 - INFO - Removed directory: temp_java_project
+2026-01-26 08:15:54,538 - INFO - ArabicCodeGenerator initialized with project dir: dummy_java_project
+2026-01-26 08:15:54,538 - INFO - Knowledge base dir: knowledge_base
+2026-01-26 08:15:54,539 - INFO - Created dummy AndroidManifest.xml at dummy_java_project/app/src/main/AndroidManifest.xml
+2026-01-26 08:15:54,539 - INFO - Created dummy app/build.gradle at dummy_java_project/app/build.gradle
+2026-01-26 08:15:54,539 - INFO - Created dummy gradlew script at dummy_java_project/gradlew
+2026-01-26 08:15:54,539 - INFO - Generating Activity 'MainActivity' with logic: 'This activity should initialize a text view and display 'مرحباً بالعالم!''
+2026-01-26 08:15:54,539 - INFO - Generated Java Activity: dummy_java_project/app/src/main/java/com/example/arabicapp/MainActivity.java
+2026-01-26 08:15:54,539 - INFO - Generating Fragment 'ArabicFragment' with logic: 'This fragment should initialize a text view and display 'جزء العربية''
+2026-01-26 08:15:54,539 - INFO - Generated Kotlin Fragment: dummy_java_project/app/src/main/java/com/example/arabicapp/ArabicFragment.kt
+2026-01-26 08:15:54,539 - INFO - Generating Layout 'MainActivity' with logic: 'This layout should contain a text view displaying 'تصميم الواجهة' and a button to 'ابدأ العملية''
+2026-01-26 08:15:54,539 - INFO - Generated Layout XML: dummy_java_project/app/src/main/res/layout/activity_mainactivity.xml
+2026-01-26 08:15:54,539 - INFO - Integrating component 'dummy_java_project/app/src/main/java/com/example/arabicapp/MainActivity.java' into 'SomeEntryActivity'.
+2026-01-26 08:15:54,539 - INFO - Cleaning up dummy project directory: dummy_java_project
+2026-01-26 08:15:54,541 - INFO - Successfully removed directory: dummy_java_project
