@@ -1,5 +1,14 @@
+2026-01-26 08:21:44,454 - INFO - Created Java project directory: dummy_android_project
+2026-01-26 08:21:44,455 - INFO - Created APK output directory: generated_apks
+2026-01-26 08:21:44,455 - INFO - ApkInstructionProcessor initialized with project dir: dummy_android_project, output dir: generated_apks
+2026-01-26 08:21:44,455 - INFO - Received 2 APK instruction sets.
 Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 11, in <module>
-    logging.basicConfig(level=logging.INFO, filename=LOG_FILE,
-                                                     ^^^^^^^^
-NameError: name 'LOG_FILE' is not defined
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 371, in <module>
+    processor.handle_instructions(sample_instructions)
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 332, in handle_instructions
+    structured_commands = self.parse_apk_instructions(instructions)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 72, in parse_apk_instructions
+    version_code = int(version_code_match.group(1)) if versionCode_match else 1
+                                                       ^^^^^^^^^^^^^^^^^
+NameError: name 'versionCode_match' is not defined. Did you mean: 'version_code_match'?
