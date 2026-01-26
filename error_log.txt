@@ -1,48 +1,32 @@
-2026-01-26 08:05:28,167 - INFO - 
---- Processing Arabic Prompt: 'إنشاء نشاط جديد اسمهرحب' ---
-2026-01-26 08:05:28,167 - INFO - Tokenized Arabic text: ['إنشاء', 'نشاط', 'جديد', 'اسمهرحب']
-2026-01-26 08:05:28,167 - INFO - Syntactically tagged tokens: [('إنشاء', 'NOUN_OR_VERB'), ('نشاط', 'NOUN_OR_VERB'), ('جديد', 'NOUN_OR_VERB'), ('اسمهرحب', 'NOUN_OR_VERB')]
-2026-01-26 08:05:28,168 - INFO - Identified intent: CREATE_ACTIVITY with parameters: {'activity_name': 'نشاط'}
-2026-01-26 08:05:28,168 - INFO - Mapped semantic result to abstract code: {'operation': 'CREATE_ACTIVITY', 'details': {'activity_name': 'نشاط'}}
-2026-01-26 08:05:28,168 - INFO - --- Initiating Synthesis for operation: CREATE_ACTIVITY ---
-2026-01-26 08:05:28,168 - INFO - --- Synthesis Complete. Generated components: ['java_activity', 'xml_layout', 'layout_name'] ---
-2026-01-26 08:05:28,168 - INFO - Added Java activity 'DefaultActivity.java' to blueprint.
-2026-01-26 08:05:28,168 - INFO - Updated AndroidManifest.xml to include activity: DefaultActivity
-2026-01-26 08:05:28,168 - INFO - Added XML layout 'None.xml' to blueprint.
-2026-01-26 08:05:28,168 - INFO - Created APK structure blueprint.
-2026-01-26 08:05:28,168 - INFO - 
---- Simulating Lobe 8: APK Compiler ---
-2026-01-26 08:05:28,168 - INFO - Calling apk_compiler_lobe with the generated blueprint.
-2026-01-26 08:05:28,168 - INFO - Lobe 8 execution simulated. The project structure would now be created.
-2026-01-26 08:05:28,169 - INFO - 
---- Processing Arabic Prompt: 'اكتب 'مرحباً بالعالم!' على TextView1' ---
-2026-01-26 08:05:28,169 - INFO - Tokenized Arabic text: ['اكتب', 'مرحبا', 'بالعالم', '!', 'على', 'TextView1']
-2026-01-26 08:05:28,169 - INFO - Syntactically tagged tokens: [('اكتب', 'NOUN_OR_VERB'), ('مرحبا', 'NOUN_OR_VERB'), ('بالعالم', 'NOUN_OR_VERB'), ('!', 'NOUN_OR_VERB'), ('على', 'PREPOSITION'), ('TextView1', 'NOUN_OR_VERB')]
-2026-01-26 08:05:28,170 - WARNING - Text content not clearly specified for SET_TEXT intent.
-2026-01-26 08:05:28,170 - INFO - Identified intent: SET_TEXT with parameters: {'view_id': 'TextView1'}
-2026-01-26 08:05:28,170 - INFO - Mapped semantic result to abstract code: {'operation': 'SET_TEXT', 'details': {'view_id': 'TextView1'}}
-2026-01-26 08:05:28,170 - INFO - --- Initiating Synthesis for operation: SET_TEXT ---
-2026-01-26 08:05:28,170 - INFO - --- Synthesis Complete. Generated components: ['java_set_text', 'xml_add_view'] ---
-2026-01-26 08:05:28,170 - INFO - Stored java_set_text snippet for later integration.
-2026-01-26 08:05:28,170 - INFO - Stored xml_add_view snippet for later integration.
-2026-01-26 08:05:28,170 - INFO - Created APK structure blueprint.
-2026-01-26 08:05:28,170 - INFO - 
---- Simulating Lobe 8: APK Compiler ---
-2026-01-26 08:05:28,170 - INFO - Calling apk_compiler_lobe with the generated blueprint.
-2026-01-26 08:05:28,170 - INFO - Lobe 8 execution simulated. The project structure would now be created.
-2026-01-26 08:05:28,170 - INFO - 
---- Processing Arabic Prompt: 'قم بإنشاء شاشة اسمها "المستخدم" ثم اكتب "اسم المستخدم" على "labelUsername"' ---
-2026-01-26 08:05:28,170 - INFO - Tokenized Arabic text: ['قم', 'بإنشاء', 'شاشة', 'اسمها', 'المستخدم', 'ثم', 'اكتب', 'اسم', 'المستخدم', 'على', 'labelUsername']
-2026-01-26 08:05:28,170 - INFO - Syntactically tagged tokens: [('قم', 'NOUN_OR_VERB'), ('بإنشاء', 'NOUN_OR_VERB'), ('شاشة', 'NOUN_FEMININE'), ('اسمها', 'NOUN_OR_VERB'), ('المستخدم', 'NOUN_OR_VERB'), ('ثم', 'NOUN_OR_VERB'), ('اكتب', 'NOUN_OR_VERB'), ('اسم', 'NOUN_OR_VERB'), ('المستخدم', 'NOUN_OR_VERB'), ('على', 'PREPOSITION'), ('labelUsername', 'NOUN_OR_VERB')]
-2026-01-26 08:05:28,170 - INFO - Identified intent: CREATE_ACTIVITY with parameters: {'activity_name': 'شاشة'}
-2026-01-26 08:05:28,170 - INFO - Mapped semantic result to abstract code: {'operation': 'CREATE_ACTIVITY', 'details': {'activity_name': 'شاشة'}}
-2026-01-26 08:05:28,170 - INFO - --- Initiating Synthesis for operation: CREATE_ACTIVITY ---
-2026-01-26 08:05:28,170 - INFO - --- Synthesis Complete. Generated components: ['java_activity', 'xml_layout', 'layout_name'] ---
-2026-01-26 08:05:28,170 - INFO - Added Java activity 'DefaultActivity.java' to blueprint.
-2026-01-26 08:05:28,170 - INFO - Updated AndroidManifest.xml to include activity: DefaultActivity
-2026-01-26 08:05:28,170 - INFO - Added XML layout 'None.xml' to blueprint.
-2026-01-26 08:05:28,170 - INFO - Created APK structure blueprint.
-2026-01-26 08:05:28,170 - INFO - 
---- Simulating Lobe 8: APK Compiler ---
-2026-01-26 08:05:28,170 - INFO - Calling apk_compiler_lobe with the generated blueprint.
-2026-01-26 08:05:28,170 - INFO - Lobe 8 execution simulated. The project structure would now be created.
+2026-01-26 08:05:36,452 - INFO - 
+--- Testing with prompt 1: 'أريد إنشاء تطبيق جديد باسم 'حاسبة بسيطة'.' ---
+2026-01-26 08:05:36,452 - INFO - --- Executing Lobe 0_arabic_lobe ---
+2026-01-26 08:05:36,452 - INFO - Preprocessing Arabic text: 'أريد إنشاء تطبيق جديد باسم 'حاسبة بسيطة'....'
+2026-01-26 08:05:36,453 - INFO - Preprocessed text: 'أريد إنشاء تطبيق جديد باسم حاسبة بسيطة...'
+2026-01-26 08:05:36,453 - INFO - Extracting intent and entities from: 'أريد إنشاء تطبيق جديد باسم حاسبة بسيطة...'
+2026-01-26 08:05:36,453 - INFO - Extracted Intent: 'create_app', Entities: {'app_name': 'جديد'}
+2026-01-26 08:05:36,453 - INFO - --- Lobe 0_arabic_lobe Execution Complete ---
+2026-01-26 08:05:36,453 - INFO - 
+--- Testing with prompt 2: 'اعرض لي قائمة المستخدمين.' ---
+2026-01-26 08:05:36,453 - INFO - --- Executing Lobe 0_arabic_lobe ---
+2026-01-26 08:05:36,453 - INFO - Preprocessing Arabic text: 'اعرض لي قائمة المستخدمين....'
+2026-01-26 08:05:36,453 - INFO - Preprocessed text: 'اعرض لي قائمة المستخدمين...'
+2026-01-26 08:05:36,453 - INFO - Extracting intent and entities from: 'اعرض لي قائمة المستخدمين...'
+2026-01-26 08:05:36,453 - INFO - Extracted Intent: 'display_list', Entities: {'list_item': 'لي'}
+2026-01-26 08:05:36,453 - INFO - --- Lobe 0_arabic_lobe Execution Complete ---
+2026-01-26 08:05:36,453 - INFO - 
+--- Testing with prompt 3: 'صنع تطبيق صغير لتدوين الملاحظات.' ---
+2026-01-26 08:05:36,453 - INFO - --- Executing Lobe 0_arabic_lobe ---
+2026-01-26 08:05:36,453 - INFO - Preprocessing Arabic text: 'صنع تطبيق صغير لتدوين الملاحظات....'
+2026-01-26 08:05:36,453 - INFO - Preprocessed text: 'صنع تطبيق صغير لتدوين الملاحظات...'
+2026-01-26 08:05:36,453 - INFO - Extracting intent and entities from: 'صنع تطبيق صغير لتدوين الملاحظات...'
+2026-01-26 08:05:36,453 - INFO - Extracted Intent: 'create_app', Entities: {'app_name': 'صغير'}
+2026-01-26 08:05:36,453 - INFO - --- Lobe 0_arabic_lobe Execution Complete ---
+2026-01-26 08:05:36,453 - INFO - 
+--- Testing with prompt 4: 'ما هي خطوات تحميل التطبيق؟' ---
+2026-01-26 08:05:36,453 - INFO - --- Executing Lobe 0_arabic_lobe ---
+2026-01-26 08:05:36,453 - INFO - Preprocessing Arabic text: 'ما هي خطوات تحميل التطبيق؟...'
+2026-01-26 08:05:36,453 - INFO - Preprocessed text: 'ما هي خطوات تحميل التطبيق؟...'
+2026-01-26 08:05:36,453 - INFO - Extracting intent and entities from: 'ما هي خطوات تحميل التطبيق؟...'
+2026-01-26 08:05:36,453 - INFO - Extracted Intent: 'unknown', Entities: {}
+2026-01-26 08:05:36,453 - INFO - --- Lobe 0_arabic_lobe Execution Complete ---
