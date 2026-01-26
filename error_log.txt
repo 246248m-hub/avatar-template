@@ -1,18 +1,79 @@
-2026-01-26 08:32:10,950 - INFO - --- Setting up APK Project Environment ---
-2026-01-26 08:32:10,950 - INFO - Created project directory structure at: ./temp_java_project
-2026-01-26 08:32:10,950 - INFO - Created AndroidManifest.xml at: ./temp_java_project/app/src/main/AndroidManifest.xml
-2026-01-26 08:32:10,950 - INFO - Created MainActivity.java at: ./temp_java_project/app/src/main/java/com/example/generatedapp/MainActivity.java
-2026-01-26 08:32:10,951 - INFO - Created activity_main.xml at: ./temp_java_project/app/src/main/res/layout/activity_main.xml
-2026-01-26 08:32:10,951 - INFO - Created themes.xml at: ./temp_java_project/app/src/main/res/values/themes.xml
-2026-01-26 08:32:10,951 - INFO - Created colors.xml at: ./temp_java_project/app/src/main/res/values/colors.xml
-2026-01-26 08:32:10,951 - INFO - Created dummy gradlew script at: ./temp_java_project/gradlew
-2026-01-26 08:32:10,951 - INFO - Created app/build.gradle at: ./temp_java_project/app/build.gradle
-2026-01-26 08:32:10,951 - INFO - Created top-level build.gradle at: ./temp_java_project/build.gradle
-2026-01-26 08:32:10,951 - INFO - Created settings.gradle at: ./temp_java_project/settings.gradle
-2026-01-26 08:32:10,951 - INFO - APK project environment setup complete.
-2026-01-26 08:32:10,951 - INFO - --- Initiating APK Build Process ---
-2026-01-26 08:32:10,951 - INFO - Created APK output directory: ./apks
-2026-01-26 08:32:10,951 - INFO - Executing command: ./temp_java_project/gradlew assembleDebug in directory: ./temp_java_project
-2026-01-26 08:32:10,951 - ERROR - Gradle wrapper not found or is not executable: ./temp_java_project/gradlew
-2026-01-26 08:32:10,952 - INFO - Returned to original directory.
-2026-01-26 08:32:10,952 - INFO - Cleaned up dummy gradlew.
+/home/runner/work/phoenix-executor/phoenix-executor/task.py:270: SyntaxWarning: invalid escape sequence '\/'
+  f.write("distributionBase=GRADLE_USER_HOME\ndistributionUrl=https\x3a\/\/services.gradle.org\/distributions\/gradle-7.5-bin.zip\ndistributionPath=wrapper\/dists\nzipStorePath=wrapper\/dists\n")
+2026-01-26 08:36:58,051 - INFO - --- Lobe 7_apk_builder_lobe: Received instruction ---
+2026-01-26 08:36:58,051 - INFO - Natural language description: 'Create an Android app that displays 'Hello from Arabic NLP!''
+2026-01-26 08:36:58,051 - WARNING - Natural language description not understood for complex simulation. Using default template.
+2026-01-26 08:36:58,051 - INFO - Calling create_apk_from_code with simulated Java code...
+2026-01-26 08:36:58,051 - INFO - Setting up Android project structure at: generated_java_project
+2026-01-26 08:36:58,052 - INFO - Android project structure created at generated_java_project
+2026-01-26 08:36:58,052 - INFO - Wrote Java code to: generated_java_project/app/src/main/java/com/example/defaultapp/MainActivity.java
+2026-01-26 08:36:58,052 - INFO - Attempting to build the APK...
+2026-01-26 08:36:58,052 - INFO - Attempting to build APK for project at: generated_java_project
+2026-01-26 08:36:58,052 - INFO - Executing command: ./gradlew assembleDebug in generated_java_project
+2026-01-26 08:36:58,054 - ERROR - APK build failed with return code 127.
+2026-01-26 08:36:58,054 - ERROR - Gradle stdout:
+
+2026-01-26 08:36:58,054 - ERROR - Gradle stderr:
+./gradlew: line 2: /home/runner/work/phoenix-executor/phoenix-executor/generated_java_project/gradle/wrapper/gradle-wrapper.jar: No such file or directory
+
+2026-01-26 08:36:58,054 - ERROR - APK build failed.
+2026-01-26 08:36:58,054 - ERROR - Failed to generate APK.
+2026-01-26 08:36:58,054 - INFO - --- Lobe 7_apk_builder_lobe: Received instruction ---
+2026-01-26 08:36:58,054 - INFO - Natural language description: 'I need an app that can calculate the sum of 5 and 7 and show the result.'
+2026-01-26 08:36:58,054 - WARNING - Natural language description not understood for complex simulation. Using default template.
+2026-01-26 08:36:58,054 - INFO - Calling create_apk_from_code with simulated Java code...
+2026-01-26 08:36:58,055 - INFO - Cleaned up generated project directory: generated_java_project
+2026-01-26 08:36:58,055 - INFO - Setting up Android project structure at: generated_java_project
+2026-01-26 08:36:58,056 - INFO - Android project structure created at generated_java_project
+2026-01-26 08:36:58,056 - INFO - Wrote Java code to: generated_java_project/app/src/main/java/com/example/defaultapp/MainActivity.java
+2026-01-26 08:36:58,056 - INFO - Attempting to build the APK...
+2026-01-26 08:36:58,056 - INFO - Attempting to build APK for project at: generated_java_project
+2026-01-26 08:36:58,056 - INFO - Executing command: ./gradlew assembleDebug in generated_java_project
+2026-01-26 08:36:58,058 - ERROR - APK build failed with return code 127.
+2026-01-26 08:36:58,058 - ERROR - Gradle stdout:
+
+2026-01-26 08:36:58,058 - ERROR - Gradle stderr:
+./gradlew: line 2: /home/runner/work/phoenix-executor/phoenix-executor/generated_java_project/gradle/wrapper/gradle-wrapper.jar: No such file or directory
+
+2026-01-26 08:36:58,058 - ERROR - APK build failed.
+2026-01-26 08:36:58,058 - ERROR - Failed to generate APK.
+2026-01-26 08:36:58,058 - INFO - --- Lobe 7_apk_builder_lobe: Received instruction ---
+2026-01-26 08:36:58,058 - INFO - Natural language description: 'Generate an app that shows an Arabic greeting: السلام عليكم!'
+2026-01-26 08:36:58,058 - INFO - Simulated generation of 'Arabic Greeting' app code.
+2026-01-26 08:36:58,058 - INFO - Calling create_apk_from_code with simulated Java code...
+2026-01-26 08:36:58,059 - INFO - Cleaned up generated project directory: generated_java_project
+2026-01-26 08:36:58,059 - INFO - Setting up Android project structure at: generated_java_project
+2026-01-26 08:36:58,060 - INFO - Android project structure created at generated_java_project
+2026-01-26 08:36:58,060 - INFO - Wrote Java code to: generated_java_project/app/src/main/java/com/example/arabicapp/MainActivity.java
+2026-01-26 08:36:58,060 - INFO - Attempting to build the APK...
+2026-01-26 08:36:58,060 - INFO - Attempting to build APK for project at: generated_java_project
+2026-01-26 08:36:58,060 - INFO - Executing command: ./gradlew assembleDebug in generated_java_project
+2026-01-26 08:36:58,061 - ERROR - APK build failed with return code 127.
+2026-01-26 08:36:58,062 - ERROR - Gradle stdout:
+
+2026-01-26 08:36:58,062 - ERROR - Gradle stderr:
+./gradlew: line 2: /home/runner/work/phoenix-executor/phoenix-executor/generated_java_project/gradle/wrapper/gradle-wrapper.jar: No such file or directory
+
+2026-01-26 08:36:58,062 - ERROR - APK build failed.
+2026-01-26 08:36:58,062 - ERROR - Failed to generate APK.
+2026-01-26 08:36:58,062 - INFO - --- Lobe 7_apk_builder_lobe: Received instruction ---
+2026-01-26 08:36:58,062 - INFO - Natural language description: 'This is a test instruction that should not be matched.'
+2026-01-26 08:36:58,062 - WARNING - Natural language description not understood for complex simulation. Using default template.
+2026-01-26 08:36:58,062 - INFO - Calling create_apk_from_code with simulated Java code...
+2026-01-26 08:36:58,063 - INFO - Cleaned up generated project directory: generated_java_project
+2026-01-26 08:36:58,063 - INFO - Setting up Android project structure at: generated_java_project
+2026-01-26 08:36:58,064 - INFO - Android project structure created at generated_java_project
+2026-01-26 08:36:58,064 - INFO - Wrote Java code to: generated_java_project/app/src/main/java/com/example/defaultapp/MainActivity.java
+2026-01-26 08:36:58,064 - INFO - Attempting to build the APK...
+2026-01-26 08:36:58,064 - INFO - Attempting to build APK for project at: generated_java_project
+2026-01-26 08:36:58,064 - INFO - Executing command: ./gradlew assembleDebug in generated_java_project
+2026-01-26 08:36:58,065 - ERROR - APK build failed with return code 127.
+2026-01-26 08:36:58,065 - ERROR - Gradle stdout:
+
+2026-01-26 08:36:58,065 - ERROR - Gradle stderr:
+./gradlew: line 2: /home/runner/work/phoenix-executor/phoenix-executor/generated_java_project/gradle/wrapper/gradle-wrapper.jar: No such file or directory
+
+2026-01-26 08:36:58,065 - ERROR - APK build failed.
+2026-01-26 08:36:58,065 - ERROR - Failed to generate APK.
+2026-01-26 08:36:58,065 - INFO - --- Cleaning up APK builder resources ---
+2026-01-26 08:36:58,066 - INFO - Cleaned up generated project directory: generated_java_project
