@@ -1,0 +1,4 @@
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 186
+    tools:context=".{layout_name.replace('_', ' ').title().replace(' ', '')}"> {/* Example context for MainActivity */}
+                                                                                ^
+SyntaxError: f-string: expecting a valid expression after '{'
