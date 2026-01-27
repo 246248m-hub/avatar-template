@@ -1,4 +1,0 @@
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 160
-    else:
-    ^^^^
-SyntaxError: invalid syntax
