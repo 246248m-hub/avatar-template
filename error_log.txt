@@ -1,20 +1,20 @@
-2026-01-27 07:50:35,996 - INFO - --- Arabic NLP to APK Module Demo ---
-2026-01-27 07:50:35,996 - INFO - Received Arabic prompt: 'أريد إنشاء تطبيق يعرض رسالة ترحيبية مع اسمي.'
-2026-01-27 07:50:35,996 - INFO - Simulating Arabic NLP processing...
-2026-01-27 07:50:35,996 - INFO - Initializing Android project structure...
-2026-01-27 07:50:35,996 - INFO - Creating Android project structure...
-2026-01-27 07:50:35,996 - INFO - Cleaning up Android project directory: arabic_nlp_module
-2026-01-27 07:50:35,996 - INFO - Creating directory structure for Java project.
-2026-01-27 07:50:35,996 - INFO - Generating Java code for prompt: 'أريد إنشاء تطبيق يعرض رسالة ترحيبية مع اسمي.'
-2026-01-27 07:50:35,996 - INFO - Created Java source file: arabic_nlp_module/src/main/java/com/example/arabicapp/MainActivity.java
-2026-01-27 07:50:35,996 - INFO - Creating Gradle files.
-2026-01-27 07:50:35,997 - INFO - Android project structure created in: arabic_nlp_module
-2026-01-27 07:50:35,997 - INFO - Arabic NLP to APK structure generation complete.
-2026-01-27 07:50:35,997 - INFO - Attempting to build APK using Gradle...
-2026-01-27 07:50:35,997 - WARNING - gradlew not found, attempting to use 'gradle' command. Ensure Gradle is in your PATH.
-2026-01-27 07:50:44,763 - ERROR - APK build failed!
-2026-01-27 07:50:44,764 - ERROR - Gradle Error Code: 1
-2026-01-27 07:50:44,764 - ERROR - Gradle Output:
+2026-01-27 07:57:39,935 - INFO - --- Arabic NLP to APK Module Demo ---
+2026-01-27 07:57:39,935 - INFO - Received Arabic prompt: 'أريد إنشاء تطبيق يعرض رسالة ترحيبية مع اسمي.'
+2026-01-27 07:57:39,935 - INFO - Simulating Arabic NLP processing...
+2026-01-27 07:57:39,935 - INFO - Initializing Android project structure...
+2026-01-27 07:57:39,935 - INFO - Creating Android project structure...
+2026-01-27 07:57:39,935 - INFO - Cleaning up Android project directory: arabic_nlp_module
+2026-01-27 07:57:39,935 - INFO - Creating directory structure for Java project.
+2026-01-27 07:57:39,935 - INFO - Generating Java code for prompt: 'أريد إنشاء تطبيق يعرض رسالة ترحيبية مع اسمي.'
+2026-01-27 07:57:39,935 - INFO - Created Java source file: arabic_nlp_module/src/main/java/com/example/arabicapp/MainActivity.java
+2026-01-27 07:57:39,935 - INFO - Creating Gradle files.
+2026-01-27 07:57:39,936 - INFO - Android project structure created in: arabic_nlp_module
+2026-01-27 07:57:39,936 - INFO - Arabic NLP to APK structure generation complete.
+2026-01-27 07:57:39,936 - INFO - Attempting to build APK using Gradle...
+2026-01-27 07:57:39,936 - WARNING - gradlew not found, attempting to use 'gradle' command. Ensure Gradle is in your PATH.
+2026-01-27 07:57:57,701 - ERROR - APK build failed!
+2026-01-27 07:57:57,701 - ERROR - Gradle Error Code: 1
+2026-01-27 07:57:57,701 - ERROR - Gradle Output:
 
 Welcome to Gradle 9.3.0!
 
@@ -27,7 +27,7 @@ For more details see https://docs.gradle.org/9.3.0/release-notes.html
 
 Starting a Gradle Daemon (subsequent builds will be faster)
 
-2026-01-27 07:50:44,764 - ERROR - Gradle Error Output:
+2026-01-27 07:57:57,701 - ERROR - Gradle Error Output:
 
 FAILURE: Build failed with an exception.
 
@@ -47,5 +47,5 @@ Plugin [id: 'com.android.application'] was not found in any of the following sou
 > Run with --scan to get full insights from a Build Scan (powered by Develocity).
 > Get more help at https://help.gradle.org.
 
-BUILD FAILED in 8s
+BUILD FAILED in 16s
 
