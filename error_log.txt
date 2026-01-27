@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 600, in <module>
-    save_json({
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 29, in save_json
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-  File "<frozen os>", line 225, in makedirs
-FileNotFoundError: [Errno 2] No such file or directory: ''
