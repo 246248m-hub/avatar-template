@@ -2,21 +2,21 @@
   gradle_wrapper_properties_content = """distributionBase=GRADLE_USER_HOME
 /home/runner/work/phoenix-executor/phoenix-executor/task.py:307: SyntaxWarning: invalid escape sequence '\%'
   gradlew_bat_content = """@if "%~1" == "" goto init
-2026-01-28 22:47:37,192 - INFO - Creating project structure at: temp_android_project_arabic
-2026-01-28 22:47:37,192 - INFO - Created temp_android_project_arabic/app/src/main/AndroidManifest.xml
-2026-01-28 22:47:37,193 - INFO - Created temp_android_project_arabic/app/src/main/java/com/example/myarabicapp/MainActivity.java
-2026-01-28 22:47:37,193 - INFO - Created temp_android_project_arabic/app/src/main/res/layout/activity_main.xml
-2026-01-28 22:47:37,193 - INFO - Created temp_android_project_arabic/app/src/main/res/values/strings.xml
-2026-01-28 22:47:37,193 - INFO - Created temp_android_project_arabic/app/src/main/res/values/themes.xml
-2026-01-28 22:47:37,193 - INFO - Created temp_android_project_arabic/app/build.gradle
-2026-01-28 22:47:37,193 - INFO - Created temp_android_project_arabic/build.gradle
-2026-01-28 22:47:37,193 - INFO - Created temp_android_project_arabic/settings.gradle
-2026-01-28 22:47:37,194 - INFO - Created temp_android_project_arabic/gradle/wrapper/gradle-wrapper.properties
-2026-01-28 22:47:37,194 - INFO - Created temp_android_project_arabic/gradlew
-2026-01-28 22:47:37,194 - INFO - Created temp_android_project_arabic/gradlew.bat
-2026-01-28 22:47:37,194 - INFO - Project structure created successfully.
-2026-01-28 22:47:37,194 - INFO - Starting APK build process...
-2026-01-28 22:47:37,194 - INFO - Executing build command: temp_android_project_arabic/./gradlew assembleDebug
-2026-01-28 22:47:37,194 - ERROR - './gradlew' not found. Make sure it's in the project root and executable.
-2026-01-28 22:47:37,194 - INFO - Cleaning up project directory: temp_android_project_arabic
-2026-01-28 22:47:37,197 - INFO - Project directory cleaned up successfully.
+2026-01-28 22:51:17,499 - INFO - Creating project structure at: temp_android_project_arabic
+2026-01-28 22:51:17,500 - INFO - Created temp_android_project_arabic/app/src/main/AndroidManifest.xml
+2026-01-28 22:51:17,500 - INFO - Created temp_android_project_arabic/app/src/main/java/com/example/myarabicapp/MainActivity.java
+2026-01-28 22:51:17,500 - INFO - Created temp_android_project_arabic/app/src/main/res/layout/activity_main.xml
+2026-01-28 22:51:17,500 - INFO - Created temp_android_project_arabic/app/src/main/res/values/strings.xml
+2026-01-28 22:51:17,500 - INFO - Created temp_android_project_arabic/app/src/main/res/values/themes.xml
+2026-01-28 22:51:17,501 - INFO - Created temp_android_project_arabic/app/build.gradle
+2026-01-28 22:51:17,501 - INFO - Created temp_android_project_arabic/build.gradle
+2026-01-28 22:51:17,501 - INFO - Created temp_android_project_arabic/settings.gradle
+2026-01-28 22:51:17,501 - INFO - Created temp_android_project_arabic/gradle/wrapper/gradle-wrapper.properties
+2026-01-28 22:51:17,501 - INFO - Created temp_android_project_arabic/gradlew
+2026-01-28 22:51:17,501 - INFO - Created temp_android_project_arabic/gradlew.bat
+2026-01-28 22:51:17,501 - INFO - Project structure created successfully.
+2026-01-28 22:51:17,501 - INFO - Starting APK build process...
+2026-01-28 22:51:17,501 - INFO - Executing build command: temp_android_project_arabic/./gradlew assembleDebug
+2026-01-28 22:51:17,502 - ERROR - './gradlew' not found. Make sure it's in the project root and executable.
+2026-01-28 22:51:17,502 - INFO - Cleaning up project directory: temp_android_project_arabic
+2026-01-28 22:51:17,505 - INFO - Project directory cleaned up successfully.
