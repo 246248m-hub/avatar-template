@@ -2,7 +2,7 @@
 FAILURE: Build failed with an exception.
 
 * Where:
-Build file '/home/runner/work/phoenix-executor/phoenix-executor/temp/arabic_app_8987/build.gradle' line: 14
+Build file '/home/runner/work/phoenix-executor/phoenix-executor/temp/arabic_app_3487/build.gradle' line: 14
 
 * What went wrong:
 A problem occurred evaluating root project 'GeneratedApp'.
