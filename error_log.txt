@@ -1,0 +1,41 @@
+2026-01-28 08:03:27,161 - INFO - --- Starting Arabic APK Generation Lobe (Lobe 9) ---
+2026-01-28 08:03:27,161 - INFO - Parsing Arabic DSL from: arabic_instructions.dsl
+2026-01-28 08:03:27,161 - INFO - Parsed instructions: ['build apk', 'create android project', 'app name: MyArabicApp', 'main activity: WelcomeScreen', 'features: [button, text_display]']
+2026-01-28 08:03:27,161 - INFO - Simulating translation of: build apk
+2026-01-28 08:03:27,161 - INFO - Simulating translation of: create android project
+2026-01-28 08:03:27,161 - INFO - Simulating translation of: app name: MyArabicApp
+2026-01-28 08:03:27,161 - INFO - Simulating translation of: main activity: WelcomeScreen
+2026-01-28 08:03:27,161 - INFO - Simulating translation of: features: [button, text_display]
+2026-01-28 08:03:27,161 - INFO - Translated instructions (simplified): ['build apk', 'android project', 'app name: myarabicapp', 'main activity: welcomescreen', 'features: [button, text_display]']
+2026-01-28 08:03:27,161 - INFO - Generating Android project structure...
+2026-01-28 08:03:27,162 - INFO - Executing Gradle init: gradle init --type application --dsl kotlin --build-script-kotlin --test-framework junit --no-wrapper --project-name ArabicApp --output-dir generated_apks_output
+2026-01-28 08:03:51,462 - ERROR - Gradle init failed: Command '['gradle', 'init', '--type', 'application', '--dsl', 'kotlin', '--build-script-kotlin', '--test-framework', 'junit', '--no-wrapper', '--project-name', 'ArabicApp', '--output-dir', 'generated_apks_output']' returned non-zero exit status 1.
+2026-01-28 08:03:51,462 - ERROR - Stderr: 
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Problem configuring task :init from command line.
+> Unknown command-line option '--build-script-kotlin'.
+
+* Try:
+> Run gradle help --task :init to get task usage details.
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 22s
+
+2026-01-28 08:03:51,462 - ERROR - Stdout: 
+Welcome to Gradle 9.3.0!
+
+Here are the highlights of this release:
+ - Test reporting improvements
+ - Error and warning improvements
+ - Build authoring improvements
+
+For more details see https://docs.gradle.org/9.3.0/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+2026-01-28 08:03:51,462 - ERROR - Failed to generate Android project structure. Aborting APK generation.
