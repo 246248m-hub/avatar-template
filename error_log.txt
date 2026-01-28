@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 275, in <module>
+    demo_arabic_processing_and_apk_struct_generation()
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 236, in demo_arabic_processing_and_apk_struct_generation
+    created_file = create_apk_structure_files(component_type, component_name_guess, app_name)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 163, in create_apk_structure_files
+    app_dir = GENERATED_APKS_DIR / app_name.replace(" ", "_").lower()
+                                   ^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'replace'
