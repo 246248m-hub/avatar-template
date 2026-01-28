@@ -1,0 +1,48 @@
+2026-01-28 08:21:19,275 - INFO - Initialized ArabicAPKGenerator. Temp dir: temp_apk_build, Output dir: generated_apks
+2026-01-28 08:21:19,275 - INFO - Parsing Arabic prompt: 'إنشاء تطبيق باسم 'مكتشف الأخطاء''
+2026-01-28 08:21:19,275 - INFO - Parsed data: {'app_name': 'تطبيق_مبدئي', 'features': [], 'permissions': []}
+2026-01-28 08:21:19,275 - INFO - Generating basic Android project structure at: temp_apk_build/تطبيق_مبدئي
+2026-01-28 08:21:19,275 - INFO - Basic Android project structure created for 'تطبيق_مبدئي'.
+2026-01-28 08:21:19,275 - INFO - Modifying Android project at temp_apk_build/تطبيق_مبدئي with data: {'app_name': 'تطبيق_مبدئي', 'features': [], 'permissions': []}
+2026-01-28 08:21:19,275 - INFO - AndroidManifest.xml modified with permissions.
+2026-01-28 08:21:19,275 - INFO - MainActivity.java modified with features.
+2026-01-28 08:21:19,276 - INFO - Attempting to build APK for 'تطبيق_مبدئي' at temp_apk_build/تطبيق_مبدئي
+2026-01-28 08:21:19,276 - INFO - Successfully created mock APK: generated_apks/تطبيق_مبدئي/تطبيق_مبدئي-debug.apk
+2026-01-28 08:21:19,276 - INFO - Cleaning up temporary directory: temp_apk_build
+2026-01-28 08:21:19,278 - INFO - Temporary directory cleaned successfully.
+2026-01-28 08:21:19,278 - INFO - Initialized ArabicAPKGenerator. Temp dir: temp_apk_build, Output dir: generated_apks
+2026-01-28 08:21:19,278 - INFO - Parsing Arabic prompt: 'اسم التطبيق هو 'مسجل الملاحظات'. إضافة ميزة حفظ الملاحظات, عرض الملاحظات'
+2026-01-28 08:21:19,278 - INFO - Parsed data: {'app_name': 'هو', 'features': ['حفظ الملاحظات', 'عرض الملاحظات'], 'permissions': []}
+2026-01-28 08:21:19,278 - INFO - Generating basic Android project structure at: temp_apk_build/هو
+2026-01-28 08:21:19,279 - INFO - Basic Android project structure created for 'هو'.
+2026-01-28 08:21:19,279 - INFO - Modifying Android project at temp_apk_build/هو with data: {'app_name': 'هو', 'features': ['حفظ الملاحظات', 'عرض الملاحظات'], 'permissions': []}
+2026-01-28 08:21:19,279 - INFO - AndroidManifest.xml modified with permissions.
+2026-01-28 08:21:19,279 - INFO - MainActivity.java modified with features.
+2026-01-28 08:21:19,279 - INFO - Attempting to build APK for 'هو' at temp_apk_build/هو
+2026-01-28 08:21:19,279 - INFO - Successfully created mock APK: generated_apks/هو/هو-debug.apk
+2026-01-28 08:21:19,279 - INFO - Cleaning up temporary directory: temp_apk_build
+2026-01-28 08:21:19,280 - INFO - Temporary directory cleaned successfully.
+2026-01-28 08:21:19,280 - INFO - Initialized ArabicAPKGenerator. Temp dir: temp_apk_build, Output dir: generated_apks
+2026-01-28 08:21:19,280 - INFO - Parsing Arabic prompt: 'اسم التطبيق 'معرض الصور'. إضافة ميزة عرض الصور. طلب إذن قراءة التخزين, كتابة التخزين'
+2026-01-28 08:21:19,280 - INFO - Parsed data: {'app_name': "'معرض", 'features': ['عرض الصور. طلب إذن قراءة التخزين', 'كتابة التخزين'], 'permissions': ['قراءة التخزين', 'كتابة التخزين']}
+2026-01-28 08:21:19,280 - INFO - Generating basic Android project structure at: temp_apk_build/'معرض
+2026-01-28 08:21:19,280 - INFO - Basic Android project structure created for ''معرض'.
+2026-01-28 08:21:19,280 - INFO - Modifying Android project at temp_apk_build/'معرض with data: {'app_name': "'معرض", 'features': ['عرض الصور. طلب إذن قراءة التخزين', 'كتابة التخزين'], 'permissions': ['قراءة التخزين', 'كتابة التخزين']}
+2026-01-28 08:21:19,280 - INFO - AndroidManifest.xml modified with permissions.
+2026-01-28 08:21:19,280 - INFO - MainActivity.java modified with features.
+2026-01-28 08:21:19,280 - INFO - Attempting to build APK for ''معرض' at temp_apk_build/'معرض
+2026-01-28 08:21:19,281 - INFO - Successfully created mock APK: generated_apks/'معرض/'معرض-debug.apk
+2026-01-28 08:21:19,281 - INFO - Cleaning up temporary directory: temp_apk_build
+2026-01-28 08:21:19,281 - INFO - Temporary directory cleaned successfully.
+2026-01-28 08:21:19,281 - INFO - Initialized ArabicAPKGenerator. Temp dir: temp_apk_build, Output dir: generated_apks
+2026-01-28 08:21:19,281 - INFO - Parsing Arabic prompt: 'إضافة ميزة تسجيل الصوت. طلب إذن الميكروفون'
+2026-01-28 08:21:19,281 - INFO - Parsed data: {'app_name': 'تطبيق_مبدئي', 'features': ['تسجيل الصوت. طلب إذن الميكروفون'], 'permissions': ['الميكروفون']}
+2026-01-28 08:21:19,281 - INFO - Generating basic Android project structure at: temp_apk_build/تطبيق_مبدئي
+2026-01-28 08:21:19,282 - INFO - Basic Android project structure created for 'تطبيق_مبدئي'.
+2026-01-28 08:21:19,282 - INFO - Modifying Android project at temp_apk_build/تطبيق_مبدئي with data: {'app_name': 'تطبيق_مبدئي', 'features': ['تسجيل الصوت. طلب إذن الميكروفون'], 'permissions': ['الميكروفون']}
+2026-01-28 08:21:19,282 - INFO - AndroidManifest.xml modified with permissions.
+2026-01-28 08:21:19,282 - INFO - MainActivity.java modified with features.
+2026-01-28 08:21:19,282 - INFO - Attempting to build APK for 'تطبيق_مبدئي' at temp_apk_build/تطبيق_مبدئي
+2026-01-28 08:21:19,282 - INFO - Successfully created mock APK: generated_apks/تطبيق_مبدئي/تطبيق_مبدئي-debug.apk
+2026-01-28 08:21:19,282 - INFO - Cleaning up temporary directory: temp_apk_build
+2026-01-28 08:21:19,282 - INFO - Temporary directory cleaned successfully.
