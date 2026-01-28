@@ -1,10 +1,12 @@
+/home/runner/work/phoenix-executor/phoenix-executor/task.py:167: SyntaxWarning: invalid escape sequence '\:'
+  f.write("distributionUrl=https\://services.gradle.org/distributions/gradle-7.5.1-bin.zip\n")
 Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 275, in <module>
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 309, in <module>
     demo_arabic_processing_and_apk_struct_generation()
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 236, in demo_arabic_processing_and_apk_struct_generation
-    created_file = create_apk_structure_files(component_type, component_name_guess, app_name)
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 163, in create_apk_structure_files
-    app_dir = GENERATED_APKS_DIR / app_name.replace(" ", "_").lower()
-                                   ^^^^^^^^^^^^^^^^
-AttributeError: 'NoneType' object has no attribute 'replace'
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 270, in demo_arabic_processing_and_apk_struct_generation
+    generated_project_path = generate_apk_structure(app_name, parsed_data)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 217, in generate_apk_structure
+    """.format(app_dir_name=app_dir_name).strip())
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: "\n    id 'com"
