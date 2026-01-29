@@ -1,4 +1,0 @@
-/home/runner/work/phoenix-executor/phoenix-executor/task.py:273: SyntaxWarning: invalid escape sequence '\:'
-  wrapper_properties_content = """distributionBase=GRADLE_USER_HOME
-/home/runner/work/phoenix-executor/phoenix-executor/task.py:293: SyntaxWarning: invalid escape sequence '\g'
-  gradlew_bat_content = """@rem
