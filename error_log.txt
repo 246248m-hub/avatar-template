@@ -1,5 +1,5 @@
 Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 259, in <module>
-    with open(os.path.join(dummy_template_project_dir, "build.gradle"), "w", encoding="utf-8") as f:
-                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-NameError: name 'dummy_template_project_dir' is not defined. Did you mean: 'dummy_template_manifest_dir'?
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 16, in <module>
+    BUILD_TOOLS_DIR = ANDROID_SDK_ROOT / "build-tools"
+                      ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+TypeError: unsupported operand type(s) for /: 'str' and 'str'
