@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 373, in <module>
+    builder = ArabicAPKBuilder()
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 35, in __init__
+    platform_versions = sorted([d for d in os.listdir(self.platforms_dir) if d.startswith('android-') and os.path.isdir(os.path.join(self.platforms_dir, d))],
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 36, in <lambda>
+    key=lambda x: int(x.split('-')[1]))
+                  ^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '36.1'
