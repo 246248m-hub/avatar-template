@@ -1,5 +1,0 @@
-Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 16, in <module>
-    BUILD_TOOLS_DIR = ANDROID_SDK_ROOT / "build-tools"
-                      ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
-TypeError: unsupported operand type(s) for /: 'str' and 'str'
