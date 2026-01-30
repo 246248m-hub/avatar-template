@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 485, in <module>
+    generated_apk_structure = arabic_generator.process_arabic_to_apk(arabic_prompt)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 463, in process_arabic_to_apk
+    apk_file_structure = self.assemble_apk_structure(integrated_code)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 393, in assemble_apk_structure
+    screens = parsed_description.get("screens", [])
+              ^^^^^^^^^^^^^^^^^^
+NameError: name 'parsed_description' is not defined
