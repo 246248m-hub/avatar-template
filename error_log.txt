@@ -1,2 +1,11 @@
-/home/runner/work/phoenix-executor/phoenix-executor/task.py:249: SyntaxWarning: invalid escape sequence '\d'
-  f.write("plugins { id 'com.android.application' }\nandroid { compileSdk 31\ndefaultConfig { applicationId 'com.example.myapp'; minSdkVersion 21; targetSdkVersion 31; versionCode 1; versionName '1.0' }\nbuildTypes { release { minifyEnabled false; proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro' } }\ncompileOptions { sourceCompatibility JavaVersion.VERSION_1_8; targetCompatibility JavaVersion.VERSION_1_8 }}\dependencies { implementation 'androidx.appcompat:appcompat:1.4.1'; implementation 'com.google.android.material:material:1.5.0'; testImplementation 'junit:junit:4.+' ; androidTestImplementation 'androidx.test.ext:junit:1.1.3'; androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'}")
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 308, in <module>
+    apk_info_1 = arabic_gear.generate_apk_components_from_arabic(sample_arabic_output_1)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 272, in generate_apk_components_from_arabic
+    self.setup_project_structure(app_title=app_name, main_activity_text=main_activity_text)
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 226, in setup_project_structure
+    self._write_file(os.path.join(self.mipmap_dir, "ic_launcher.png"), dummy_icon_content)
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 177, in _write_file
+    f.write(content)
+TypeError: write() argument must be str, not bytes
