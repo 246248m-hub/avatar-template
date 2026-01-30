@@ -1,0 +1,24 @@
+2026-01-30 08:50:17,769 - INFO - Knowledge base directory: knowledge_base
+2026-01-30 08:50:17,769 - INFO - APK output directory: apk_output
+2026-01-30 08:50:17,769 - INFO - --- Starting APK Generation from Arabic ---
+2026-01-30 08:50:17,769 - INFO - Parsing Arabic description: 'إنشاء تطبيق لآلة حاسبة بسيطة مع أزرار للأرقام والعمليات الحسابية.'
+2026-01-30 08:50:17,769 - INFO - Loading Arabic language model...
+2026-01-30 08:50:17,769 - INFO - Arabic language model loaded (mock).
+2026-01-30 08:50:17,769 - INFO - Parsed structure: {'app_name': 'تطبيق_افتراضي', 'features': [], 'ui_elements': [{'type': 'button', 'label': 'زر'}], 'permissions': [], 'data_models': [], 'dependencies': []}
+2026-01-30 08:50:17,769 - INFO - Generating code structure from parsed description...
+2026-01-30 08:50:17,769 - ERROR - Error during code structure generation: name 'p' is not defined
+2026-01-30 08:50:17,769 - INFO - --- Starting APK Generation from Arabic ---
+2026-01-30 08:50:17,769 - INFO - Parsing Arabic description: 'تطبيق لعرض قائمة جهات الاتصال مع إمكانية البحث.'
+2026-01-30 08:50:17,769 - INFO - Parsed structure: {'app_name': 'تطبيق_افتراضي', 'features': ['data_display'], 'ui_elements': [{'type': 'list_view', 'label': 'قائمة البيانات'}], 'permissions': [], 'data_models': [], 'dependencies': []}
+2026-01-30 08:50:17,769 - INFO - Generating code structure from parsed description...
+2026-01-30 08:50:17,769 - ERROR - Error during code structure generation: name 'p' is not defined
+2026-01-30 08:50:17,769 - INFO - --- Starting APK Generation from Arabic ---
+2026-01-30 08:50:17,769 - INFO - Parsing Arabic description: 'بناء تطبيق بسيط يعرض رسالة ترحيبية عند الفتح ويحتاج إلى صلاحية الإنترنت.'
+2026-01-30 08:50:17,769 - INFO - Parsed structure: {'app_name': 'تطبيق_افتراضي', 'features': ['data_display'], 'ui_elements': [{'type': 'list_view', 'label': 'قائمة البيانات'}], 'permissions': ['INTERNET'], 'data_models': [], 'dependencies': []}
+2026-01-30 08:50:17,769 - INFO - Generating code structure from parsed description...
+2026-01-30 08:50:17,769 - ERROR - Error during code structure generation: name 'p' is not defined
+2026-01-30 08:50:17,769 - INFO - --- Starting APK Generation from Arabic ---
+2026-01-30 08:50:17,769 - INFO - Parsing Arabic description: 'تطبيق يعرض قائمة بالمنتجات ويمكن إضافة منتجات جديدة.'
+2026-01-30 08:50:17,769 - INFO - Parsed structure: {'app_name': 'تطبيق_افتراضي', 'features': ['data_display'], 'ui_elements': [{'type': 'list_view', 'label': 'قائمة البيانات'}], 'permissions': [], 'data_models': [], 'dependencies': []}
+2026-01-30 08:50:17,769 - INFO - Generating code structure from parsed description...
+2026-01-30 08:50:17,769 - ERROR - Error during code structure generation: name 'p' is not defined
