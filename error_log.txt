@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 220, in <module>
+    demo_arabic_text_processor()
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 157, in demo_arabic_text_processor
+    assert normalized_text == expected_normalized, f"Normalization failed. Expected: {expected_normalized}, Got: {normalized_text}"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Normalization failed. Expected: اهلا وسهلا بكم يا عرب هذا نص به حركات وتشكيلات ولفظ مختلف ووااوااه ه, Got: اهلا وسهلا بكم يا عرب! هذا نص به حركات وتشكيلات ولفظ مختلف. وااايه
