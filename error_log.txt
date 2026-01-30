@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 324, in <module>
+    compiler.compile(test_prompt_arabic)
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 276, in compile
+    create_dummy_project_structure()
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 56, in create_dummy_project_structure
+    with open(os.path.join(dummy_project_root, "app", "src", "main", "java", "com", "example", "dummyapp", "MainActivity.java"), "w", encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: './dummy_project_for_apk/app/src/main/java/com/example/dummyapp/MainActivity.java'
