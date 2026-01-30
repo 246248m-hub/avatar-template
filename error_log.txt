@@ -1,2 +1,0 @@
-/home/runner/work/phoenix-executor/phoenix-executor/task.py:58: SyntaxWarning: invalid escape sequence '\:'
-  GRADLE_WRAPPER_PROPERTIES_TEMPLATE = """
