@@ -1,4 +1,0 @@
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 261
-    "}", f"    implementation '{dep}'\n}"
-                                       ^
-SyntaxError: f-string: single '}' is not allowed
