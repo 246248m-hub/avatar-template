@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 162, in <module>
+    create_dummy_android_project(None, os.path.join(ANDROID_PROJECT_TEMPLATES, "simple_app_template"))
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 39, in create_dummy_android_project
+    if not os.path.exists(template_path):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen genericpath>", line 19, in exists
+TypeError: stat: path should be string, bytes, os.PathLike or integer, not NoneType
