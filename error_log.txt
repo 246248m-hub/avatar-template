@@ -1,7 +1,4 @@
 Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 742, in <module>
-    main_workflow()
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 675, in main_workflow
-    arabic_parser_generator = ArabicParserGenerator(knowledge_base_dir=KNOWLEDGE_BASE_DIR) # Explicitly instantiate for clarity if needed elsewhere
-                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: ArabicParserGenerator.__init__() got an unexpected keyword argument 'knowledge_base_dir'
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 7, in <module>
+    from constants import (
+ModuleNotFoundError: No module named 'constants'
