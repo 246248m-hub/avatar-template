@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 203, in <module>
-    demo_arabic_nlp_processor()
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 187, in demo_arabic_nlp_processor
-    f.write(f"package {app_name.lower().replace(' ', '_')};\n\nimport androidx.appcompat.app.AppCompatActivity;\n\npublic class {screen_name} extends AppCompatActivity {{}}")
-                       ^^^^^^^^
-NameError: name 'app_name' is not defined
