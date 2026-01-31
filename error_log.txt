@@ -1,8 +1,0 @@
-Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 312, in <module>
-    dummy_project_path_1 = create_dummy_android_project(app_name_1, package_name_1)
-                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 82, in create_dummy_android_project
-    (project_path / "app" / "build.gradle").write_text(build_gradle_app_content.format(package_name=package_name))
-                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-KeyError: "\n    id 'com"
