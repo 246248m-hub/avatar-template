@@ -1,4 +1,21 @@
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 166
-    "tools:context=\".MainActivity\"" # Default context
-                                    ^
-SyntaxError: ':' expected after dictionary key
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 345, in <module>
+    final_apk_path = unified_mind.process_request(arabic_request_example)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 261, in process_request
+    project_root = self.generate_android_project_structure(parsed_details)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 103, in generate_android_project_structure
+    self._create_java_project_from_structure(project_root, app_details)
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 117, in _create_java_project_from_structure
+    self._create_java_project_from_structure(path, app_details)
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 117, in _create_java_project_from_structure
+    self._create_java_project_from_structure(path, app_details)
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 117, in _create_java_project_from_structure
+    self._create_java_project_from_structure(path, app_details)
+  [Previous line repeated 991 more times]
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 116, in _create_java_project_from_structure
+    os.makedirs(path, exist_ok=True)
+  File "<frozen os>", line 210, in makedirs
+  File "<frozen posixpath>", line 104, in split
+RecursionError: maximum recursion depth exceeded
