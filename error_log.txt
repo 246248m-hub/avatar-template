@@ -1,4 +1,14 @@
+error: file not found: ./apk_gen_81e9a5df/app/src/main/java/com/example/generatedapp/MainActivity.java
+Usage: javac <options> <source files>
+use --help for a list of possible options
 Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 4, in <module>
-    from arabic_reshaper import reshape
-ModuleNotFoundError: No module named 'arabic_reshaper'
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 466, in <module>
+    generate_hyper_efficient_apk(test_prompt_arabic, OUTPUT_APK_PATH)
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 431, in generate_hyper_efficient_apk
+    apk_generated = compile_apk(temp_project_dir, output_path)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 214, in compile_apk
+    subprocess.run(javac_command, check=True, cwd=app_module_dir)
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['javac', '-d', './apk_gen_81e9a5df/app/build/intermediates/dex/classes', '-cp', '/usr/local/lib/android/sdk/platforms/android-33/android.jar', './apk_gen_81e9a5df/app/src/main/java/com/example/generatedapp/MainActivity.java']' returned non-zero exit status 2.
