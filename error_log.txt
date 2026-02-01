@@ -1,5 +1,0 @@
-Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 227, in <module>
-    arabic_converter_nl_to_code.cleanup_arabic_temp_files()
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'ArabicNLPToCodeConverter' object has no attribute 'cleanup_arabic_temp_files'
