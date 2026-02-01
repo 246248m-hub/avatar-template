@@ -1,0 +1,4 @@
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 173
+    print(f"\n// Lobe 8_apk_compiler_lobe Last Thought: mmy_android_project_path}")
+                                                                                ^
+SyntaxError: f-string: single '}' is not allowed
