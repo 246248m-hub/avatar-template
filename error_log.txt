@@ -1,0 +1,4 @@
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 194
+    f.write("@echo off\nif ''%_OPTIONS%'':'' == ':'' set _OPTIONS=\njava %_OPTIONS% -Dorg.gradle.logging.level=warn -jar "%~dp0gradle/wrapper/gradle-wrapper.jar" %*\n")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+SyntaxError: invalid syntax. Perhaps you forgot a comma?
