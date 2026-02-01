@@ -1,8 +1,0 @@
-Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 461, in <module>
-    generated_project_path = generate_android_project(
-                             ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 231, in generate_android_project
-    with open(app_build_gradle_path, "r", encoding="utf-8") as f:
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: 'generated_android_projects/مفكرة_بسيطة/app/build.gradle'
