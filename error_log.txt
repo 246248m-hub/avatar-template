@@ -1,10 +1,5 @@
 Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 484, in <module>
-    unified_mind.generate_apk_from_nl(arabic_prompt)
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 420, in generate_apk_from_nl
-    "display_message": self.arabic_processor.generate_arabic_content("display_message")
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 64, in generate_arabic_content
-    user_name = context.get("user_name", "مستخدم")
-                ^^^^^^^^^^^
-AttributeError: 'NoneType' object has no attribute 'get'
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 227, in <module>
+    arabic_converter_nl_to_code.cleanup_arabic_temp_files()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ArabicNLPToCodeConverter' object has no attribute 'cleanup_arabic_temp_files'
