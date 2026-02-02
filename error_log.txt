@@ -1,0 +1,273 @@
+2026-02-02 08:03:15,831 - INFO - Initializing APKCompilerLobe.
+2026-02-02 08:03:15,831 - INFO - Initializing SynthesisLobe.
+2026-02-02 08:03:15,831 - INFO - Initializing ArabicNLP module.
+2026-02-02 08:03:15,832 - INFO - Using Android build tools: /usr/local/lib/android/sdk/build-tools
+2026-02-02 08:03:15,832 - INFO - 
+--- Initiating APK generation for Arabic request: 'افتح التطبيق' ---
+2026-02-02 08:03:15,832 - INFO - Synthesizing APK intent description for: 'افتح التطبيق'
+2026-02-02 08:03:15,832 - INFO - Processing Arabic request: 'افتح التطبيق'
+2026-02-02 08:03:15,833 - INFO - Analyzing Arabic text: 'افتح التطبيق'
+2026-02-02 08:03:15,833 - INFO - Analyzed tags: [{'word': 'افتح', 'pos': 'unknown'}, {'word': 'التطبيق', 'pos': 'unknown'}]
+2026-02-02 08:03:15,833 - INFO - Inferring structure from POS sequence: ['unknown', 'unknown']
+2026-02-02 08:03:15,833 - WARNING - Could not infer a defined sentence structure.
+2026-02-02 08:03:15,833 - INFO - Generating Arabic phrase for structure 'complex_structure' with keywords: {}
+2026-02-02 08:03:15,833 - INFO - Synthesized intent description: {'source_language': 'arabic', 'original_request': 'افتح التطبيق', 'analyzed_structure': 'complex_structure', 'keyword_mapping': {}, 'synthesized_description': 'Perform action related to: ', 'potential_android_intent': 'UNDEFINED_INTENT'}
+2026-02-02 08:03:15,833 - WARNING - Could not map Arabic request to a defined Android intent. APK generation may be basic.
+2026-02-02 08:03:15,833 - INFO - Creating dummy Android project: ArabicApp
+2026-02-02 08:03:15,834 - INFO - Dummy project structure created at: android_project_template/arabicapp
+2026-02-02 08:03:15,834 - INFO - Attempting to compile APK for project at: android_project_template/arabicapp
+2026-02-02 08:03:15,834 - ERROR - Gradle wrapper (gradlew) not found in project. Cannot compile APK.
+2026-02-02 08:03:15,834 - WARNING - gradlew not found, attempting to use 'gradle' command directly.
+2026-02-02 08:03:22,954 - ERROR - Gradle build failed: Command '['gradle', 'assembleDebug', '-p', 'android_project_template/arabicapp']' returned non-zero exit status 1.
+Stdout: 
+Welcome to Gradle 9.3.0!
+
+Here are the highlights of this release:
+ - Test reporting improvements
+ - Error and warning improvements
+ - Build authoring improvements
+
+For more details see https://docs.gradle.org/9.3.0/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+Stderr: 
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Directory '/home/runner/work/phoenix-executor/phoenix-executor/android_project_template/arabicapp' does not contain a Gradle build.
+
+A Gradle build's root directory should contain one of the possible settings files: settings.gradle, settings.gradle.kts, settings.gradle.dcl.It may also contain one of the possible build files: build.gradle, build.gradle.kts, build.gradle.dcl.
+
+To create a new Gradle build in this directory run 'gradle init'
+
+For more information about the 'init' task, please refer to https://docs.gradle.org/9.3.0/userguide/build_init_plugin.html in the Gradle documentation.
+
+For more details on creating a Gradle build, please refer to https://docs.gradle.org/9.3.0/userguide/tutorial_using_tasks.html in the Gradle documentation.
+
+* Try:
+> Run gradle init to create a new Gradle build in this directory.
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 6s
+
+2026-02-02 08:03:22,954 - INFO - Cleaning up demo project directory.
+2026-02-02 08:03:22,957 - INFO - Demo project directory removed.
+2026-02-02 08:03:22,957 - ERROR - APK generation process failed.
+2026-02-02 08:03:22,957 - INFO - 
+--- Initiating APK generation for Arabic request: 'أرسل رسالة نصية' ---
+2026-02-02 08:03:22,957 - INFO - Synthesizing APK intent description for: 'أرسل رسالة نصية'
+2026-02-02 08:03:22,957 - INFO - Processing Arabic request: 'أرسل رسالة نصية'
+2026-02-02 08:03:22,957 - INFO - Analyzing Arabic text: 'أرسل رسالة نصية'
+2026-02-02 08:03:22,957 - INFO - Analyzed tags: [{'word': 'أرسل', 'pos': 'unknown'}, {'word': 'رسالة', 'pos': 'unknown'}, {'word': 'نصية', 'pos': 'unknown'}]
+2026-02-02 08:03:22,957 - INFO - Inferring structure from POS sequence: ['unknown', 'unknown', 'unknown']
+2026-02-02 08:03:22,957 - WARNING - Could not infer a defined sentence structure.
+2026-02-02 08:03:22,957 - INFO - Generating Arabic phrase for structure 'complex_structure' with keywords: {}
+2026-02-02 08:03:22,957 - INFO - Synthesized intent description: {'source_language': 'arabic', 'original_request': 'أرسل رسالة نصية', 'analyzed_structure': 'complex_structure', 'keyword_mapping': {}, 'synthesized_description': 'Perform action related to: ', 'potential_android_intent': 'UNDEFINED_INTENT'}
+2026-02-02 08:03:22,957 - WARNING - Could not map Arabic request to a defined Android intent. APK generation may be basic.
+2026-02-02 08:03:22,957 - INFO - Creating dummy Android project: ArabicApp
+2026-02-02 08:03:22,958 - INFO - Dummy project structure created at: android_project_template/arabicapp
+2026-02-02 08:03:22,958 - INFO - Attempting to compile APK for project at: android_project_template/arabicapp
+2026-02-02 08:03:22,958 - ERROR - Gradle wrapper (gradlew) not found in project. Cannot compile APK.
+2026-02-02 08:03:22,958 - WARNING - gradlew not found, attempting to use 'gradle' command directly.
+2026-02-02 08:03:23,643 - ERROR - Gradle build failed: Command '['gradle', 'assembleDebug', '-p', 'android_project_template/arabicapp']' returned non-zero exit status 1.
+Stdout: 
+Stderr: 
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Directory '/home/runner/work/phoenix-executor/phoenix-executor/android_project_template/arabicapp' does not contain a Gradle build.
+
+A Gradle build's root directory should contain one of the possible settings files: settings.gradle, settings.gradle.kts, settings.gradle.dcl.It may also contain one of the possible build files: build.gradle, build.gradle.kts, build.gradle.dcl.
+
+To create a new Gradle build in this directory run 'gradle init'
+
+For more information about the 'init' task, please refer to https://docs.gradle.org/9.3.0/userguide/build_init_plugin.html in the Gradle documentation.
+
+For more details on creating a Gradle build, please refer to https://docs.gradle.org/9.3.0/userguide/tutorial_using_tasks.html in the Gradle documentation.
+
+* Try:
+> Run gradle init to create a new Gradle build in this directory.
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 609ms
+
+2026-02-02 08:03:23,643 - INFO - Cleaning up demo project directory.
+2026-02-02 08:03:23,644 - INFO - Demo project directory removed.
+2026-02-02 08:03:23,644 - ERROR - APK generation process failed.
+2026-02-02 08:03:23,644 - INFO - 
+--- Initiating APK generation for Arabic request: 'اتصل بصديق' ---
+2026-02-02 08:03:23,644 - INFO - Synthesizing APK intent description for: 'اتصل بصديق'
+2026-02-02 08:03:23,644 - INFO - Processing Arabic request: 'اتصل بصديق'
+2026-02-02 08:03:23,644 - INFO - Analyzing Arabic text: 'اتصل بصديق'
+2026-02-02 08:03:23,644 - INFO - Analyzed tags: [{'word': 'اتصل', 'pos': 'unknown'}, {'word': 'بصديق', 'pos': 'unknown'}]
+2026-02-02 08:03:23,644 - INFO - Inferring structure from POS sequence: ['unknown', 'unknown']
+2026-02-02 08:03:23,644 - WARNING - Could not infer a defined sentence structure.
+2026-02-02 08:03:23,644 - INFO - Generating Arabic phrase for structure 'complex_structure' with keywords: {}
+2026-02-02 08:03:23,644 - INFO - Synthesized intent description: {'source_language': 'arabic', 'original_request': 'اتصل بصديق', 'analyzed_structure': 'complex_structure', 'keyword_mapping': {}, 'synthesized_description': 'Perform action related to: ', 'potential_android_intent': 'UNDEFINED_INTENT'}
+2026-02-02 08:03:23,644 - WARNING - Could not map Arabic request to a defined Android intent. APK generation may be basic.
+2026-02-02 08:03:23,644 - INFO - Creating dummy Android project: ArabicApp
+2026-02-02 08:03:23,645 - INFO - Dummy project structure created at: android_project_template/arabicapp
+2026-02-02 08:03:23,645 - INFO - Attempting to compile APK for project at: android_project_template/arabicapp
+2026-02-02 08:03:23,645 - ERROR - Gradle wrapper (gradlew) not found in project. Cannot compile APK.
+2026-02-02 08:03:23,645 - WARNING - gradlew not found, attempting to use 'gradle' command directly.
+2026-02-02 08:03:24,310 - ERROR - Gradle build failed: Command '['gradle', 'assembleDebug', '-p', 'android_project_template/arabicapp']' returned non-zero exit status 1.
+Stdout: 
+Stderr: 
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Directory '/home/runner/work/phoenix-executor/phoenix-executor/android_project_template/arabicapp' does not contain a Gradle build.
+
+A Gradle build's root directory should contain one of the possible settings files: settings.gradle, settings.gradle.kts, settings.gradle.dcl.It may also contain one of the possible build files: build.gradle, build.gradle.kts, build.gradle.dcl.
+
+To create a new Gradle build in this directory run 'gradle init'
+
+For more information about the 'init' task, please refer to https://docs.gradle.org/9.3.0/userguide/build_init_plugin.html in the Gradle documentation.
+
+For more details on creating a Gradle build, please refer to https://docs.gradle.org/9.3.0/userguide/tutorial_using_tasks.html in the Gradle documentation.
+
+* Try:
+> Run gradle init to create a new Gradle build in this directory.
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 589ms
+
+2026-02-02 08:03:24,310 - INFO - Cleaning up demo project directory.
+2026-02-02 08:03:24,311 - INFO - Demo project directory removed.
+2026-02-02 08:03:24,311 - ERROR - APK generation process failed.
+2026-02-02 08:03:24,311 - INFO - 
+--- Initiating APK generation for Arabic request: 'هذه شاشة رئيسية' ---
+2026-02-02 08:03:24,311 - INFO - Synthesizing APK intent description for: 'هذه شاشة رئيسية'
+2026-02-02 08:03:24,311 - INFO - Processing Arabic request: 'هذه شاشة رئيسية'
+2026-02-02 08:03:24,311 - INFO - Analyzing Arabic text: 'هذه شاشة رئيسية'
+2026-02-02 08:03:24,311 - INFO - Analyzed tags: [{'word': 'هذه', 'pos': 'unknown'}, {'word': 'شاشة', 'pos': 'unknown'}, {'word': 'رئيسية', 'pos': 'unknown'}]
+2026-02-02 08:03:24,311 - INFO - Inferring structure from POS sequence: ['unknown', 'unknown', 'unknown']
+2026-02-02 08:03:24,311 - WARNING - Could not infer a defined sentence structure.
+2026-02-02 08:03:24,311 - INFO - Generating Arabic phrase for structure 'complex_structure' with keywords: {}
+2026-02-02 08:03:24,311 - INFO - Synthesized intent description: {'source_language': 'arabic', 'original_request': 'هذه شاشة رئيسية', 'analyzed_structure': 'complex_structure', 'keyword_mapping': {}, 'synthesized_description': 'Perform action related to: ', 'potential_android_intent': 'UNDEFINED_INTENT'}
+2026-02-02 08:03:24,311 - WARNING - Could not map Arabic request to a defined Android intent. APK generation may be basic.
+2026-02-02 08:03:24,311 - INFO - Creating dummy Android project: ArabicApp
+2026-02-02 08:03:24,312 - INFO - Dummy project structure created at: android_project_template/arabicapp
+2026-02-02 08:03:24,312 - INFO - Attempting to compile APK for project at: android_project_template/arabicapp
+2026-02-02 08:03:24,312 - ERROR - Gradle wrapper (gradlew) not found in project. Cannot compile APK.
+2026-02-02 08:03:24,312 - WARNING - gradlew not found, attempting to use 'gradle' command directly.
+2026-02-02 08:03:25,035 - ERROR - Gradle build failed: Command '['gradle', 'assembleDebug', '-p', 'android_project_template/arabicapp']' returned non-zero exit status 1.
+Stdout: 
+Stderr: 
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Directory '/home/runner/work/phoenix-executor/phoenix-executor/android_project_template/arabicapp' does not contain a Gradle build.
+
+A Gradle build's root directory should contain one of the possible settings files: settings.gradle, settings.gradle.kts, settings.gradle.dcl.It may also contain one of the possible build files: build.gradle, build.gradle.kts, build.gradle.dcl.
+
+To create a new Gradle build in this directory run 'gradle init'
+
+For more information about the 'init' task, please refer to https://docs.gradle.org/9.3.0/userguide/build_init_plugin.html in the Gradle documentation.
+
+For more details on creating a Gradle build, please refer to https://docs.gradle.org/9.3.0/userguide/tutorial_using_tasks.html in the Gradle documentation.
+
+* Try:
+> Run gradle init to create a new Gradle build in this directory.
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 645ms
+
+2026-02-02 08:03:25,035 - INFO - Cleaning up demo project directory.
+2026-02-02 08:03:25,036 - INFO - Demo project directory removed.
+2026-02-02 08:03:25,036 - ERROR - APK generation process failed.
+2026-02-02 08:03:25,036 - INFO - 
+--- Initiating APK generation for Arabic request: 'البحث عن معلومات' ---
+2026-02-02 08:03:25,036 - INFO - Synthesizing APK intent description for: 'البحث عن معلومات'
+2026-02-02 08:03:25,036 - INFO - Processing Arabic request: 'البحث عن معلومات'
+2026-02-02 08:03:25,036 - INFO - Analyzing Arabic text: 'البحث عن معلومات'
+2026-02-02 08:03:25,036 - INFO - Analyzed tags: [{'word': 'البحث', 'pos': 'unknown'}, {'word': 'عن', 'pos': 'unknown'}, {'word': 'معلومات', 'pos': 'unknown'}]
+2026-02-02 08:03:25,036 - INFO - Inferring structure from POS sequence: ['unknown', 'unknown', 'unknown']
+2026-02-02 08:03:25,036 - WARNING - Could not infer a defined sentence structure.
+2026-02-02 08:03:25,036 - INFO - Generating Arabic phrase for structure 'complex_structure' with keywords: {}
+2026-02-02 08:03:25,036 - INFO - Synthesized intent description: {'source_language': 'arabic', 'original_request': 'البحث عن معلومات', 'analyzed_structure': 'complex_structure', 'keyword_mapping': {}, 'synthesized_description': 'Perform action related to: ', 'potential_android_intent': 'UNDEFINED_INTENT'}
+2026-02-02 08:03:25,036 - WARNING - Could not map Arabic request to a defined Android intent. APK generation may be basic.
+2026-02-02 08:03:25,036 - INFO - Creating dummy Android project: ArabicApp
+2026-02-02 08:03:25,037 - INFO - Dummy project structure created at: android_project_template/arabicapp
+2026-02-02 08:03:25,037 - INFO - Attempting to compile APK for project at: android_project_template/arabicapp
+2026-02-02 08:03:25,037 - ERROR - Gradle wrapper (gradlew) not found in project. Cannot compile APK.
+2026-02-02 08:03:25,037 - WARNING - gradlew not found, attempting to use 'gradle' command directly.
+2026-02-02 08:03:25,715 - ERROR - Gradle build failed: Command '['gradle', 'assembleDebug', '-p', 'android_project_template/arabicapp']' returned non-zero exit status 1.
+Stdout: 
+Stderr: 
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Directory '/home/runner/work/phoenix-executor/phoenix-executor/android_project_template/arabicapp' does not contain a Gradle build.
+
+A Gradle build's root directory should contain one of the possible settings files: settings.gradle, settings.gradle.kts, settings.gradle.dcl.It may also contain one of the possible build files: build.gradle, build.gradle.kts, build.gradle.dcl.
+
+To create a new Gradle build in this directory run 'gradle init'
+
+For more information about the 'init' task, please refer to https://docs.gradle.org/9.3.0/userguide/build_init_plugin.html in the Gradle documentation.
+
+For more details on creating a Gradle build, please refer to https://docs.gradle.org/9.3.0/userguide/tutorial_using_tasks.html in the Gradle documentation.
+
+* Try:
+> Run gradle init to create a new Gradle build in this directory.
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 600ms
+
+2026-02-02 08:03:25,715 - INFO - Cleaning up demo project directory.
+2026-02-02 08:03:25,715 - INFO - Demo project directory removed.
+2026-02-02 08:03:25,715 - ERROR - APK generation process failed.
+2026-02-02 08:03:25,715 - INFO - 
+--- Initiating APK generation for Arabic request: 'قطة جميلة تجلس على السجادة' ---
+2026-02-02 08:03:25,715 - INFO - Synthesizing APK intent description for: 'قطة جميلة تجلس على السجادة'
+2026-02-02 08:03:25,715 - INFO - Processing Arabic request: 'قطة جميلة تجلس على السجادة'
+2026-02-02 08:03:25,715 - INFO - Analyzing Arabic text: 'قطة جميلة تجلس على السجادة'
+2026-02-02 08:03:25,715 - INFO - Analyzed tags: [{'word': 'قطة', 'pos': 'unknown'}, {'word': 'جميلة', 'pos': 'unknown'}, {'word': 'تجلس', 'pos': 'unknown'}, {'word': 'على', 'pos': 'unknown'}, {'word': 'السجادة', 'pos': 'unknown'}]
+2026-02-02 08:03:25,715 - INFO - Inferring structure from POS sequence: ['unknown', 'unknown', 'unknown', 'unknown', 'unknown']
+2026-02-02 08:03:25,715 - WARNING - Could not infer a defined sentence structure.
+2026-02-02 08:03:25,715 - INFO - Generating Arabic phrase for structure 'complex_structure' with keywords: {}
+2026-02-02 08:03:25,716 - INFO - Synthesized intent description: {'source_language': 'arabic', 'original_request': 'قطة جميلة تجلس على السجادة', 'analyzed_structure': 'complex_structure', 'keyword_mapping': {}, 'synthesized_description': 'Perform action related to: ', 'potential_android_intent': 'UNDEFINED_INTENT'}
+2026-02-02 08:03:25,716 - WARNING - Could not map Arabic request to a defined Android intent. APK generation may be basic.
+2026-02-02 08:03:25,716 - INFO - Creating dummy Android project: ArabicApp
+2026-02-02 08:03:25,717 - INFO - Dummy project structure created at: android_project_template/arabicapp
+2026-02-02 08:03:25,717 - INFO - Attempting to compile APK for project at: android_project_template/arabicapp
+2026-02-02 08:03:25,717 - ERROR - Gradle wrapper (gradlew) not found in project. Cannot compile APK.
+2026-02-02 08:03:25,717 - WARNING - gradlew not found, attempting to use 'gradle' command directly.
+2026-02-02 08:03:26,373 - ERROR - Gradle build failed: Command '['gradle', 'assembleDebug', '-p', 'android_project_template/arabicapp']' returned non-zero exit status 1.
+Stdout: 
+Stderr: 
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Directory '/home/runner/work/phoenix-executor/phoenix-executor/android_project_template/arabicapp' does not contain a Gradle build.
+
+A Gradle build's root directory should contain one of the possible settings files: settings.gradle, settings.gradle.kts, settings.gradle.dcl.It may also contain one of the possible build files: build.gradle, build.gradle.kts, build.gradle.dcl.
+
+To create a new Gradle build in this directory run 'gradle init'
+
+For more information about the 'init' task, please refer to https://docs.gradle.org/9.3.0/userguide/build_init_plugin.html in the Gradle documentation.
+
+For more details on creating a Gradle build, please refer to https://docs.gradle.org/9.3.0/userguide/tutorial_using_tasks.html in the Gradle documentation.
+
+* Try:
+> Run gradle init to create a new Gradle build in this directory.
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 580ms
+
+2026-02-02 08:03:26,373 - INFO - Cleaning up demo project directory.
+2026-02-02 08:03:26,374 - INFO - Demo project directory removed.
+2026-02-02 08:03:26,374 - ERROR - APK generation process failed.
