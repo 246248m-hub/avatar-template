@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 429, in <module>
-    builder._update_layout_file(text_element_xml)
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 189, in _update_layout_file
-    with open(self.layout_file_path, 'r') as f:
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: './MyArabicApp_project/app/src/main/res/layout/activity_main.xml'
