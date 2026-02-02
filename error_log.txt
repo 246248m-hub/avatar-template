@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 673, in <module>
+    code_generation_lobe = CodeGenerationLobe()
+                           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 469, in __init__
+    self.code_generator = CodeGenerationLobe() # Instantiating the dummy class
+                          ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 469, in __init__
+    self.code_generator = CodeGenerationLobe() # Instantiating the dummy class
+                          ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 469, in __init__
+    self.code_generator = CodeGenerationLobe() # Instantiating the dummy class
+                          ^^^^^^^^^^^^^^^^^^^^
+  [Previous line repeated 996 more times]
+RecursionError: maximum recursion depth exceeded
