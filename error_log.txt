@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 210, in <module>
+    apk_path = synthesize_apk_from_nlp(dummy_arabic_description, app_name="Notes App")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 178, in synthesize_apk_from_nlp
+    copy_template_project()
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 34, in copy_template_project
+    shutil.copytree(ANDROID_PROJECT_TEMPLATE_DIR, "./current_android_project")
+  File "/usr/lib/python3.12/shutil.py", line 598, in copytree
+    with os.scandir(src) as itr:
+         ^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: './android_project_template'
