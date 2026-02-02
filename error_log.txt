@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 220, in <module>
+    create_android_project_structure("DemoApp", "com.example.demo")
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 72, in create_android_project_structure
+    """.format(project_name))
+        ^^^^^^^^^^^^^^^^^^^^
+KeyError: "\n    id 'com"
