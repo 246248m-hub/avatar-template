@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 243, in <module>
+    run_arabic_apk_generator_demo()
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 218, in run_arabic_apk_generator_demo
+    generated_project_path = arabic_generator.execute(instruction_file_path)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 185, in execute
+    app_structure = self.analyze_and_structure(arabic_instructions)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 103, in analyze_and_structure
+    extracted_components = self.nlp_processor.extract_components(arabic_instructions)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 39, in extract_components
+    components["app_info"]["name"] = app_name_match.group(1)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+TypeError: list indices must be integers or slices, not str
