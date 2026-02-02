@@ -1,9 +1,0 @@
-Traceback (most recent call last):
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 178, in <module>
-    generated_apk_file = apk_generator.generate_arabic_apk(arabic_prompt, app_name)
-                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 73, in generate_arabic_apk
-    self._initialize_lobes()
-  File "/home/runner/work/phoenix-executor/phoenix-executor/task.py", line 38, in _initialize_lobes
-    from lobe_0_language_lobe import LanguageLobe
-ModuleNotFoundError: No module named 'lobe_0_language_lobe'
